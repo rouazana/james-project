@@ -26,18 +26,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.james.jmap.methods.RequestHandler;
+import org.apache.james.jmap.methods.MethodProcessor;
 import org.apache.james.jmap.model.ProtocolRequest;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 
 public class JMAPServlet extends HttpServlet {
 
@@ -47,7 +49,13 @@ public class JMAPServlet extends HttpServlet {
     public static final String JSON_CONTENT_TYPE_UTF8 = "application/json; charset=UTF-8";
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private RequestHandler requestHandler;
+
+    private final MethodProcessor methodProcessor;
+    
+    @Inject
+    @VisibleForTesting JMAPServlet(MethodProcessor methodProcessor) {
+        this.methodProcessor = methodProcessor;
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
@@ -55,7 +63,7 @@ public class JMAPServlet extends HttpServlet {
             List<Object[]> responses = 
                 requestAsJsonStream(req)
                 .map(ProtocolRequest::deserialize)
-                .map(requestHandler::process)
+                .map(methodProcessor::process)
                 .map(protocolResponse -> protocolResponse.asProtocolSpecification())
                 .collect(Collectors.toList());
 
@@ -68,9 +76,5 @@ public class JMAPServlet extends HttpServlet {
     private Stream<JsonNode[]> requestAsJsonStream(HttpServletRequest req) throws IOException, JsonParseException, JsonMappingException {
         return Arrays.stream(
                 objectMapper.readValue(req.getInputStream(), JsonNode[][].class));
-    }
-
-    public void setRequestHandler(RequestHandler requestHandler) {
-        this.requestHandler = requestHandler;
     }
 }

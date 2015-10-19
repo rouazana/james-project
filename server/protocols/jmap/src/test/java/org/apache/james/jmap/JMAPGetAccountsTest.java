@@ -26,7 +26,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.apache.james.jmap.methods.RequestHandler;
+import org.apache.james.jmap.methods.MethodProcessor;
 import org.apache.james.jmap.model.ProtocolResponse;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -47,7 +47,7 @@ public class JMAPGetAccountsTest {
     private static final int RANDOM_PORT = 0;
 
     private Server server;
-    private RequestHandler requestHandler;
+    private MethodProcessor methodProcessor;
 
     @Before
     public void setup() throws Exception {
@@ -56,10 +56,9 @@ public class JMAPGetAccountsTest {
         ServletHandler handler = new ServletHandler();
         server.setHandler(handler);
 
-        requestHandler = mock(RequestHandler.class);
+        methodProcessor = mock(MethodProcessor.class);
 
-        JMAPServlet jmapServlet = new JMAPServlet();
-        jmapServlet.setRequestHandler(requestHandler);
+        JMAPServlet jmapServlet = new JMAPServlet(methodProcessor);
         ServletHolder servletHolder = new ServletHolder(jmapServlet);
         handler.addServletWithMapping(servletHolder, "/*");
 
@@ -90,7 +89,7 @@ public class JMAPGetAccountsTest {
         ObjectNode json = new ObjectNode(new JsonNodeFactory(false));
         json.put("type", "invalidArgument");
 
-        when(requestHandler.process(any()))
+        when(methodProcessor.process(any()))
             .thenReturn(new ProtocolResponse("error", json, "#0"));
 
         given()
@@ -114,7 +113,7 @@ public class JMAPGetAccountsTest {
         list.put("name", "roger@barcamp");
         arrayNode.add(list);
 
-        when(requestHandler.process(any()))
+        when(methodProcessor.process(any()))
             .thenReturn(new ProtocolResponse("accounts", json, "#0"));
 
         given()
