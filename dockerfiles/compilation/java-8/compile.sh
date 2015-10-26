@@ -44,9 +44,9 @@ git checkout $SHA1
 # Compilation
 
 if [ "$SKIPTESTS" = "skipTests" ]; then
-   mvn clean install -DskipTests -Pcassandra,exclude-lucene,with-assembly,with-jetm
+   mvn package -DskipTests -Pcassandra,exclude-lucene,with-assembly,with-jetm
 else
-   mvn clean install -Pcassandra,exclude-lucene,with-assembly,with-jetm 
+   mvn package -Pcassandra,exclude-lucene,with-assembly,with-jetm
 fi
 
 # Retrieve result
