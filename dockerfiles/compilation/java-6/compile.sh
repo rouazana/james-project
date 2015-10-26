@@ -3,7 +3,7 @@
 
 printUsage() {
    echo "Usage : "
-   echo "./compile-java6.sh [-s | --skipTests] SHA1"
+   echo "./compile.sh [-s | --skipTests] SHA1"
    echo "    -s : Skip test"
    echo "    SHA1: SHA1 to build (optional)"
    exit 1
@@ -44,7 +44,7 @@ git checkout $SHA1
 # Compilation
 
 if [ "$SKIPTESTS" = "skipTests" ]; then
-   mvn clean package -DskipTests
+   mvn package -DskipTests
 else
-   mvn clean package
+   mvn package
 fi
