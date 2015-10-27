@@ -81,7 +81,7 @@ public class HBaseRecipientRewriteTable extends AbstractRecipientRewriteTable {
         try {
             table = TablePool.getInstance().getRecipientRewriteTable();
             // Optimize this to only make one call.
-            feedUserDomainMappingsList(table, user, domain, list);
+            return feedUserDomainMappingsList(table, user, domain, list);
         } catch (IOException e) {
             log.error("Error while getting user domain mapping in HBase", e);
             throw new RecipientRewriteTableException("Error while getting user domain mapping in HBase", e);
@@ -94,7 +94,6 @@ public class HBaseRecipientRewriteTable extends AbstractRecipientRewriteTable {
                 }
             }
         }
-        return list;
     }
 
     private Mappings feedUserDomainMappingsList(HTableInterface table, String user, String domain, Mappings list) throws
