@@ -16,17 +16,15 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.rrt.cassandra;
 
-import org.junit.runner.RunWith;
+package org.apache.james.rrt.cassandra.tables;
 
-import cucumber.api.CucumberOptions;
-import cucumber.api.junit.Cucumber;
 
-@RunWith(Cucumber.class)
-@CucumberOptions(
-        features = { "classpath:cucumber/" },
-        glue = { "org.apache.james.rrt.lib", "org.apache.james.rrt.cassandra" }
-    )
-public class RewriteTablesTest {
+public interface CassandraRecipientRewriteTableTable {
+
+    String TABLE_NAME = "rrt";
+
+    String USER = "user";
+    String DOMAIN = "domain";
+    String MAPPING = "mapping";
 }
