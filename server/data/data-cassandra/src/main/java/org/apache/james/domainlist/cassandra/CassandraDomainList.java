@@ -23,21 +23,22 @@ import static com.datastax.driver.core.querybuilder.QueryBuilder.delete;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.insertInto;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.select;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.james.backends.cassandra.utils.CassandraConstants;
+import org.apache.james.backends.cassandra.utils.CassandraUtils;
 import org.apache.james.domainlist.api.DomainListException;
 import org.apache.james.domainlist.lib.AbstractDomainList;
-import org.apache.james.backends.cassandra.utils.CassandraConstants;
 import org.apache.james.tables.CassandraDomainsTable;
+
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Session;
 
 public class CassandraDomainList extends AbstractDomainList {
 
@@ -51,7 +52,7 @@ public class CassandraDomainList extends AbstractDomainList {
 
     @Override
     protected List<String> getDomainListInternal() throws DomainListException {
-        return convertToStream(session.execute(select(CassandraDomainsTable.DOMAIN).from(CassandraDomainsTable.TABLE_NAME)))
+        return CassandraUtils.convertToStream(session.execute(select(CassandraDomainsTable.DOMAIN).from(CassandraDomainsTable.TABLE_NAME)))
             .map(row -> row.getString(CassandraDomainsTable.DOMAIN))
             .collect(Collectors.toList());
     }
@@ -85,10 +86,6 @@ public class CassandraDomainList extends AbstractDomainList {
         if (!resultSet.one().getBool(CassandraConstants.LIGHTWEIGHT_TRANSACTION_APPLIED)) {
             throw new DomainListException(domain + " was not found");
         }
-    }
-
-    private Stream<Row> convertToStream(ResultSet resultSet) {
-        return StreamSupport.stream(resultSet.spliterator(), true);
     }
 
 }
