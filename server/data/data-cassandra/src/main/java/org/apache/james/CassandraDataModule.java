@@ -19,16 +19,18 @@
 
 package org.apache.james;
 
-import java.util.Arrays;
+import static com.datastax.driver.core.DataType.text;
+
 import java.util.List;
-import com.datastax.driver.core.schemabuilder.SchemaBuilder;
-import com.google.common.collect.ImmutableList;
+
 import org.apache.james.backends.cassandra.components.CassandraIndex;
 import org.apache.james.backends.cassandra.components.CassandraModule;
 import org.apache.james.backends.cassandra.components.CassandraTable;
 import org.apache.james.backends.cassandra.components.CassandraType;
 import org.apache.james.tables.CassandraDomainsTable;
-import static com.datastax.driver.core.DataType.text;
+
+import com.datastax.driver.core.schemabuilder.SchemaBuilder;
+import com.google.common.collect.ImmutableList;
 
 public class CassandraDataModule implements CassandraModule {
     private final List<CassandraTable> tables;
@@ -36,11 +38,11 @@ public class CassandraDataModule implements CassandraModule {
     private final List<CassandraType> types;
 
     public CassandraDataModule() {
-        tables = ImmutableList.copyOf(
-            Arrays.asList(new CassandraTable(CassandraDomainsTable.TABLE_NAME,
-                SchemaBuilder.createTable(CassandraDomainsTable.TABLE_NAME)
-                    .ifNotExists()
-                    .addPartitionKey(CassandraDomainsTable.DOMAIN, text()))));
+        tables = ImmutableList.of(
+                new CassandraTable(CassandraDomainsTable.TABLE_NAME,
+                        SchemaBuilder.createTable(CassandraDomainsTable.TABLE_NAME)
+                        .ifNotExists()
+                        .addPartitionKey(CassandraDomainsTable.DOMAIN, text())));
         index = ImmutableList.of();
         types = ImmutableList.of();
     }
