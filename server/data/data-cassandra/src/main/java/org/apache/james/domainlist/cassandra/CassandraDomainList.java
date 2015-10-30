@@ -27,9 +27,7 @@ import static com.datastax.driver.core.querybuilder.QueryBuilder.select;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.james.backends.cassandra.utils.CassandraConstants;
 import org.apache.james.backends.cassandra.utils.CassandraUtils;
@@ -39,14 +37,14 @@ import org.apache.james.tables.CassandraDomainsTable;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
+import com.google.common.annotations.VisibleForTesting;
 
 public class CassandraDomainList extends AbstractDomainList {
 
     private Session session;
 
     @Inject
-    @Resource
-    public void setSession(@Named("cassandra-session") Session session) {
+    @VisibleForTesting CassandraDomainList(Session session) {
         this.session = session;
     }
 
