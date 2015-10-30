@@ -19,7 +19,6 @@
 
 package org.apache.james.domainlist.cassandra;
 
-import org.apache.james.CassandraDataModule;
 import org.apache.james.backends.cassandra.CassandraClusterSingleton;
 import org.apache.james.domainlist.api.DomainList;
 import org.apache.james.domainlist.lib.AbstractDomainListTest;
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class CassandraDomainListTest extends AbstractDomainListTest {
 
-    private static final CassandraClusterSingleton cassandra = CassandraClusterSingleton.create(new CassandraDataModule());
+    private static final CassandraClusterSingleton cassandra = CassandraClusterSingleton.create(new CassandraDomainListModule());
 
     @Override
     protected DomainList createDomainList() {
