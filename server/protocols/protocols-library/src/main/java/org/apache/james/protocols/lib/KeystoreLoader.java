@@ -19,20 +19,21 @@
 
 package org.apache.james.protocols.lib;
 
-import org.apache.james.filesystem.api.FileSystem;
-
 import java.io.InputStream;
 import java.security.KeyStore;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.apache.james.filesystem.api.FileSystem;
+
+@Singleton
 public class KeystoreLoader {
 
     public static final String JKS = "JKS";
 
+    @Inject
     private FileSystem fileSystem;
-
-    public void setFileSystem(FileSystem fileSystem) {
-        this.fileSystem = fileSystem;
-    }
 
     public KeyStore load(String keystoreURL, String secret) throws Exception {
         KeyStore result = KeyStore.getInstance(JKS);

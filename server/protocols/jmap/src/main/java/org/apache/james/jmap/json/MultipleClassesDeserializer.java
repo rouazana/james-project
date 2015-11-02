@@ -34,6 +34,8 @@ import com.google.common.base.Throwables;
 
 public class MultipleClassesDeserializer extends StdDeserializer<Object> {
 
+    private static final long serialVersionUID = 1L;
+
     private Map<String, Class<?>> registry = new HashMap<String, Class<?>>();
 
     MultipleClassesDeserializer() {
