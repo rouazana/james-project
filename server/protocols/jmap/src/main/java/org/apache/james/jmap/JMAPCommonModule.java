@@ -30,34 +30,25 @@ import org.apache.james.jmap.crypto.SignedContinuationTokenManager;
 import org.apache.james.jmap.memory.access.MemoryAccessTokenRepository;
 import org.apache.james.jmap.utils.DefaultZonedDateTimeProvider;
 import org.apache.james.jmap.utils.ZonedDateTimeProvider;
-import org.apache.james.protocols.lib.KeystoreLoader;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
-import com.google.inject.servlet.ServletModule;
 
-public class JMAPModule extends ServletModule {
+public class JMAPCommonModule extends AbstractModule {
     
     private static final long DEFAULT_TOKEN_EXPIRATION_IN_MS = TimeUnit.MILLISECONDS.convert(15, TimeUnit.MINUTES);
 
     @Override
-    protected void configureServlets() {
-        bindContinuationTokenManager();
-        bindAccessTokenManager();
+    protected void configure() {
+        bind(SignatureHandler.class).to(JamesSignatureHandler.class);
+        bind(ZonedDateTimeProvider.class).to(DefaultZonedDateTimeProvider.class);
+        bind(ContinuationTokenManager.class).to(SignedContinuationTokenManager.class);
+
+        bindConstant().annotatedWith(Names.named("tokenExpirationInMs")).to(DEFAULT_TOKEN_EXPIRATION_IN_MS);
+        bind(AccessTokenRepository.class).to(MemoryAccessTokenRepository.class);
+        bind(AccessTokenManager.class).to(AccessTokenManagerImpl.class);
 
         bind(AuthenticationServlet.class);
     }
 
-    private void bindContinuationTokenManager() {
-        bind(KeystoreLoader.class).toInstance(new KeystoreLoader());
-        bind(SignatureHandler.class).to(JamesSignatureHandler.class);
-        bind(ZonedDateTimeProvider.class).to(DefaultZonedDateTimeProvider.class);
-        bind(ContinuationTokenManager.class).to(SignedContinuationTokenManager.class);
-    }
-    
-    private void bindAccessTokenManager() {
-        bind(Long.class).annotatedWith(Names.named("tokenExpirationInMs")).toInstance(DEFAULT_TOKEN_EXPIRATION_IN_MS);
-        bind(AccessTokenRepository.class).to(MemoryAccessTokenRepository.class);
-        bind(AccessTokenManager.class).to(AccessTokenManagerImpl.class);
-    }
-    
 }
