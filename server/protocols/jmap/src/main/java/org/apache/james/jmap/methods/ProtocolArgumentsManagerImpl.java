@@ -20,15 +20,14 @@
 package org.apache.james.jmap.methods;
 
 import java.io.IOException;
-import java.util.Set;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.james.jmap.model.ProtocolRequest;
 import org.apache.james.jmap.model.ProtocolResponse;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -36,41 +35,30 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.annotations.VisibleForTesting;
 
 @Singleton
-@SuppressWarnings("rawtypes")
-public class MethodProcessorImpl implements MethodProcessor {
+public class ProtocolArgumentsManagerImpl implements ProtocolArgumentsManager {
 
-    private final Set<Method> methods;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    @VisibleForTesting static final String DEFAULT_ERROR_MESSAGE = "Error while processing";
+    @VisibleForTesting static final String ERROR_METHOD = "error";
+    private static final ObjectNode ERROR_OBJECT_NODE = new ObjectNode(new JsonNodeFactory(false)).put("type", DEFAULT_ERROR_MESSAGE);
 
-    @Inject
-    @VisibleForTesting MethodProcessorImpl(Set<Method> methods) {
-        this.methods = methods;
+    private final ObjectMapper objectMapper;
+
+    @VisibleForTesting ProtocolArgumentsManagerImpl() {
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public ProtocolResponse process(ProtocolRequest request) {
-        try {
-            Method processedMethod = methods.stream()
-                .filter(method -> method.methodName().equals(request.getMethod()))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("unknown method"));
-
-            JmapResponse jmapResponse = processedMethod.process(
-                    extractJmapRequest(request, processedMethod.requestClass()));
-
-            return formatResponse(request, jmapResponse);
-        } catch (IOException e) {
-            return new ProtocolResponse("error", new ObjectNode(new JsonNodeFactory(false)).put("type", "Unserializable response"), request.getClientId());
-        }
-    }
-
-    private <T extends JmapRequest> T extractJmapRequest(ProtocolRequest request, Class<T> requestClass) throws IOException, JsonParseException, JsonMappingException {
+    public <T extends JmapRequest> T extractJmapRequest(ProtocolRequest request, Class<T> requestClass) 
+            throws IOException, JsonParseException, JsonMappingException {
         return objectMapper.readValue(request.getParameters().toString(), requestClass);
     }
 
-    private ProtocolResponse formatResponse(ProtocolRequest request, JmapResponse jmapResponse) {
+    public ProtocolResponse formatMethodResponse(ProtocolRequest request, JmapResponse jmapResponse) {
         ObjectNode objectNode = objectMapper.valueToTree(jmapResponse);
         return new ProtocolResponse(request.getMethod(), objectNode, request.getClientId());
+    }
+
+    public ProtocolResponse formatErrorResponse(ProtocolRequest request) {
+        return new ProtocolResponse(ERROR_METHOD, ERROR_OBJECT_NODE, request.getClientId());
     }
 }

@@ -19,13 +19,36 @@
 
 package org.apache.james.jmap.methods;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.apache.james.jmap.model.ProtocolRequest;
 import org.apache.james.jmap.model.ProtocolResponse;
 
-public interface Method {
+import com.google.common.annotations.VisibleForTesting;
 
-    String methodName();
+@Singleton
+public class RequestHandlerImpl implements RequestHandler {
 
-    ProtocolResponse process(ProtocolRequest request);
+    private final Map<String, Method> methods;
 
+    @Inject
+    @VisibleForTesting RequestHandlerImpl(Set<Method> methods) {
+        this.methods = methods.stream()
+                .collect(Collectors.toMap(Method::methodName, method -> method));
+    }
+
+    @Override
+    public ProtocolResponse handle(ProtocolRequest request) {
+        String methodName = request.getMethod();
+        if (!methods.containsKey(methodName)) {
+            throw new IllegalStateException("unknown method");
+        }
+
+        return methods.get(methodName).process(request);
+    }
 }

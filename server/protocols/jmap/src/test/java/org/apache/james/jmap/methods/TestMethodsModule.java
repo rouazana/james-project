@@ -19,15 +19,21 @@
 
 package org.apache.james.jmap.methods;
 
-import org.apache.james.jmap.MethodsModule;
+import java.io.IOException;
 
+import javax.inject.Inject;
+
+import org.apache.james.jmap.MethodsModule;
+import org.apache.james.jmap.model.ProtocolRequest;
+import org.apache.james.jmap.model.ProtocolResponse;
+
+import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 
 public class TestMethodsModule extends AbstractModule {
 
     @Override
-    @SuppressWarnings("rawtypes")
     protected void configure() {
         install(new MethodsModule());
 
@@ -74,7 +80,14 @@ public class TestMethodsModule extends AbstractModule {
         }
     }
 
-    public static class MyMethod implements Method<MyJmapRequest, MyJmapResponse> {
+    public static class MyMethod implements Method {
+
+        private ProtocolArgumentsManager protocolArgumentsManager;
+
+        @Inject
+        @VisibleForTesting MyMethod(ProtocolArgumentsManager protocolArgumentsManager) {
+            this.protocolArgumentsManager = protocolArgumentsManager;
+        }
 
         @Override
         public String methodName() {
@@ -82,13 +95,14 @@ public class TestMethodsModule extends AbstractModule {
         }
 
         @Override
-        public MyJmapResponse process(MyJmapRequest request) {
-            return new MyJmapResponse(request.getId(), request.getName(), "works");
-        }
-
-        @Override
-        public Class<MyJmapRequest> requestClass() {
-            return MyJmapRequest.class;
+        public ProtocolResponse process(ProtocolRequest request) {
+            try {
+                MyJmapRequest typedRequest = protocolArgumentsManager.extractJmapRequest(request, MyJmapRequest.class);
+                return protocolArgumentsManager.formatMethodResponse(request, 
+                        new MyJmapResponse(typedRequest.getId(), typedRequest.getName(), "works"));
+            } catch (IOException e) {
+                return protocolArgumentsManager.formatErrorResponse(request);
+            }
         }
     }
 }

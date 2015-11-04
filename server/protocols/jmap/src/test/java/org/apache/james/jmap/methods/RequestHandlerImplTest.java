@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.inject.Inject;
 
+import org.apache.james.jmap.methods.TestMethodsModule.MyMethod;
 import org.apache.james.jmap.model.ProtocolRequest;
 import org.apache.james.jmap.model.ProtocolResponse;
 import org.apache.onami.test.OnamiRunner;
@@ -37,19 +38,56 @@ import com.google.common.collect.ImmutableSet;
 
 @RunWith(OnamiRunner.class)
 @GuiceModules({ TestMethodsModule.class })
-public class MethodProcessorImplTest {
+public class RequestHandlerImplTest {
 
     @Inject
-    private MethodProcessor methodProcessor;
+    private RequestHandler requestHandler;
+    @Inject
+    private ProtocolArgumentsManager protocolArgumentsManager;
 
     @Test(expected=IllegalStateException.class)
     public void processShouldThrowWhenUnknownMethod() {
-        JsonNode[] nodes = new JsonNode[] { new ObjectNode(new JsonNodeFactory(false)).textNode("getAccounts"),
+        JsonNode[] nodes = new JsonNode[] { new ObjectNode(new JsonNodeFactory(false)).textNode("unknwonMethod"),
                 new ObjectNode(new JsonNodeFactory(false)).putObject("{\"id\": \"id\"}"),
                 new ObjectNode(new JsonNodeFactory(false)).textNode("#1")} ;
 
-        MethodProcessorImpl requestHandlerImpl = new MethodProcessorImpl(ImmutableSet.of());
-        requestHandlerImpl.process(ProtocolRequest.deserialize(nodes));
+        RequestHandlerImpl requestHandlerImpl = new RequestHandlerImpl(ImmutableSet.of());
+        requestHandlerImpl.handle(ProtocolRequest.deserialize(nodes));
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void requestHandlerShouldThrowWhenAMethodIsRecordedTwice() {
+        new RequestHandlerImpl(ImmutableSet.of(new MyMethod(protocolArgumentsManager), new MyMethod(protocolArgumentsManager)));
+    }
+
+    @Test(expected=IllegalStateException.class)
+    public void requestHandlerShouldThrowWhenTwoMethodsWithSameName() {
+        new RequestHandlerImpl(ImmutableSet.of(new NamedMethod("name"), new NamedMethod("name")));
+    }
+
+    @Test
+    public void requestHandlerMayBeCreatedWhenTwoMethodsWithDifferentName() {
+        new RequestHandlerImpl(ImmutableSet.of(new NamedMethod("name"), new NamedMethod("name2")));
+    }
+
+    private class NamedMethod implements Method {
+
+        private final String methodName;
+
+        public NamedMethod(String methodName) {
+            this.methodName = methodName;
+            
+        }
+
+        @Override
+        public String methodName() {
+            return methodName;
+        }
+
+        @Override
+        public ProtocolResponse process(ProtocolRequest request) {
+            return null;
+        }
     }
 
     @Test
@@ -62,7 +100,7 @@ public class MethodProcessorImplTest {
                 parameters,
                 new ObjectNode(new JsonNodeFactory(false)).textNode("#1")} ;
 
-        ProtocolResponse response = methodProcessor.process(ProtocolRequest.deserialize(nodes));
+        ProtocolResponse response = requestHandler.handle(ProtocolRequest.deserialize(nodes));
 
         assertThat(response.getResults().findValue("id").asText()).isEqualTo("myId");
         assertThat(response.getResults().findValue("name").asText()).isEqualTo("myName");

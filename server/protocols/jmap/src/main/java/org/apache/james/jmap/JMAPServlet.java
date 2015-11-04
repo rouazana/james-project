@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.james.jmap.methods.MethodProcessor;
+import org.apache.james.jmap.methods.RequestHandler;
 import org.apache.james.jmap.model.ProtocolRequest;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -50,11 +50,11 @@ public class JMAPServlet extends HttpServlet {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    private final MethodProcessor methodProcessor;
+    private final RequestHandler requestHandler;
     
     @Inject
-    @VisibleForTesting JMAPServlet(MethodProcessor methodProcessor) {
-        this.methodProcessor = methodProcessor;
+    @VisibleForTesting JMAPServlet(RequestHandler requestHandler) {
+        this.requestHandler = requestHandler;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class JMAPServlet extends HttpServlet {
             List<Object[]> responses = 
                 requestAsJsonStream(req)
                 .map(ProtocolRequest::deserialize)
-                .map(methodProcessor::process)
+                .map(requestHandler::handle)
                 .map(protocolResponse -> protocolResponse.asProtocolSpecification())
                 .collect(Collectors.toList());
 

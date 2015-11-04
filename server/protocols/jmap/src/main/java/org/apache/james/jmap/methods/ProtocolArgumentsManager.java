@@ -19,13 +19,21 @@
 
 package org.apache.james.jmap.methods;
 
+import java.io.IOException;
+
 import org.apache.james.jmap.model.ProtocolRequest;
 import org.apache.james.jmap.model.ProtocolResponse;
 
-public interface Method {
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
-    String methodName();
+public interface ProtocolArgumentsManager {
 
-    ProtocolResponse process(ProtocolRequest request);
+    <T extends JmapRequest> T extractJmapRequest(ProtocolRequest request, Class<T> requestClass) 
+            throws IOException, JsonParseException, JsonMappingException;
+
+    ProtocolResponse formatMethodResponse(ProtocolRequest request, JmapResponse jmapResponse);
+
+    ProtocolResponse formatErrorResponse(ProtocolRequest request);
 
 }

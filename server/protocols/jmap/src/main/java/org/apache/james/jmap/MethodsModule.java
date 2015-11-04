@@ -19,9 +19,11 @@
 
 package org.apache.james.jmap;
 
+import org.apache.james.jmap.methods.ProtocolArgumentsManager;
+import org.apache.james.jmap.methods.ProtocolArgumentsManagerImpl;
 import org.apache.james.jmap.methods.Method;
-import org.apache.james.jmap.methods.MethodProcessor;
-import org.apache.james.jmap.methods.MethodProcessorImpl;
+import org.apache.james.jmap.methods.RequestHandler;
+import org.apache.james.jmap.methods.RequestHandlerImpl;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
@@ -29,9 +31,9 @@ import com.google.inject.multibindings.Multibinder;
 public class MethodsModule extends AbstractModule {
 
     @Override
-    @SuppressWarnings("rawtypes")
     protected void configure() {
-        bind(MethodProcessor.class).to(MethodProcessorImpl.class);
+        bind(RequestHandler.class).to(RequestHandlerImpl.class);
+        bind(ProtocolArgumentsManager.class).to(ProtocolArgumentsManagerImpl.class);
 
         Multibinder<Method> methods = Multibinder.newSetBinder(binder(), Method.class);
     }
