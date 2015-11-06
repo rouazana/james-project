@@ -63,12 +63,14 @@ public class TestServer {
 
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(accessTokenManager);
         Filter getAuthenticationFilter = new BypassOnPostFilter(authenticationFilter);
-        FilterHolder authenticationFilterHolder = new FilterHolder(getAuthenticationFilter);
-        handler.addFilterWithMapping(authenticationFilterHolder, "/*", null);
+        FilterHolder getAuthenticationFilterHolder = new FilterHolder(getAuthenticationFilter);
+        handler.addFilterWithMapping(getAuthenticationFilterHolder, "/authentication", null);
         
         JMAPServlet jmapServlet = injector.getInstance(JMAPServlet.class);
         servletHolder = new ServletHolder(jmapServlet);
         handler.addServletWithMapping(servletHolder, "/jmap");
+        FilterHolder authenticationFilterHolder = new FilterHolder(authenticationFilter);
+        handler.addFilterWithMapping(authenticationFilterHolder, "/jmap", null);
 
         server.start();
     }
@@ -86,6 +88,14 @@ public class TestServer {
         return ((ServerConnector) server.getConnectors()[0]).getLocalPort();
     }
     
+    public ZonedDateTimeProvider getZonedDateTimeProvider() {
+        return zonedDateTimeProvider;
+    }
+
+    public UsersRepository getUserRepository() {
+        return usersRepository;
+    }
+
     public AccessTokenManager getAccessTokenManager() {
         return accessTokenManager;
     }

@@ -19,8 +19,6 @@
 package org.apache.james.jmap;
 
 import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.config.EncoderConfig.encoderConfig;
-import static com.jayway.restassured.config.RestAssuredConfig.newConfig;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
 
@@ -30,16 +28,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 
 public class JMAPGetMailboxesTest {
 
     private TestServer server;
+    private TestClient client;
 
     private UsersRepository mockedUsersRepository;
     private ZonedDateTimeProvider mockedZonedDateTimeProvider;
-
+    
     @Before
     public void setup() throws Exception {
         mockedUsersRepository = mock(UsersRepository.class);
@@ -48,8 +46,7 @@ public class JMAPGetMailboxesTest {
         server = new TestServer(mockedUsersRepository, mockedZonedDateTimeProvider);
         server.start();
 
-        RestAssured.port = server.getLocalPort();
-        RestAssured.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
+        client = new TestClient(server);
     }
 
     @After
@@ -59,9 +56,11 @@ public class JMAPGetMailboxesTest {
     
     @Test
     public void getMailboxesShouldErrorNotSupportedWhenRequestContainsNonNullAccountId() throws Exception {
+        String accessToken = client.authenticate();
         given()
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
+            .header("Authorization", accessToken)
             .body("[[\"getMailboxes\", {\"accountId\": \"1\"}, \"#0\"]]")
         .when()
             .post("/jmap")
@@ -73,9 +72,11 @@ public class JMAPGetMailboxesTest {
     
     @Test
     public void getMailboxesShouldErrorNotSupportedWhenRequestContainsNonNullIds() throws Exception {
+        String accessToken = client.authenticate();
         given()
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
+            .header("Authorization", accessToken)
             .body("[[\"getMailboxes\", {\"ids\": []}, \"#0\"]]")
         .when()
             .post("/jmap")
@@ -86,9 +87,11 @@ public class JMAPGetMailboxesTest {
     
     @Test
     public void getMailboxesShouldErrorNotSupportedWhenRequestContainsNonNullProperties() throws Exception {
+        String accessToken = client.authenticate();
         given()
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
+            .header("Authorization", accessToken)
             .body("[[\"getMailboxes\", {\"properties\": []}, \"#0\"]]")
         .when()
             .post("/jmap")
@@ -99,9 +102,11 @@ public class JMAPGetMailboxesTest {
     
     @Test
     public void getMailboxesShouldErrorInvalidArgumentsWhenRequestIsInvalid() throws Exception {
+        String accessToken = client.authenticate();
         given()
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
+            .header("Authorization", accessToken)
             .body("[[\"getMailboxes\", {\"ids\": true}, \"#0\"]]")
         .when()
             .post("/jmap")
