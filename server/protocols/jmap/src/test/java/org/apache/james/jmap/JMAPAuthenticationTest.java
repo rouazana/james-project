@@ -34,6 +34,9 @@ import java.util.UUID;
 import org.apache.james.jmap.api.AccessTokenManager;
 import org.apache.james.jmap.api.access.AccessToken;
 import org.apache.james.jmap.utils.ZonedDateTimeProvider;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.store.TestId;
+import org.apache.james.mailbox.store.mail.MailboxMapper;
 import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
 import org.junit.After;
@@ -56,12 +59,14 @@ public class JMAPAuthenticationTest {
     private ZonedDateTimeProvider mockedZonedDateTimeProvider;
     private AccessTokenManager accessTokenManager;
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setup() throws Exception {
         mockedUsersRepository = mock(UsersRepository.class);
         mockedZonedDateTimeProvider = mock(ZonedDateTimeProvider.class);
+        MailboxMapper<TestId> mailboxMapper = mock(MailboxMapper.class);
 
-        server = new TestServer(mockedUsersRepository, mockedZonedDateTimeProvider);
+        server = new TestServer(mockedUsersRepository, mockedZonedDateTimeProvider, mock(MailboxManager.class), mailboxMapper);
         server.start();
         accessTokenManager = server.getAccessTokenManager();
 

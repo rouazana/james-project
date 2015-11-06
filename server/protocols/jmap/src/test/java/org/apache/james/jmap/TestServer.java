@@ -6,6 +6,10 @@ import org.apache.james.jmap.api.AccessTokenManager;
 import org.apache.james.jmap.crypto.JamesSignatureHandlerModule;
 import org.apache.james.jmap.crypto.SignatureHandler;
 import org.apache.james.jmap.utils.ZonedDateTimeProvider;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.store.TestId;
+import org.apache.james.mailbox.store.mail.MailboxMapper;
+import org.apache.james.mailbox.store.mail.model.MailboxId;
 import org.apache.james.user.api.UsersRepository;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -15,6 +19,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.google.inject.util.Modules;
@@ -26,6 +31,8 @@ public class TestServer {
     private UsersRepository usersRepository;
     private ZonedDateTimeProvider zonedDateTimeProvider;
     private AccessTokenManager accessTokenManager;
+    private MailboxManager mailboxManager;
+    private MailboxMapper<MailboxId> mockedMailboxMapper;
 
     private class JMAPModuleTest extends ServletModule {
 
@@ -36,12 +43,16 @@ public class TestServer {
             bind(UsersRepository.class).toInstance(usersRepository);
             bind(ZonedDateTimeProvider.class).toInstance(zonedDateTimeProvider);
             bindConstant().annotatedWith(Names.named("tokenExpirationInMs")).to(100L);
+            bind(MailboxManager.class).toInstance(mailboxManager);
+            bind(new TypeLiteral<MailboxMapper<MailboxId>>(){}).toInstance(mockedMailboxMapper);
         }
     }
 
-    public TestServer(UsersRepository usersRepository, ZonedDateTimeProvider zonedDateTimeProvider) {
+    public TestServer(UsersRepository usersRepository, ZonedDateTimeProvider zonedDateTimeProvider, MailboxManager mailboxManager, MailboxMapper<MailboxId> mockedMailboxMapper) {
         this.usersRepository = usersRepository;
         this.zonedDateTimeProvider = zonedDateTimeProvider;
+        this.mailboxManager = mailboxManager;
+        this.mockedMailboxMapper = mockedMailboxMapper;
     }
 
     private Server server;
@@ -61,7 +72,7 @@ public class TestServer {
         ServletHolder servletHolder = new ServletHolder(authenticationServlet);
         handler.addServletWithMapping(servletHolder, "/authentication");
 
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(accessTokenManager);
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(accessTokenManager, mailboxManager);
         Filter getAuthenticationFilter = new BypassOnPostFilter(authenticationFilter);
         FilterHolder getAuthenticationFilterHolder = new FilterHolder(getAuthenticationFilter);
         handler.addFilterWithMapping(getAuthenticationFilterHolder, "/authentication", null);

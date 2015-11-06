@@ -20,14 +20,21 @@ package org.apache.james.jmap;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.apache.james.jmap.utils.ZonedDateTimeProvider;
+import org.apache.james.mailbox.MailboxManager;
+import org.apache.james.mailbox.model.MailboxPath;
+import org.apache.james.mailbox.store.mail.MailboxMapper;
+import org.apache.james.mailbox.store.mail.model.MailboxId;
 import org.apache.james.user.api.UsersRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableList;
 import com.jayway.restassured.http.ContentType;
 
 public class JMAPGetMailboxesTest {
@@ -37,13 +44,18 @@ public class JMAPGetMailboxesTest {
 
     private UsersRepository mockedUsersRepository;
     private ZonedDateTimeProvider mockedZonedDateTimeProvider;
+    private MailboxManager mockedMailboxManager;
+    private MailboxMapper<MailboxId> mockedMailboxMapper;
     
+    @SuppressWarnings("unchecked")
     @Before
     public void setup() throws Exception {
         mockedUsersRepository = mock(UsersRepository.class);
         mockedZonedDateTimeProvider = mock(ZonedDateTimeProvider.class);
+        mockedMailboxManager = mock(MailboxManager.class);
+        mockedMailboxMapper = mock(MailboxMapper.class);
 
-        server = new TestServer(mockedUsersRepository, mockedZonedDateTimeProvider);
+        server = new TestServer(mockedUsersRepository, mockedZonedDateTimeProvider, mockedMailboxManager, mockedMailboxMapper);
         server.start();
 
         client = new TestClient(server);
@@ -113,5 +125,39 @@ public class JMAPGetMailboxesTest {
         .then()
             .statusCode(200)
             .content(equalTo("[[\"error\",{\"type\":\"invalidArguments\"},\"#0\"]]"));
+    }
+
+    @Test
+    public void getMailboxesShouldReturnEmptyListWhenNoMailboxes() throws Exception {
+        when(mockedMailboxManager.list(any()))
+            .thenReturn(ImmutableList.<MailboxPath>of());
+        String accessToken = client.authenticate();
+        given()
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .header("Authorization", accessToken)
+            .body("[[\"getMailboxes\", {}, \"#0\"]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200)
+            .content(equalTo("[[\"getMailboxes\",{\"accountId\":null,\"state\":null,\"list\":[],\"notFound\":null},\"#0\"]]"));
+    }
+
+    @Test
+    public void getMailboxesShouldReturnMailboxesWhenAvailable() throws Exception {
+        when(mockedMailboxManager.list(any()))
+            .thenReturn(ImmutableList.<MailboxPath>of(new MailboxPath("namespace", "user", "name"), new MailboxPath("namespace2", "user2", "name2")));
+        String accessToken = client.authenticate();
+        given()
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .header("Authorization", accessToken)
+            .body("[[\"getMailboxes\", {}, \"#0\"]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200)
+            .content(equalTo("[[\"getMailboxes\",{\"accountId\":null,\"state\":null,\"list\":[],\"notFound\":null},\"#0\"]]"));
     }
 }
