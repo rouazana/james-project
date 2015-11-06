@@ -39,7 +39,6 @@ public class ProtocolArgumentsManagerImpl implements ProtocolArgumentsManager {
 
     @VisibleForTesting static final String DEFAULT_ERROR_MESSAGE = "Error while processing";
     @VisibleForTesting static final String ERROR_METHOD = "error";
-    private static final ObjectNode ERROR_OBJECT_NODE = new ObjectNode(new JsonNodeFactory(false)).put("type", DEFAULT_ERROR_MESSAGE);
 
     private final ObjectMapper objectMapper;
 
@@ -48,17 +47,26 @@ public class ProtocolArgumentsManagerImpl implements ProtocolArgumentsManager {
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    @Override
     public <T extends JmapRequest> T extractJmapRequest(ProtocolRequest request, Class<T> requestClass) 
             throws IOException, JsonParseException, JsonMappingException {
         return objectMapper.readValue(request.getParameters().toString(), requestClass);
     }
 
+    @Override
     public ProtocolResponse formatMethodResponse(ProtocolRequest request, JmapResponse jmapResponse) {
         ObjectNode objectNode = objectMapper.valueToTree(jmapResponse);
         return new ProtocolResponse(request.getMethod(), objectNode, request.getClientId());
     }
 
+    @Override
     public ProtocolResponse formatErrorResponse(ProtocolRequest request) {
-        return new ProtocolResponse(ERROR_METHOD, ERROR_OBJECT_NODE, request.getClientId());
+        return formatErrorResponse(request, DEFAULT_ERROR_MESSAGE);
+    }
+
+    @Override
+    public ProtocolResponse formatErrorResponse(ProtocolRequest request, String error) {
+        ObjectNode errorObjectNode = new ObjectNode(new JsonNodeFactory(false)).put("type", error);
+        return new ProtocolResponse(ERROR_METHOD, errorObjectNode, request.getClientId());
     }
 }

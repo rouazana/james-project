@@ -21,6 +21,8 @@ import com.google.inject.util.Modules;
 
 public class TestServer {
 
+    static final int RANDOM_PORT = 0;
+
     private UsersRepository usersRepository;
     private ZonedDateTimeProvider zonedDateTimeProvider;
     private AccessTokenManager accessTokenManager;
@@ -30,6 +32,7 @@ public class TestServer {
         @Override
         protected void configureServlets() {
             install(new JamesSignatureHandlerModule());
+            install(new MethodsModule());
             bind(UsersRepository.class).toInstance(usersRepository);
             bind(ZonedDateTimeProvider.class).toInstance(zonedDateTimeProvider);
             bindConstant().annotatedWith(Names.named("tokenExpirationInMs")).to(100L);
@@ -49,19 +52,23 @@ public class TestServer {
         accessTokenManager = injector.getInstance(AccessTokenManager.class);
         initJamesSignatureHandler(injector);
 
-        server = new Server(JMAPAuthenticationTest.RANDOM_PORT);
+        server = new Server(RANDOM_PORT);
 
         ServletHandler handler = new ServletHandler();
         server.setHandler(handler);
 
         AuthenticationServlet authenticationServlet = injector.getInstance(AuthenticationServlet.class);
         ServletHolder servletHolder = new ServletHolder(authenticationServlet);
-        handler.addServletWithMapping(servletHolder, "/*");
+        handler.addServletWithMapping(servletHolder, "/authentication");
 
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(accessTokenManager);
         Filter getAuthenticationFilter = new BypassOnPostFilter(authenticationFilter);
         FilterHolder authenticationFilterHolder = new FilterHolder(getAuthenticationFilter);
         handler.addFilterWithMapping(authenticationFilterHolder, "/*", null);
+        
+        JMAPServlet jmapServlet = injector.getInstance(JMAPServlet.class);
+        servletHolder = new ServletHolder(jmapServlet);
+        handler.addServletWithMapping(servletHolder, "/jmap");
 
         server.start();
     }
