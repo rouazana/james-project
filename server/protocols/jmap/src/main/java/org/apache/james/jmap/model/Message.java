@@ -323,11 +323,9 @@ public class Message {
     }
 
     protected static boolean areAttachedMessagesKeysInAttachments(ImmutableList<Attachment> attachments, ImmutableMap<String, SubMessage> attachedMessages) {
-        Set<String> attachmentsIds = attachments.stream()
+        return attachments.stream()
                 .map(Attachment::getBlobId)
-                .collect(Collectors.toSet());
-        Set<String> attachedMessagesKeys = attachedMessages.keySet();
-        return attachmentsIds.containsAll(attachedMessagesKeys);
+                .allMatch(attachedMessages::containsKey);
     }
 
     private final String id;
