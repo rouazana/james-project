@@ -224,7 +224,7 @@ public abstract class GetMessagesMethodTest {
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .header("Authorization", accessToken.serialize())
-            .body("[[\"getMessages\", {\"ids\": [\"username-inbox-1\"], \"properties\": [\"id\", \"subject\"]}, \"#0\"]]")
+            .body("[[\"getMessages\", {\"ids\": [\"username-inbox-1\"], \"properties\": [\"subject\"]}, \"#0\"]]")
         .when()
             .post("/jmap")
         .then()
