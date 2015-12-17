@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -53,6 +54,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 public class GetMessagesMethodTest {
 
@@ -184,14 +186,11 @@ public class GetMessagesMethodTest {
         GetMessagesMethod<InMemoryId> testee = new GetMessagesMethod<>(mailboxSessionMapperFactory, mailboxSessionMapperFactory);
         List<JmapResponse> result = testee.process(request, clientId, session).collect(Collectors.toList());
 
-        assertThat(result).hasSize(1)
-            .extracting(JmapResponse::getResponse)
-            .hasOnlyElementsOfType(GetMessagesResponse.class)
-            .extracting(GetMessagesResponse.class::cast)
-            .flatExtracting(GetMessagesResponse::list)
-            .extracting(message -> message.getId().getUid(), Message::getSubject)
-            .containsOnly(
-                Tuple.tuple(message1Uid, "message 1 subject"));
+//        assertThat(result).hasSize(1)
+//            .extracting(JmapResponse::getProperties)
+//            .extracting(Optional::get)
+//            .isEqualTo(ImmutableSet.of(MessageProperty.id));
+        assertThat(result.get(0).getProperties().get()).isEqualTo(ImmutableSet.of(MessageProperty.id));
     }
 
     @Test
@@ -209,38 +208,10 @@ public class GetMessagesMethodTest {
         GetMessagesMethod<InMemoryId> testee = new GetMessagesMethod<>(mailboxSessionMapperFactory, mailboxSessionMapperFactory);
         List<JmapResponse> result = testee.process(request, clientId, session).collect(Collectors.toList());
 
-        assertThat(result).hasSize(1)
-            .extracting(JmapResponse::getResponse)
-            .hasOnlyElementsOfType(GetMessagesResponse.class)
-            .extracting(GetMessagesResponse.class::cast)
-            .flatExtracting(GetMessagesResponse::list)
-            .extracting(message -> message.getId().getUid(), Message::getSubject)
-            .containsOnly(
-                Tuple.tuple(message1Uid, "message 1 subject"));
+//        assertThat(result).hasSize(1)
+//            .extracting(JmapResponse::getProperties)
+//            .extracting(Optional::get)
+//            .isEqualTo(ImmutableSet.of(MessageProperty.id, MessageProperty.subject));
+        assertThat(result.get(0).getProperties().get()).isEqualTo(ImmutableSet.of(MessageProperty.id, MessageProperty.subject));
     }
-    
-    @Test
-    public void processShouldReturnAllFieldsWhenUndefinedPropertyList() throws MailboxException {
-        MessageManager inbox = mailboxManager.getMailbox(inboxPath, session);
-        Date now = new Date();
-        ByteArrayInputStream message1Content = new ByteArrayInputStream("Subject: message 1 subject\r\n\r\nmy message".getBytes(Charsets.UTF_8));
-        long message1Uid = inbox.appendMessage(message1Content, now, session, false, null);
-        
-        GetMessagesRequest request = GetMessagesRequest.builder()
-                .ids(new MessageId(ROBERT, inboxPath, message1Uid))
-                .build();
-
-        GetMessagesMethod<InMemoryId> testee = new GetMessagesMethod<>(mailboxSessionMapperFactory, mailboxSessionMapperFactory);
-        List<JmapResponse> result = testee.process(request, clientId, session).collect(Collectors.toList());
-
-        assertThat(result).hasSize(1)
-            .extracting(JmapResponse::getResponse)
-            .hasOnlyElementsOfType(GetMessagesResponse.class)
-            .extracting(GetMessagesResponse.class::cast)
-            .flatExtracting(GetMessagesResponse::list)
-            .extracting(message -> message.getId().getUid(), Message::getSubject)
-            .containsOnly(
-                Tuple.tuple(message1Uid, "message 1 subject"));
-    }
-
 }
