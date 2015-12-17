@@ -50,6 +50,7 @@ import com.github.fge.lambdas.Throwing;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Sets;
 
 public class GetMessagesMethod<Id extends MailboxId> implements Method {
@@ -92,15 +93,24 @@ public class GetMessagesMethod<Id extends MailboxId> implements Method {
     }
 
     private Set<MessageProperty> handleSpecificProperties(Set<MessageProperty> input) {
-        return ensureContainsId(input);
+        Builder<MessageProperty> toAdd = ImmutableSet.<MessageProperty>builder();
+        Builder<MessageProperty> toRemove = ImmutableSet.<MessageProperty>builder();
+        ensureContainsId(input, toAdd);
+        handleBody(input, toAdd, toRemove);
+        return Sets.union(Sets.difference(input, toRemove.build()), toAdd.build()).immutableCopy();
+    }
+        
+    private void ensureContainsId(Set<MessageProperty> input, Builder<MessageProperty> toAdd) {
+        if (!input.contains(MessageProperty.id)) {
+            toAdd.add(MessageProperty.id);
+        }
     }
     
-    private Set<MessageProperty> ensureContainsId(Set<MessageProperty> input) {
-        if (!input.contains(MessageProperty.id)) {
-            return Sets.union(input, ImmutableSet.of(MessageProperty.id))
-                    .immutableCopy();
+    private void handleBody(Set<MessageProperty> input, Builder<MessageProperty> toAdd, Builder<MessageProperty> toRemove) {
+        if (input.contains(MessageProperty.body)) {
+            toAdd.add(MessageProperty.textBody);
+            toRemove.add(MessageProperty.body);
         }
-        return input;
     }
 
     private GetMessagesResponse getMessagesResponse(MailboxSession mailboxSession, GetMessagesRequest getMessagesRequest) {
