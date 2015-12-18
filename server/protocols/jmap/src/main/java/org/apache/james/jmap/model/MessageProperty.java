@@ -18,47 +18,71 @@
  ****************************************************************/
 package org.apache.james.jmap.model;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Objects;
 
-public enum MessageProperty implements Property {
-    id("id"),
-    blobId("blobId"),
-    threadId("threadId"),
-    mailboxIds("mailboxIds"),
-    inReplyToMessageId("inReplyToMessageId"),
-    isUnread("isUnread"),
-    isFlagged("isFlagged"),
-    isAnswered("isAnswered"),
-    isDraft("isDraft"),
-    hasAttachment("hasAttachment"),
-    headers("headers"),
-    from("from"),
-    to("to"),
-    cc("cc"),
-    bcc("bcc"),
-    replyTo("replyTo"),
-    subject("subject"),
-    date("date"),
-    size("size"),
-    preview("preview"),
-    textBody("textBody"),
-    htmlBody("htmlBody"),
-    attachments("attachments"),
-    attachedMessages("attachedMessages"),
-    body("body"),
-    headers_property("headers.property");
+public class MessageProperty implements Property {
+    public static MessageProperty id = valueOf("id");
+    public static MessageProperty blobId = valueOf("blobId");
+    public static MessageProperty threadId = valueOf("threadId");
+    public static MessageProperty mailboxIds = valueOf("mailboxIds");
+    public static MessageProperty inReplyToMessageId = valueOf("inReplyToMessageId");
+    public static MessageProperty isUnread = valueOf("isUnread");
+    public static MessageProperty isFlagged = valueOf("isFlagged");
+    public static MessageProperty isAnswered = valueOf("isAnswered");
+    public static MessageProperty isDraft = valueOf("isDraft");
+    public static MessageProperty hasAttachment = valueOf("hasAttachment");
+    public static MessageProperty headers = valueOf("headers");
+    public static MessageProperty from = valueOf("from");
+    public static MessageProperty to = valueOf("to");
+    public static MessageProperty cc = valueOf("cc");
+    public static MessageProperty bcc = valueOf("bcc");
+    public static MessageProperty replyTo = valueOf("replyTo");
+    public static MessageProperty subject = valueOf("subject");
+    public static MessageProperty date = valueOf("date");
+    public static MessageProperty size = valueOf("size");
+    public static MessageProperty preview = valueOf("preview");
+    public static MessageProperty textBody = valueOf("textBody");
+    public static MessageProperty htmlBody = valueOf("htmlBody");
+    public static MessageProperty attachments = valueOf("attachments");
+    public static MessageProperty attachedMessages = valueOf("attachedMessages");
+    public static MessageProperty body = valueOf("body");
+    
+    private static String HEADER_PROPERTY_PREFIX = "headers.";
     
     private String property;
-
-    MessageProperty(String property) {
+    
+    private MessageProperty(String property) {
         this.property = property;
     }
+
+    public static MessageProperty valueOf(String property) {
+        return new MessageProperty(property);
+    }
     
+    public static MessageProperty headerValueOf(String headerProperty) {
+        return new MessageProperty(HEADER_PROPERTY_PREFIX + headerProperty);
+    }
+    
+    @Override
     public String asFieldName() {
         return property;
     }
     
-    public static ImmutableSet<MessageProperty> all() {
-        return ImmutableSet.copyOf(values());
+    public boolean isHeaderProperty() {
+        return property.startsWith(HEADER_PROPERTY_PREFIX);
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MessageProperty) {
+            MessageProperty other = (MessageProperty) obj;
+            return Objects.equals(this.property, other.property);
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(property);
     }
 }

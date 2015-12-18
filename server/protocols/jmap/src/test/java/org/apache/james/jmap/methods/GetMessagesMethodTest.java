@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -36,6 +37,7 @@ import org.apache.james.jmap.model.GetMessagesResponse;
 import org.apache.james.jmap.model.Message;
 import org.apache.james.jmap.model.MessageId;
 import org.apache.james.jmap.model.MessageProperty;
+import org.apache.james.jmap.model.Property;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.acl.SimpleGroupMembershipResolver;
@@ -46,6 +48,7 @@ import org.apache.james.mailbox.inmemory.InMemoryMailboxSessionMapperFactory;
 import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.store.MockAuthenticator;
 import org.apache.james.mailbox.store.StoreMailboxManager;
+import org.assertj.core.data.MapEntry;
 import org.assertj.core.groups.Tuple;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +57,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 public class GetMessagesMethodTest {
 
@@ -234,5 +239,30 @@ public class GetMessagesMethodTest {
             .flatExtracting(Optional::get)
             .asList()
             .containsOnly(MessageProperty.id, MessageProperty.textBody);
+    }
+    
+    @Test
+    public void processShouldFilterHeadersKeysAsRequestedInPropertyList() throws MailboxException {
+        MessageManager inbox = mailboxManager.getMailbox(inboxPath, session);
+        Date now = new Date();
+        ByteArrayInputStream message1Content = new ByteArrayInputStream(("From: user@domain.tld\r\n"
+                + "header1: Header1Content\r\n"
+                + "header2: Header2Content\r\n"
+                + "Subject: message 1 subject\r\n\r\nmy message").getBytes(Charsets.UTF_8));
+        long message1Uid = inbox.appendMessage(message1Content, now, session, false, null);
+        
+        GetMessagesRequest request = GetMessagesRequest.builder()
+                .ids(new MessageId(ROBERT, inboxPath, message1Uid))
+                .properties(MessageProperty.headers, MessageProperty.valueOf("headers.from"), MessageProperty.valueOf("headers.header2"))
+                .build();
+
+        GetMessagesMethod<InMemoryId> testee = new GetMessagesMethod<>(mailboxSessionMapperFactory, mailboxSessionMapperFactory);
+        List<JmapResponse> result = testee.process(request, clientId, session).collect(Collectors.toList());
+
+        Set<? extends Property> properties = result.get(0).getProperties().get();
+        ImmutableMap<String, String> headers = ((GetMessagesResponse)result.get(0).getResponse()).list().get(0).getHeaders();
+        
+        assertThat(properties).isEqualTo(ImmutableSet.of(MessageProperty.id, MessageProperty.headers));
+        assertThat(headers).containsOnly(MapEntry.entry("from", "user@domain.tld"), MapEntry.entry("header2", "Header2Content"));
     }
 }

@@ -21,6 +21,8 @@ package org.apache.james.jmap.methods;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -49,6 +51,7 @@ import org.javatuples.Pair;
 import com.github.fge.lambdas.Throwing;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Sets;
@@ -59,7 +62,6 @@ public class GetMessagesMethod<Id extends MailboxId> implements Method {
     private static final Method.Response.Name RESPONSE_NAME = Method.Response.name("messages");
     private final MessageMapperFactory<Id> messageMapperFactory;
     private final MailboxMapperFactory<Id> mailboxMapperFactory;
-    
 
     @Inject
     @VisibleForTesting GetMessagesMethod(
@@ -85,10 +87,11 @@ public class GetMessagesMethod<Id extends MailboxId> implements Method {
         Preconditions.checkNotNull(mailboxSession);
         Preconditions.checkArgument(request instanceof GetMessagesRequest);
         GetMessagesRequest getMessagesRequest = (GetMessagesRequest) request;
+        Optional<ImmutableSet<MessageProperty>> requestedProperties = getMessagesRequest.getProperties();
         return Stream.of(JmapResponse.builder().clientId(clientId)
-                            .response(getMessagesResponse(mailboxSession, getMessagesRequest))
+                            .response(getMessagesResponse(mailboxSession, getMessagesRequest, requestedProperties))
                             .responseName(RESPONSE_NAME)
-                            .properties(getMessagesRequest.getProperties().map(this::handleSpecificProperties))
+                            .properties(requestedProperties.map(this::handleSpecificProperties))
                             .build());
     }
 
@@ -97,6 +100,7 @@ public class GetMessagesMethod<Id extends MailboxId> implements Method {
         Builder<MessageProperty> toRemove = ImmutableSet.<MessageProperty>builder();
         ensureContainsId(input, toAdd);
         handleBody(input, toAdd, toRemove);
+        removeHeadersProperties(input, toRemove);
         return Sets.union(Sets.difference(input, toRemove.build()), toAdd.build()).immutableCopy();
     }
         
@@ -112,8 +116,18 @@ public class GetMessagesMethod<Id extends MailboxId> implements Method {
             toRemove.add(MessageProperty.body);
         }
     }
+    
+    private void removeHeadersProperties(Set<MessageProperty> input, Builder<MessageProperty> toRemove) {
+        toRemove.addAll(getHeadersProperties(input));
+    }
+    
+    private Set<MessageProperty> getHeadersProperties(Set<MessageProperty> properties) {
+        return properties.stream()
+                .filter(MessageProperty::isHeaderProperty)
+                .collect(Collectors.toSet());
+    }
 
-    private GetMessagesResponse getMessagesResponse(MailboxSession mailboxSession, GetMessagesRequest getMessagesRequest) {
+    private GetMessagesResponse getMessagesResponse(MailboxSession mailboxSession, GetMessagesRequest getMessagesRequest, Optional<ImmutableSet<MessageProperty>> requestedProperties) {
         getMessagesRequest.getAccountId().ifPresent(GetMessagesMethod::notImplemented);
 
         Function<MessageId, Stream<Pair<org.apache.james.mailbox.store.mail.model.Message<Id>, MailboxPath>>> loadMessages = loadMessage(mailboxSession);
@@ -122,6 +136,7 @@ public class GetMessagesMethod<Id extends MailboxId> implements Method {
         List<Message> result = getMessagesRequest.getIds().stream()
             .flatMap(loadMessages)
             .map(convertToJmapMessage)
+            .map(x -> this.filterHeaders(requestedProperties, x))
             .collect(Collectors.toList());
 
         return GetMessagesResponse.builder().messages(result).expectedMessageIds(getMessagesRequest.getIds()).build();
@@ -164,5 +179,20 @@ public class GetMessagesMethod<Id extends MailboxId> implements Method {
         
         MailboxPath mailboxPath = value.getValue1();
         return targetStream.map(x -> Pair.with(x, mailboxPath));
+    }
+    
+    private Message filterHeaders(Optional<ImmutableSet<MessageProperty>> requestedProperties, Message message) {
+        if (requestedProperties.isPresent()) {
+            ImmutableMap<String, String> filteredHeaders = message.getHeaders()
+                    .entrySet()
+                    .stream()
+                    .filter(x -> getHeadersProperties(requestedProperties.get()).contains(MessageProperty.headerValueOf(x.getKey())))
+                    .collect(org.apache.james.util.streams.Collectors.toImmutableMap(Entry::getKey, Entry::getValue));
+            return Message.builder()
+                    .fromMessage(message)
+                    .headers(filteredHeaders)
+                    .build();
+        }
+        return message;
     }
 }

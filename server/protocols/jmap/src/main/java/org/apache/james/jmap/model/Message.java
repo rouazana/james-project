@@ -306,6 +306,34 @@ public class Message {
             this.attachedMessages.putAll(attachedMessages);
             return this;
         }
+        
+        public Builder fromMessage(Message message) {
+            id = message.getId();
+            blobId = message.getBlobId();
+            threadId = message.getThreadId();
+            mailboxIds = message.getMailboxIds();
+            inReplyToMessageId = message.getInReplyToMessageId().orElse(null);
+            isUnread = message.isIsUnread();
+            isFlagged = message.isIsFlagged();
+            isAnswered = message.isIsAnswered();
+            isDraft = message.isIsDraft();
+            hasAttachment = message.isHasAttachment();
+            headers = message.getHeaders();
+            from = message.getFrom().orElse(null);
+            to.addAll(message.getTo());
+            cc.addAll(message.getCc());
+            bcc.addAll(message.getBcc());
+            replyTo.addAll(message.getReplyTo());
+            subject = message.getSubject();
+            date = message.getDate();
+            size = message.getSize();
+            preview = message.getPreview();
+            textBody = message.getTextBody().orElse(null);
+            htmlBody = message.getHtmlBody().orElse(null);
+            attachments.addAll(message.getAttachments());
+            attachedMessages.putAll(message.getAttachedMessages());
+            return this;
+        }
 
         public Message build() {
             Preconditions.checkState(id != null, "'id' is mandatory");
