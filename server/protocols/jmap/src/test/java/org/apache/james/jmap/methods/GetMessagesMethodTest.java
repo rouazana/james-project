@@ -229,6 +229,10 @@ public class GetMessagesMethodTest {
         GetMessagesMethod<InMemoryId> testee = new GetMessagesMethod<>(mailboxSessionMapperFactory, mailboxSessionMapperFactory);
         List<JmapResponse> result = testee.process(request, clientId, session).collect(Collectors.toList());
 
-        assertThat(result.get(0).getProperties().get()).isEqualTo(ImmutableSet.of(MessageProperty.id, MessageProperty.textBody));
+        assertThat(result).hasSize(1)
+            .extracting(JmapResponse::getProperties)
+            .flatExtracting(Optional::get)
+            .asList()
+            .containsOnly(MessageProperty.id, MessageProperty.textBody);
     }
 }
