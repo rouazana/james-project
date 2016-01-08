@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -37,7 +36,6 @@ import org.apache.james.jmap.model.GetMessagesResponse;
 import org.apache.james.jmap.model.Message;
 import org.apache.james.jmap.model.MessageId;
 import org.apache.james.jmap.model.MessageProperty;
-import org.apache.james.jmap.model.Property;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.acl.SimpleGroupMembershipResolver;
@@ -48,7 +46,6 @@ import org.apache.james.mailbox.inmemory.InMemoryMailboxSessionMapperFactory;
 import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.store.MockAuthenticator;
 import org.apache.james.mailbox.store.StoreMailboxManager;
-import org.assertj.core.data.MapEntry;
 import org.assertj.core.groups.Tuple;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +55,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 
 public class GetMessagesMethodTest {
 
@@ -259,10 +255,18 @@ public class GetMessagesMethodTest {
         GetMessagesMethod<InMemoryId> testee = new GetMessagesMethod<>(mailboxSessionMapperFactory, mailboxSessionMapperFactory);
         List<JmapResponse> result = testee.process(request, clientId, session).collect(Collectors.toList());
 
-        Set<? extends Property> properties = result.get(0).getProperties().get();
-        ImmutableMap<String, String> headers = ((GetMessagesResponse)result.get(0).getResponse()).list().get(0).getHeaders();
-        
-        assertThat(properties).isEqualTo(ImmutableSet.of(MessageProperty.id, MessageProperty.headers));
-        assertThat(headers).containsOnly(MapEntry.entry("from", "user@domain.tld"), MapEntry.entry("header2", "Header2Content"));
+        assertThat(result).hasSize(1)
+            .extracting(JmapResponse::getProperties)
+            .flatExtracting(Optional::get)
+            .asList()
+            .containsOnly(MessageProperty.id, MessageProperty.headers);
+        assertThat(result)
+            .extracting(JmapResponse::getResponse)
+            .hasOnlyElementsOfType(GetMessagesResponse.class)
+            .extracting(GetMessagesResponse.class::cast)
+            .flatExtracting(GetMessagesResponse::list)
+            .extracting(Message::getHeaders)
+            .asList()
+            .containsOnly(ImmutableMap.of("from", "user@domain.tld", "header2", "Header2Content"));
     }
 }
