@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 public class GetMessagesMethodTest {
 
@@ -186,11 +185,11 @@ public class GetMessagesMethodTest {
         GetMessagesMethod<InMemoryId> testee = new GetMessagesMethod<>(mailboxSessionMapperFactory, mailboxSessionMapperFactory);
         List<JmapResponse> result = testee.process(request, clientId, session).collect(Collectors.toList());
 
-//        assertThat(result).hasSize(1)
-//            .extracting(JmapResponse::getProperties)
-//            .extracting(Optional::get)
-//            .isEqualTo(ImmutableSet.of(MessageProperty.id));
-        assertThat(result.get(0).getProperties().get()).isEqualTo(ImmutableSet.of(MessageProperty.id));
+        assertThat(result).hasSize(1)
+            .extracting(JmapResponse::getProperties)
+            .flatExtracting(Optional::get)
+            .asList()
+            .containsOnly(MessageProperty.id);
     }
 
     @Test
@@ -208,10 +207,10 @@ public class GetMessagesMethodTest {
         GetMessagesMethod<InMemoryId> testee = new GetMessagesMethod<>(mailboxSessionMapperFactory, mailboxSessionMapperFactory);
         List<JmapResponse> result = testee.process(request, clientId, session).collect(Collectors.toList());
 
-//        assertThat(result).hasSize(1)
-//            .extracting(JmapResponse::getProperties)
-//            .extracting(Optional::get)
-//            .isEqualTo(ImmutableSet.of(MessageProperty.id, MessageProperty.subject));
-        assertThat(result.get(0).getProperties().get()).isEqualTo(ImmutableSet.of(MessageProperty.id, MessageProperty.subject));
+        assertThat(result).hasSize(1)
+            .extracting(JmapResponse::getProperties)
+            .flatExtracting(Optional::get)
+            .asList()
+            .containsOnly(MessageProperty.id, MessageProperty.subject);
     }
 }

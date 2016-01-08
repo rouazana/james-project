@@ -50,6 +50,7 @@ import com.github.fge.lambdas.Throwing;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 public class GetMessagesMethod<Id extends MailboxId> implements Method {
 
@@ -91,11 +92,13 @@ public class GetMessagesMethod<Id extends MailboxId> implements Method {
     }
 
     private Set<MessageProperty> handleSpecificProperties(Set<MessageProperty> input) {
+        return ensureContainsId(input);
+    }
+    
+    private Set<MessageProperty> ensureContainsId(Set<MessageProperty> input) {
         if (!input.contains(MessageProperty.id)) {
-            return ImmutableSet.<MessageProperty>builder()
-                    .addAll(input)
-                    .add(MessageProperty.id)
-                    .build();
+            return Sets.union(input, ImmutableSet.of(MessageProperty.id))
+                    .immutableCopy();
         }
         return input;
     }
