@@ -19,6 +19,9 @@
 package org.apache.james.jmap.model;
 
 import java.util.Objects;
+import java.util.Set;
+
+import org.apache.james.util.streams.Collectors;
 
 public class MessageProperty implements Property {
     public static MessageProperty id = valueOf("id");
@@ -52,17 +55,23 @@ public class MessageProperty implements Property {
     private String property;
     
     private MessageProperty(String property) {
-        this.property = property;
+        this.property = property.toLowerCase();
     }
 
     public static MessageProperty valueOf(String property) {
-        return new MessageProperty(property);
+        return new MessageProperty(property.toLowerCase());
     }
     
     public static MessageProperty headerValueOf(String headerProperty) {
-        return new MessageProperty(HEADER_PROPERTY_PREFIX + headerProperty);
+        return new MessageProperty(HEADER_PROPERTY_PREFIX + headerProperty.toLowerCase());
     }
     
+    public static Set<MessageProperty> selectHeadersProperties(Set<MessageProperty> properties) {
+        return properties.stream()
+                .filter(MessageProperty::isHeaderProperty)
+                .collect(Collectors.toImmutableSet());
+    }
+
     @Override
     public String asFieldName() {
         return property;
@@ -76,7 +85,7 @@ public class MessageProperty implements Property {
     public boolean equals(Object obj) {
         if (obj instanceof MessageProperty) {
             MessageProperty other = (MessageProperty) obj;
-            return Objects.equals(this.property, other.property);
+            return this.property.equalsIgnoreCase(other.property);
         }
         return false;
     }

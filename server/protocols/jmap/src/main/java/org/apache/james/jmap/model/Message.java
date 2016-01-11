@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -307,34 +308,6 @@ public class Message {
             return this;
         }
         
-        public Builder fromMessage(Message message) {
-            id = message.getId();
-            blobId = message.getBlobId();
-            threadId = message.getThreadId();
-            mailboxIds = message.getMailboxIds();
-            inReplyToMessageId = message.getInReplyToMessageId().orElse(null);
-            isUnread = message.isIsUnread();
-            isFlagged = message.isIsFlagged();
-            isAnswered = message.isIsAnswered();
-            isDraft = message.isIsDraft();
-            hasAttachment = message.isHasAttachment();
-            headers = message.getHeaders();
-            from = message.getFrom().orElse(null);
-            to.addAll(message.getTo());
-            cc.addAll(message.getCc());
-            bcc.addAll(message.getBcc());
-            replyTo.addAll(message.getReplyTo());
-            subject = message.getSubject();
-            date = message.getDate();
-            size = message.getSize();
-            preview = message.getPreview();
-            textBody = message.getTextBody().orElse(null);
-            htmlBody = message.getHtmlBody().orElse(null);
-            attachments.addAll(message.getAttachments());
-            attachedMessages.putAll(message.getAttachedMessages());
-            return this;
-        }
-
         public Message build() {
             Preconditions.checkState(id != null, "'id' is mandatory");
             Preconditions.checkState(!Strings.isNullOrEmpty(blobId), "'blobId' is mandatory");
@@ -412,6 +385,40 @@ public class Message {
         this.htmlBody = htmlBody;
         this.attachments = attachments;
         this.attachedMessages = attachedMessages;
+    }
+    
+    public Message filterHeaders(Set<MessageProperty> requestedProperties) {
+        ImmutableMap<String, String> filteredHeaders = headers
+                .entrySet()
+                .stream()
+                .filter(x -> MessageProperty.selectHeadersProperties(requestedProperties).contains(MessageProperty.headerValueOf(x.getKey())))
+                .collect(org.apache.james.util.streams.Collectors.toImmutableMap(Entry::getKey, Entry::getValue));
+        return Message.builder()
+            .id(id)
+            .blobId(blobId)
+            .threadId(threadId)
+            .mailboxIds(mailboxIds)
+            .inReplyToMessageId(inReplyToMessageId.orElse(null))
+            .isUnread(isUnread)
+            .isFlagged(isFlagged)
+            .isAnswered(isAnswered)
+            .isDraft(isDraft)
+            .hasAttachment(hasAttachment)
+            .headers(filteredHeaders)
+            .from(from.orElse(null))
+            .to(to)
+            .cc(cc)
+            .bcc(bcc)
+            .replyTo(replyTo)
+            .subject(subject)
+            .date(date)
+            .size(size)
+            .preview(preview)
+            .textBody(textBody.orElse(null))
+            .htmlBody(htmlBody.orElse(null))
+            .attachments(attachments)
+            .attachedMessages(attachedMessages)
+            .build();
     }
 
     public MessageId getId() {
