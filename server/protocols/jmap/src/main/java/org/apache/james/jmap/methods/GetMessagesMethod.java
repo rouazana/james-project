@@ -19,6 +19,7 @@
 
 package org.apache.james.jmap.methods;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -49,8 +50,6 @@ import org.javatuples.Pair;
 import com.github.fge.lambdas.Throwing;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Sets;
 
 public class GetMessagesMethod<Id extends MailboxId> implements Method {
@@ -93,20 +92,20 @@ public class GetMessagesMethod<Id extends MailboxId> implements Method {
     }
 
     private Set<MessageProperty> handleSpecificProperties(Set<MessageProperty> input) {
-        Builder<MessageProperty> toAdd = ImmutableSet.<MessageProperty>builder();
-        Builder<MessageProperty> toRemove = ImmutableSet.<MessageProperty>builder();
+        Set<MessageProperty> toAdd = new HashSet<MessageProperty>();
+        Set<MessageProperty> toRemove = new HashSet<MessageProperty>();
         ensureContainsId(input, toAdd);
         handleBody(input, toAdd, toRemove);
-        return Sets.union(Sets.difference(input, toRemove.build()), toAdd.build()).immutableCopy();
+        return Sets.union(Sets.difference(input, toRemove), toAdd).immutableCopy();
     }
         
-    private void ensureContainsId(Set<MessageProperty> input, Builder<MessageProperty> toAdd) {
+    private void ensureContainsId(Set<MessageProperty> input, Set<MessageProperty> toAdd) {
         if (!input.contains(MessageProperty.id)) {
             toAdd.add(MessageProperty.id);
         }
     }
     
-    private void handleBody(Set<MessageProperty> input, Builder<MessageProperty> toAdd, Builder<MessageProperty> toRemove) {
+    private void handleBody(Set<MessageProperty> input, Set<MessageProperty> toAdd, Set<MessageProperty> toRemove) {
         if (input.contains(MessageProperty.body)) {
             toAdd.add(MessageProperty.textBody);
             toRemove.add(MessageProperty.body);
