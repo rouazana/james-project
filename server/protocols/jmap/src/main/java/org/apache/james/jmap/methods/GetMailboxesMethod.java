@@ -104,8 +104,7 @@ public class GetMailboxesMethod<Id extends MailboxId> implements Method {
         String username = session.getUser().getUserName();
         return mailboxManager.search(MailboxQuery.builder()
                                         .pathDelimiter(session.getPathDelimiter())
-                                        .privateMailboxPathForUser(username)
-                                        .all()
+                                        .privateUserMailboxes(username)
                                         .build(),
                                    session);
     }
