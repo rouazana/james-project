@@ -70,6 +70,7 @@ public abstract class GetMailboxesMethodTest {
         .around(jmapServer);
 
     private AccessToken accessToken;
+    private String username;
 
     @Before
     public void setup() throws Exception {
@@ -77,7 +78,7 @@ public abstract class GetMailboxesMethodTest {
         RestAssured.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset(Charsets.UTF_8));
 
         String domain = "domain.tld";
-        String username = "username@" + domain;
+        username = "username@" + domain;
         String password = "password";
         jmapServer.serverProbe().addDomain(domain);
         jmapServer.serverProbe().addUser(username, password);
@@ -209,10 +210,9 @@ public abstract class GetMailboxesMethodTest {
 
     @Test
     public void getMailboxesShouldReturnMailboxesWhenAvailable() throws Exception {
-        String user = "user";
-        jmapServer.serverProbe().createMailbox(MailboxConstants.USER_NAMESPACE, user, "name");
+        jmapServer.serverProbe().createMailbox(MailboxConstants.USER_NAMESPACE, username, "name");
 
-        jmapServer.serverProbe().appendMessage(user, new MailboxPath(MailboxConstants.USER_NAMESPACE, user, "name"), 
+        jmapServer.serverProbe().appendMessage(username, new MailboxPath(MailboxConstants.USER_NAMESPACE, username, "name"), 
                 new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), false, new Flags());
 
         String response = given()
@@ -248,9 +248,8 @@ public abstract class GetMailboxesMethodTest {
     @SuppressWarnings("unchecked")
     @Test
     public void getMailboxesShouldReturnMailboxesWithSortOrder() throws Exception {
-        String user = "user";
-        jmapServer.serverProbe().createMailbox(MailboxConstants.USER_NAMESPACE, user, "inbox");
-        jmapServer.serverProbe().createMailbox(MailboxConstants.USER_NAMESPACE, user, "trash");
+        jmapServer.serverProbe().createMailbox(MailboxConstants.USER_NAMESPACE, username, "inbox");
+        jmapServer.serverProbe().createMailbox(MailboxConstants.USER_NAMESPACE, username, "trash");
 
         String response = given()
                 .accept(ContentType.JSON)
