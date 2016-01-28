@@ -67,9 +67,9 @@ public class SetMessagesResponseTest {
                 .build());
         ImmutableList<MessageId> updated = ImmutableList.of(MessageId.of("user|updated|1"));
         ImmutableList<MessageId> destroyed = ImmutableList.of(MessageId.of("user|destroyed|1"));
-        ImmutableList<SetError> notCreated = ImmutableList.of(SetError.builder().type("created").build());
-        ImmutableList<SetError> notUpdated = ImmutableList.of(SetError.builder().type("updated").build());
-        ImmutableList<SetError> notDestroyed  = ImmutableList.of(SetError.builder().type("destroyed").build());
+        ImmutableMap<MessageId, SetError> notCreated = ImmutableMap.of(MessageId.of("user|created|2"), SetError.builder().type("created").build());
+        ImmutableMap<MessageId, SetError> notUpdated = ImmutableMap.of(MessageId.of("user|update|2"), SetError.builder().type("updated").build());
+        ImmutableMap<MessageId, SetError> notDestroyed  = ImmutableMap.of(MessageId.of("user|destroyed|3"), SetError.builder().type("destroyed").build());
         SetMessagesResponse expected = new SetMessagesResponse(null, null, null, created, updated, destroyed, notCreated, notUpdated, notDestroyed);
 
         SetMessagesResponse setMessagesResponse = SetMessagesResponse.builder()

@@ -67,12 +67,16 @@ public class SetMessagesRequest implements JmapRequest {
         }
 
         public Builder create(List<Message> create) {
-            this.create.addAll(create);
+            if (create != null && !create.isEmpty()) {
+                throw new NotImplementedException();
+            }
             return this;
         }
 
         public Builder update(List<Message> update) {
-            this.update.addAll(update);
+            if (update != null && !update.isEmpty()) {
+                throw new NotImplementedException();
+            }
             return this;
         }
 

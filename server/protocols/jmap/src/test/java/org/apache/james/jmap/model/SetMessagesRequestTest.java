@@ -46,10 +46,8 @@ public class SetMessagesRequestTest {
     }
 
     @Test
-    public void builderShouldWork() {
-        ZonedDateTime currentDate = ZonedDateTime.now();
-        ImmutableList<Message> create = ImmutableList.of(
-            Message.builder()
+    public void builderShouldThrowWhenCreateIsNotEmpty() {
+        assertThatThrownBy(() -> SetMessagesRequest.builder().create(ImmutableList.of(Message.builder()
                 .id(MessageId.of("user|create|1"))
                 .blobId("blobId")
                 .threadId("threadId")
@@ -57,30 +55,39 @@ public class SetMessagesRequestTest {
                 .headers(ImmutableMap.of("key", "value"))
                 .subject("subject")
                 .size(123)
-                .date(currentDate)
+                .date(ZonedDateTime.now())
                 .preview("preview")
-                .build());
-        ImmutableList<Message> update = ImmutableList.of(
-            Message.builder()
-                .id(MessageId.of("user|update|1"))
+                .build())))
+            .isInstanceOf(NotImplementedException.class);
+    }
+
+    @Test
+    public void builderShouldThrowWhenUpdateIsNotEmpty() {
+        assertThatThrownBy(() -> SetMessagesRequest.builder().update(ImmutableList.of(Message.builder()
+                .id(MessageId.of("user|create|1"))
                 .blobId("blobId")
                 .threadId("threadId")
                 .mailboxIds(ImmutableList.of("mailboxId"))
                 .headers(ImmutableMap.of("key", "value"))
                 .subject("subject")
                 .size(123)
-                .date(currentDate)
+                .date(ZonedDateTime.now())
                 .preview("preview")
-                .build());
+                .build())))
+            .isInstanceOf(NotImplementedException.class);
+    }
+
+    @Test
+    public void builderShouldWork() {
         ImmutableList<MessageId> destroy = ImmutableList.of(MessageId.of("user|destroy|1"));
 
-        SetMessagesRequest expected = new SetMessagesRequest(Optional.empty(), Optional.empty(), create, update, destroy);
+        SetMessagesRequest expected = new SetMessagesRequest(Optional.empty(), Optional.empty(), ImmutableList.of(), ImmutableList.of(), destroy);
 
         SetMessagesRequest setMessagesRequest = SetMessagesRequest.builder()
             .accountId(null)
             .ifInState(null)
-            .create(create)
-            .update(update)
+            .create(ImmutableList.of())
+            .update(ImmutableList.of())
             .destroy(destroy)
             .build();
 

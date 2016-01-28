@@ -21,7 +21,7 @@ package org.apache.james.jmap.methods;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 
 public class SetMessagesMethod<Id extends MailboxId> implements Method {
 
@@ -98,35 +97,41 @@ public class SetMessagesMethod<Id extends MailboxId> implements Method {
         return builder.build();
     }
 
-    private void processDestroy(List<MessageId> destroy, MailboxSession mailboxSession, SetMessagesResponse.Builder builder) throws MailboxException {
+    private void processDestroy(List<MessageId> messageIds, MailboxSession mailboxSession, SetMessagesResponse.Builder builder) throws MailboxException {
         MessageMapper<Id> messageMapper = mailboxSessionMapperFactory.createMessageMapper(mailboxSession);
-        destroy.stream()
-            .map(messageId -> delete(messageId, messageMapper, mailboxSession, builder))
-            .collect(Collectors.toList());
+        Consumer<? super MessageId> delete = delete(messageMapper, mailboxSession, builder);
+
+        messageIds.stream()
+            .forEach(delete);
     }
 
-    private boolean delete(MessageId messageId, MessageMapper<Id> messageMapper, MailboxSession mailboxSession, Builder builder) {
-        try {
-            Mailbox<Id> mailbox = mailboxMapperFactory.getMailboxMapper(mailboxSession).findMailboxByPath(messageId.getMailboxPath(mailboxSession));
-            Iterator<MailboxMessage<Id>> mailboxMessage = messageMapper.findInMailbox(mailbox, MessageRange.one(messageId.getUid()), FetchType.Metadata, LIMIT_BY_ONE);
-            if (!mailboxMessage.hasNext()) {
-                builder.notDestroyed(ImmutableList.of(SetError.builder()
+    private Consumer<? super MessageId> delete(MessageMapper<Id> messageMapper, MailboxSession mailboxSession, Builder builder) {
+        return (messageId) -> {
+            try {
+                Mailbox<Id> mailbox = mailboxMapperFactory
+                        .getMailboxMapper(mailboxSession)
+                        .findMailboxByPath(messageId.getMailboxPath(mailboxSession));
+
+                Iterator<MailboxMessage<Id>> mailboxMessage = messageMapper.findInMailbox(mailbox, MessageRange.one(messageId.getUid()), FetchType.Metadata, LIMIT_BY_ONE);
+                if (!mailboxMessage.hasNext()) {
+                    builder.notDestroyed(messageId,
+                            SetError.builder()
+                            .type("notFound")
+                            .description(messageId.serialize())
+                            .build());
+                    return;
+                }
+
+                messageMapper.delete(mailbox, mailboxMessage.next());
+                builder.destroyed(messageId);
+            } catch (MailboxException e) {
+                LOGGER.error("An error occured when deleting a message", e);
+                builder.notDestroyed(messageId,
+                        SetError.builder()
                         .type("anErrorOccured")
                         .description(messageId.serialize())
-                        .build()));
-                return false;
+                        .build());
             }
-
-            messageMapper.delete(mailbox, mailboxMessage.next());
-            builder.destroyed(ImmutableList.of(messageId));
-        } catch (MailboxException e) {
-            LOGGER.error("An error occured when deleting a message", e);
-            builder.notDestroyed(ImmutableList.of(SetError.builder()
-                    .type("anErrorOccured")
-                    .description(messageId.serialize())
-                    .build()));
-        }
-        return true;
+        };
     }
-
 }
