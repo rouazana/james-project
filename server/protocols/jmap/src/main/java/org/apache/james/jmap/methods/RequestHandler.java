@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class RequestHandler {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(RequestHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestHandler.class);
 
     private final JmapRequestParser jmapRequestParser;
     private final JmapResponseWriter jmapResponseWriter;
