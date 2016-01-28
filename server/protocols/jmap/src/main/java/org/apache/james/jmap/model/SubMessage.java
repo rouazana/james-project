@@ -41,7 +41,7 @@ public class SubMessage {
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
-        private ImmutableMap.Builder<String, String> headers;
+        private ImmutableMap<String, String> headers;
         private Emailer from;
         private final ImmutableList.Builder<Emailer> to;
         private final ImmutableList.Builder<Emailer> cc;
@@ -55,7 +55,6 @@ public class SubMessage {
         private final ImmutableMap.Builder<String, SubMessage> attachedMessages;
         
         private Builder() {
-            headers = ImmutableMap.builder();
             to = ImmutableList.builder();
             cc = ImmutableList.builder();
             bcc = ImmutableList.builder();
@@ -64,8 +63,8 @@ public class SubMessage {
             attachedMessages = ImmutableMap.builder();
         }
 
-        public Builder headers(Map<String, String> headers) {
-            this.headers.putAll(headers);
+        public Builder headers(ImmutableMap<String, String> headers) {
+            this.headers = headers;
             return this;
         }
 
@@ -131,7 +130,7 @@ public class SubMessage {
             ImmutableList<Attachment> attachments = this.attachments.build();
             ImmutableMap<String, SubMessage> attachedMessages = this.attachedMessages.build();
             Preconditions.checkState(Message.areAttachedMessagesKeysInAttachments(attachments, attachedMessages), "'attachedMessages' keys must be in 'attachements'");
-            return new SubMessage(headers.build(), Optional.ofNullable(from), to.build(), cc.build(), bcc.build(),
+            return new SubMessage(headers, Optional.ofNullable(from), to.build(), cc.build(), bcc.build(),
                     replyTo.build(), subject, date, Optional.ofNullable(textBody), Optional.ofNullable(htmlBody),
                     attachments, attachedMessages
                     );
