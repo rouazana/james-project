@@ -74,7 +74,7 @@ public class SetError {
     }
 
     @JsonSerialize
-    public Optional<String> getDescrption() {
+    public Optional<String> getDescription() {
         return description;
     }
 }

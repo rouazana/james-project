@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.startsWith;
 
 import java.io.ByteArrayInputStream;
 import java.util.Date;
+import java.util.Map;
 
 import javax.mail.Flags;
 
@@ -38,6 +39,7 @@ import org.apache.james.jmap.api.access.AccessToken;
 import org.apache.james.mailbox.elasticsearch.EmbeddedElasticSearch;
 import org.apache.james.mailbox.model.MailboxConstants;
 import org.apache.james.mailbox.model.MailboxPath;
+import org.assertj.core.data.MapEntry;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +47,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TemporaryFolder;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -137,6 +140,10 @@ public abstract class SetMessagesMethodTest {
         assertThat(jsonPath.parse(response).<Integer>read("$.length()")).isEqualTo(1);
         assertThat(jsonPath.parse(response).<Integer>read("$.[0].[1].destroyed.length()")).isEqualTo(0);
         assertThat(jsonPath.parse(response).<Integer>read("$.[0].[1].notDestroyed.length()")).isEqualTo(1);
+        assertThat(jsonPath.parse(response).<Map<String, Map<String, String>>>read("$.[0].[1].notDestroyed"))
+            .containsExactly(MapEntry.entry(username + "|unknown|1", 
+                    ImmutableMap.of("type", "anErrorOccurred",
+                            "description", "An error occurred while deleting message " + username + "|unknown|1")));
     }
 
     @Test
@@ -162,6 +169,10 @@ public abstract class SetMessagesMethodTest {
         assertThat(jsonPath.parse(response).<Integer>read("$.length()")).isEqualTo(1);
         assertThat(jsonPath.parse(response).<Integer>read("$.[0].[1].destroyed.length()")).isEqualTo(0);
         assertThat(jsonPath.parse(response).<Integer>read("$.[0].[1].notDestroyed.length()")).isEqualTo(1);
+        assertThat(jsonPath.parse(response).<Map<String, Map<String, String>>>read("$.[0].[1].notDestroyed"))
+            .containsExactly(MapEntry.entry(username + "|mailbox|12345", 
+                    ImmutableMap.of("type", "notFound",
+                            "description", "The message " + username + "|mailbox|12345 can't be found")));
     }
 
     @Test

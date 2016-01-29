@@ -31,7 +31,6 @@ import org.apache.james.jmap.model.MessageId;
 import org.apache.james.jmap.model.SetError;
 import org.apache.james.jmap.model.SetMessagesRequest;
 import org.apache.james.jmap.model.SetMessagesResponse;
-import org.apache.james.jmap.model.SetMessagesResponse.Builder;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.exception.MailboxException;
 import org.apache.james.mailbox.model.MessageRange;
@@ -59,7 +58,7 @@ public class SetMessagesMethod<Id extends MailboxId> implements Method {
     private final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;
 
     @Inject
-    @VisibleForTesting public SetMessagesMethod(MailboxMapperFactory<Id> mailboxMapperFactory, MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory) {
+    @VisibleForTesting SetMessagesMethod(MailboxMapperFactory<Id> mailboxMapperFactory, MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory) {
         this.mailboxMapperFactory = mailboxMapperFactory;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
     }
@@ -92,20 +91,20 @@ public class SetMessagesMethod<Id extends MailboxId> implements Method {
     }
 
     private SetMessagesResponse setMessagesResponse(SetMessagesRequest request, MailboxSession mailboxSession) throws MailboxException {
-        SetMessagesResponse.Builder builder = SetMessagesResponse.builder();
-        processDestroy(request.getDestroy(), mailboxSession, builder);
-        return builder.build();
+        SetMessagesResponse.Builder responseBuilder = SetMessagesResponse.builder();
+        processDestroy(request.getDestroy(), mailboxSession, responseBuilder);
+        return responseBuilder.build();
     }
 
-    private void processDestroy(List<MessageId> messageIds, MailboxSession mailboxSession, SetMessagesResponse.Builder builder) throws MailboxException {
+    private void processDestroy(List<MessageId> messageIds, MailboxSession mailboxSession, SetMessagesResponse.Builder responseBuilder) throws MailboxException {
         MessageMapper<Id> messageMapper = mailboxSessionMapperFactory.createMessageMapper(mailboxSession);
-        Consumer<? super MessageId> delete = delete(messageMapper, mailboxSession, builder);
+        Consumer<? super MessageId> delete = delete(messageMapper, mailboxSession, responseBuilder);
 
         messageIds.stream()
             .forEach(delete);
     }
 
-    private Consumer<? super MessageId> delete(MessageMapper<Id> messageMapper, MailboxSession mailboxSession, Builder builder) {
+    private Consumer<? super MessageId> delete(MessageMapper<Id> messageMapper, MailboxSession mailboxSession, SetMessagesResponse.Builder responseBuilder) {
         return (messageId) -> {
             try {
                 Mailbox<Id> mailbox = mailboxMapperFactory
@@ -114,22 +113,22 @@ public class SetMessagesMethod<Id extends MailboxId> implements Method {
 
                 Iterator<MailboxMessage<Id>> mailboxMessage = messageMapper.findInMailbox(mailbox, MessageRange.one(messageId.getUid()), FetchType.Metadata, LIMIT_BY_ONE);
                 if (!mailboxMessage.hasNext()) {
-                    builder.notDestroyed(messageId,
+                    responseBuilder.notDestroyed(messageId,
                             SetError.builder()
                             .type("notFound")
-                            .description(messageId.serialize())
+                            .description("The message " + messageId.serialize() + " can't be found")
                             .build());
                     return;
                 }
 
                 messageMapper.delete(mailbox, mailboxMessage.next());
-                builder.destroyed(messageId);
+                responseBuilder.destroyed(messageId);
             } catch (MailboxException e) {
-                LOGGER.error("An error occured when deleting a message", e);
-                builder.notDestroyed(messageId,
+                LOGGER.error("An error occurred when deleting a message", e);
+                responseBuilder.notDestroyed(messageId,
                         SetError.builder()
-                        .type("anErrorOccured")
-                        .description(messageId.serialize())
+                        .type("anErrorOccurred")
+                        .description("An error occurred while deleting message " + messageId.serialize())
                         .build());
             }
         };
