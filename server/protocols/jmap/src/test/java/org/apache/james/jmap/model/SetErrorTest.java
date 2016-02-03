@@ -21,10 +21,12 @@ package org.apache.james.jmap.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.apache.james.jmap.model.MessageProperties.MessageProperty;
 
 import java.util.Optional;
 
 import org.junit.Test;
+import com.google.common.collect.ImmutableSet;
 
 public class SetErrorTest {
 
@@ -36,7 +38,7 @@ public class SetErrorTest {
 
     @Test
     public void buildShouldWorkWhenAllMandatoryFieldsAreGiven() {
-        SetError expected = new SetError("type", Optional.empty());
+        SetError expected = new SetError("type", Optional.empty(), Optional.empty());
 
         SetError setError = SetError.builder()
             .type("type")
@@ -47,11 +49,14 @@ public class SetErrorTest {
 
     @Test
     public void buildShouldWorkWhenAllFieldsAreGiven() {
-        SetError expected = new SetError("type", Optional.of("description"));
+        ImmutableSet<MessageProperty> props = ImmutableSet.of(MessageProperty.attachedMessages);
+
+        SetError expected = new SetError("type", Optional.of("description"), Optional.of(props));
 
         SetError setError = SetError.builder()
             .type("type")
             .description("description")
+            .properties(MessageProperty.attachedMessages)
             .build();
 
         assertThat(setError).isEqualToComparingFieldByField(expected);
