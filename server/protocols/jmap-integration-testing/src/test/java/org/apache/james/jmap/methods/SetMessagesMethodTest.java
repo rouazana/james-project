@@ -148,31 +148,25 @@ public abstract class SetMessagesMethodTest {
 
     @Test
     public void setMessagesShouldReturnNotDestroyedWhenNoMatchingMessage() throws Exception {
-        // Given
+
         jmapServer.serverProbe().createMailbox(MailboxConstants.USER_NAMESPACE, username, "mailbox");
 
-        // When
-        String response = given()
+        String messageId = username + "|mailbox|12345";
+        given()
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .header("Authorization", accessToken.serialize())
-            .body("[[\"setMessages\", {\"destroy\": [\"" + username + "|mailbox|12345\"]}, \"#0\"]]")
+            .body("[[\"setMessages\", {\"destroy\": [\"" + messageId + "\"]}, \"#0\"]]")
         .when()
             .post("/jmap")
         .then()
             .statusCode(200)
             .content(startsWith("[[\"messagesSet\","))
-            .extract()
-            .asString();
-
-        // Then
-        assertThat(jsonPath.parse(response).<Integer>read("$.length()")).isEqualTo(1);
-        assertThat(jsonPath.parse(response).<Integer>read("$.[0].[1].destroyed.length()")).isEqualTo(0);
-        assertThat(jsonPath.parse(response).<Integer>read("$.[0].[1].notDestroyed.length()")).isEqualTo(1);
-        assertThat(jsonPath.parse(response).<Map<String, Map<String, String>>>read("$.[0].[1].notDestroyed"))
-            .containsExactly(MapEntry.entry(username + "|mailbox|12345", 
-                    ImmutableMap.of("type", "notFound",
-                            "description", "The message " + username + "|mailbox|12345 can't be found")));
+            .body("$", hasSize(1))
+            .body("[0][1].destroyed", hasSize(0))
+            .body("[0][1].notDestroyed", hasKey(messageId))
+            .body("[0][1].notDestroyed[\"" + messageId + "\"].type", equalTo("notFound"))
+            .body("[0][1].notDestroyed[\"" + messageId + "\"].description", equalTo("The message " + messageId + " can't be found"));
     }
 
     @Test
