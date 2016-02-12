@@ -77,7 +77,7 @@ public class ForwardSmtpTest extends AbstractSimpleScriptedTestProtocol {
         WatchService watcher = FileSystems.getDefault().newWatchService();
         WatchKey watchKey = Paths.get("/tmp/fakemail").register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
         scriptTest("helo", Locale.US);
-        WatchKey key = watcher.poll(20, TimeUnit.MINUTES);
+        WatchKey key = watcher.poll(20, TimeUnit.SECONDS);
         assertThat(key).isNotNull().isEqualTo(watchKey);
     }
 
