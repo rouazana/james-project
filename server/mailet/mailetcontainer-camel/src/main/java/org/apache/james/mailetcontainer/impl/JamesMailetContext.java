@@ -42,7 +42,6 @@ import org.apache.mailet.base.RFC2822Headers;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -63,7 +62,6 @@ import java.util.Locale;
 import java.util.Vector;
 
 @SuppressWarnings("deprecation")
-@Singleton
 public class JamesMailetContext implements MailetContext, LogEnabled, Configurable {
 
     /**
