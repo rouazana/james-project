@@ -46,6 +46,7 @@
         <module>core</module>
         <module>impl/imap-mailbox</module>
         <module>impl/managesieve</module>
+        <module>impl/smtp</module>
         <module>mavenplugin</module>
     </modules>
 
@@ -236,6 +237,11 @@
                 <artifactId>apache-james-mailbox-store</artifactId>
                 <type>test-jar</type>
                 <version>${james-mailbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.james</groupId>
+                <artifactId>james-server-dnsservice-api</artifactId>
+                <version>${james.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.james.protocols</groupId>
