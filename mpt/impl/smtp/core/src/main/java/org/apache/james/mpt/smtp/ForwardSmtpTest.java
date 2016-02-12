@@ -18,8 +18,16 @@
  ****************************************************************/
 package org.apache.james.mpt.smtp;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.net.InetAddress;
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -66,7 +74,11 @@ public class ForwardSmtpTest extends AbstractSimpleScriptedTestProtocol {
 
     @Test
     public void authenticateShouldWork() throws Exception {
+        WatchService watcher = FileSystems.getDefault().newWatchService();
+        WatchKey watchKey = Paths.get("/tmp/fakemail").register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
         scriptTest("helo", Locale.US);
+        WatchKey key = watcher.poll(20, TimeUnit.MINUTES);
+        assertThat(key).isNotNull().isEqualTo(watchKey);
     }
 
 }

@@ -66,7 +66,7 @@
                 <processor>local-address-error</processor>
                 <notice>550 - Requested action not taken: no such user here</notice>
             </mailet> -->
-            <mailet match="SMTPAuthSuccessful" class="RemoteDelivery">
+            <mailet match="All" class="RemoteDelivery">
                 <outgoingQueue>outgoing</outgoingQueue>
                 <delayTime>5 minutes</delayTime>
                 <delayTime>10 minutes</delayTime>
@@ -79,11 +79,10 @@
                 <deliveryThreads>1</deliveryThreads>
                 <sendpartial>false</sendpartial>
                 <bounceProcessor>bounces</bounceProcessor>
-                <mail.smtp.localhost>byjean.eu</mail.smtp.localhost>
             </mailet>
-            <mailet match="All" class="ToProcessor">
+            <!-- mailet match="All" class="ToProcessor">
                 <processor>relay-denied</processor>
-            </mailet>
+            </mailet-->
         </processor>
 
         <processor state="local-address-error" enableJmx="true">

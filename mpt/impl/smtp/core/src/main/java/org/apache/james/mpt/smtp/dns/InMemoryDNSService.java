@@ -48,8 +48,8 @@ public class InMemoryDNSService implements DNSService {
         return dnsRecordFor(ImmutableList.of(), ImmutableList.of(), addresses);
     }
 
-    private DNSRecord dnsRecordFor(Collection<String> mXRecords, Collection<String> tXTRecords, InetAddress... addresses) {
-        return new DNSRecord(addresses, ImmutableList.of(), ImmutableList.of());
+    private DNSRecord dnsRecordFor(Collection<String> mxRecords, Collection<String> txtRecords, InetAddress... addresses) {
+        return new DNSRecord(addresses, mxRecords, txtRecords);
     }
 
     public void registerRecord(String hostname, InetAddress[] addresses,Collection<String> mxRecords, Collection<String> txtRecords ){
