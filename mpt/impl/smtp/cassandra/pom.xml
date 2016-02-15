@@ -141,12 +141,6 @@
                 <dependency>
                     <groupId>org.apache.james</groupId>
                     <artifactId>apache-james-mpt-core</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <artifactId>httpclient</artifactId>
-                            <groupId>org.apache.httpcomponents</groupId>
-                        </exclusion>
-                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.james</groupId>
@@ -156,24 +150,6 @@
                     <groupId>org.apache.james</groupId>
                     <artifactId>james-server-cassandra-guice</artifactId>
                     <version>${james.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <artifactId>httpclient</artifactId>
-                            <groupId>org.apache.httpcomponents</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>httpcore</artifactId>
-                            <groupId>org.apache.httpcomponents</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>httpclient-osgi</artifactId>
-                            <groupId>org.apache.httpcomponents</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>openjpa</artifactId>
-                            <groupId>org.apache.openjpa</groupId>
-                        </exclusion>
-                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>com.google.guava</groupId>
