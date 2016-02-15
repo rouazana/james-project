@@ -121,36 +121,28 @@ public class SmtpTestModule extends AbstractModule {
         protected void configure() {
             bind(FileSystem.class).to(FileSystemImpl.class);
             bind(ConfigurationProvider.class).to(FileConfigurationProvider.class);
-            bind(JamesDirectoriesProvider.class).toInstance(new MyJamesDirectoriesProvider(rootDirectory));
-        }
-
-        private static class MyJamesDirectoriesProvider implements JamesDirectoriesProvider {
-
-            private final String rootDirectory;
-
-            public MyJamesDirectoriesProvider(String rootDirectory) {
-                this.rootDirectory = rootDirectory;
-            }
-
-            @Override
-            public String getAbsoluteDirectory() {
-                return "/";
-            }
-
-            @Override
-            public String getConfDirectory() {
-                return ClassLoader.getSystemResource("conf").getPath();
-            }
-
-            @Override
-            public String getVarDirectory() {
-                return rootDirectory + "/var/";
-            }
-
-            @Override
-            public String getRootDirectory() {
-                return rootDirectory;
-            }
+            bind(JamesDirectoriesProvider.class).toInstance(new JamesDirectoriesProvider() {
+    
+                @Override
+                public String getAbsoluteDirectory() {
+                    return "/";
+                }
+    
+                @Override
+                public String getConfDirectory() {
+                    return ClassLoader.getSystemResource("conf").getPath();
+                }
+    
+                @Override
+                public String getVarDirectory() {
+                    return rootDirectory + "/var/";
+                }
+    
+                @Override
+                public String getRootDirectory() {
+                    return rootDirectory;
+                }
+            });
         }
     }
 

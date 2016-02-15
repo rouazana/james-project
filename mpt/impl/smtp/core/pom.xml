@@ -135,17 +135,10 @@
                 <dependency>
                     <groupId>org.apache.james</groupId>
                     <artifactId>apache-james-mpt-core</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <artifactId>httpclient</artifactId>
-                            <groupId>org.apache.httpcomponents</groupId>
-                        </exclusion>
-                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>com.spotify</groupId>
                     <artifactId>docker-client</artifactId>
-                    <version>3.5.10</version>
                 </dependency>
                 <dependency>
                     <groupId>org.assertj</groupId>
