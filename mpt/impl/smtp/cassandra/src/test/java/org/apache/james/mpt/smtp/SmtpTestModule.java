@@ -18,41 +18,33 @@
  ****************************************************************/
 package org.apache.james.mpt.smtp;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 
-import javax.inject.Named;
-
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.james.CassandraJamesServerMain;
 import org.apache.james.backends.cassandra.CassandraCluster;
 import org.apache.james.backends.cassandra.init.CassandraModuleComposite;
-import org.apache.james.core.filesystem.FileSystemImpl;
 import org.apache.james.dnsservice.api.DNSService;
 import org.apache.james.domainlist.api.DomainList;
 import org.apache.james.domainlist.cassandra.CassandraDomainListModule;
 import org.apache.james.filesystem.api.FileSystem;
-import org.apache.james.filesystem.api.JamesDirectoriesProvider;
+import org.apache.james.jmap.JMAPConfiguration;
+import org.apache.james.jmap.PortConfiguration;
 import org.apache.james.mailbox.cassandra.modules.CassandraMailboxModule;
 import org.apache.james.mailbox.cassandra.modules.CassandraMessageModule;
-import org.apache.james.modules.data.CassandraRecipientRewriteTableModule;
-import org.apache.james.modules.protocols.ManageSieveServerModule;
-import org.apache.james.modules.protocols.ProtocolHandlerModule;
-import org.apache.james.modules.protocols.SMTPServerModule;
-import org.apache.james.modules.server.ActiveMQQueueModule;
-import org.apache.james.modules.server.CamelMailetContainerModule;
-import org.apache.james.modules.server.ConfigurationProviderModule;
-import org.apache.james.modules.server.DNSServiceModule;
-import org.apache.james.modules.server.MailStoreRepositoryModule;
-import org.apache.james.modules.server.SieveModule;
+import org.apache.james.mailbox.elasticsearch.ClientProvider;
+import org.apache.james.mailbox.elasticsearch.EmbeddedElasticSearch;
+import org.apache.james.modules.TestFilesystemModule;
 import org.apache.james.mpt.api.SmtpHostSystem;
 import org.apache.james.mpt.smtp.dns.InMemoryDNSService;
 import org.apache.james.mpt.smtp.host.JamesSmtpHostSystem;
-import org.apache.james.rrt.api.RecipientRewriteTable;
 import org.apache.james.rrt.cassandra.CassandraRRTModule;
 import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.cassandra.CassandraUsersRepositoryModule;
-import org.apache.james.utils.ConfigurationProvider;
 import org.apache.james.utils.ConfigurationsPerformer;
-import org.apache.james.utils.FileConfigurationProvider;
-import org.apache.onami.lifecycle.jsr250.PreDestroyModule;
+import org.elasticsearch.client.Client;
 import org.junit.rules.TemporaryFolder;
 
 import com.datastax.driver.core.Session;
@@ -65,12 +57,11 @@ import com.google.inject.util.Modules;
 public class SmtpTestModule extends AbstractModule {
 
     private final TemporaryFolder folder = new TemporaryFolder();
-    private final String rootDirectory;
     private final CassandraCluster cassandraClusterSingleton;
+    private final EmbeddedElasticSearch embeddedElasticSearch;
 
     public SmtpTestModule() throws IOException {
         folder.create();
-        rootDirectory = folder.newFolder().getAbsolutePath();
         CassandraModuleComposite cassandraModuleComposite = new CassandraModuleComposite(
                 new CassandraMailboxModule(),
                 new CassandraMessageModule(),
@@ -78,72 +69,19 @@ public class SmtpTestModule extends AbstractModule {
                 new CassandraUsersRepositoryModule(),
                 new CassandraRRTModule());
         cassandraClusterSingleton = CassandraCluster.create(cassandraModuleComposite);
+
+        embeddedElasticSearch = new EmbeddedElasticSearch(folder);
     }
 
     @Override
     protected void configure() {
-        install(Modules.override(Modules.combine(
-                new org.apache.james.modules.data.CassandraUsersRepositoryModule(),
-                new org.apache.james.modules.data.CassandraDomainListModule(),
-                new CassandraRecipientRewriteTableModule(),
-                new DNSServiceModule(),
-                new ProtocolHandlerModule(),
-                new SMTPServerModule(),
-                new ManageSieveServerModule(),
-                new ActiveMQQueueModule(),
-                new SieveModule(),
-                new MailStoreRepositoryModule(),
-                new CamelMailetContainerModule(),
-                new ConfigurationProviderModule(),
-                new PreDestroyModule()))
+        install(Modules.override(CassandraJamesServerMain.defaultModule)
             .with(Modules.combine(
-                new FileSystemModule(rootDirectory),
+                new TestFilesystemModule(folder),
                 new CassandraModule(cassandraClusterSingleton.getConf()),
-                new DNSModule())));
-    }
-
-    private static class FileSystemModule extends AbstractModule {
-
-        private static final String CONFIGURATION_PATH = "configurationPath";
-
-        private final String rootDirectory;
-
-        public FileSystemModule(String rootDirectory) {
-            this.rootDirectory = rootDirectory;
-        }
-
-        @Provides @Singleton @Named(CONFIGURATION_PATH)
-        public String configurationPath() {
-            return FileSystem.FILE_PROTOCOL_AND_CONF;
-        }
-
-        @Override
-        protected void configure() {
-            bind(FileSystem.class).to(FileSystemImpl.class);
-            bind(ConfigurationProvider.class).to(FileConfigurationProvider.class);
-            bind(JamesDirectoriesProvider.class).toInstance(new JamesDirectoriesProvider() {
-    
-                @Override
-                public String getAbsoluteDirectory() {
-                    return "/";
-                }
-    
-                @Override
-                public String getConfDirectory() {
-                    return ClassLoader.getSystemResource("conf").getPath();
-                }
-    
-                @Override
-                public String getVarDirectory() {
-                    return rootDirectory + "/var/";
-                }
-    
-                @Override
-                public String getRootDirectory() {
-                    return rootDirectory;
-                }
-            });
-        }
+                new DNSModule(),
+                new ElasticSearchModule(embeddedElasticSearch),
+                new JMAPModule())));
     }
 
     private static class CassandraModule extends AbstractModule {
@@ -173,9 +111,57 @@ public class SmtpTestModule extends AbstractModule {
         }
     }
 
+    private static class ElasticSearchModule extends AbstractModule {
+
+        private final EmbeddedElasticSearch embeddedElasticSearch;
+
+        public ElasticSearchModule(EmbeddedElasticSearch embeddedElasticSearch) {
+            this.embeddedElasticSearch = embeddedElasticSearch;
+        }
+
+        @Override
+        protected void configure() {
+        }
+
+        @Provides
+        @Singleton
+        protected ClientProvider provideClientProvider(FileSystem fileSystem) throws ConfigurationException, FileNotFoundException {
+            return new ClientProvider() {
+                
+                @Override
+                public Client get() {
+                    return embeddedElasticSearch.getNode().client();
+                }
+            };
+        }
+    }
+
+    private static class JMAPModule extends AbstractModule {
+
+        @Override
+        protected void configure() {
+            bind(PortConfiguration.class).toInstance(new PortConfiguration() {
+                
+                @Override
+                public Optional<Integer> getPort() {
+                    return Optional.empty();
+                }
+            });
+        }
+
+        @Provides
+        @Singleton
+        JMAPConfiguration provideConfiguration(FileSystem fileSystem) throws ConfigurationException, IOException{
+            return JMAPConfiguration.builder()
+                    .keystore("keystore")
+                    .secret("james72laBalle")
+                    .build();
+        }
+    }
+
     @Provides
     @Singleton
-    public SmtpHostSystem provideHostSystem(ConfigurationsPerformer configurationsPerformer, DomainList domainList, UsersRepository usersRepository, RecipientRewriteTable recipientRewriteTable) throws Exception {
-        return new JamesSmtpHostSystem(configurationsPerformer, domainList, usersRepository, recipientRewriteTable);
+    public SmtpHostSystem provideHostSystem(ConfigurationsPerformer configurationsPerformer, DomainList domainList, UsersRepository usersRepository) throws Exception {
+        return new JamesSmtpHostSystem(configurationsPerformer, domainList, usersRepository);
     }
 }

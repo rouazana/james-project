@@ -25,7 +25,6 @@ import org.apache.james.domainlist.api.DomainList;
 import org.apache.james.mpt.api.SmtpHostSystem;
 import org.apache.james.mpt.monitor.SystemLoggingMonitor;
 import org.apache.james.mpt.session.ExternalSessionFactory;
-import org.apache.james.rrt.api.RecipientRewriteTable;
 import org.apache.james.user.api.UsersRepository;
 import org.apache.james.utils.ConfigurationsPerformer;
 import org.slf4j.Logger;
@@ -40,27 +39,24 @@ public class JamesSmtpHostSystem extends ExternalSessionFactory implements SmtpH
 
     private final DomainList domainList;
     private final UsersRepository usersRepository;
-    private final RecipientRewriteTable recipientRewriteTable;
     private final ConfigurationsPerformer configurationsPerformer;
 
-    public JamesSmtpHostSystem(ConfigurationsPerformer configurationsPerformer, DomainList domainList, UsersRepository usersRepository, RecipientRewriteTable recipientRewriteTable) {
+    public JamesSmtpHostSystem(ConfigurationsPerformer configurationsPerformer, DomainList domainList, UsersRepository usersRepository) {
         super("localhost", 1025, new SystemLoggingMonitor(), "220 mydomain.tld smtp");
         this.configurationsPerformer = configurationsPerformer;
         this.domainList = domainList;
         this.usersRepository = usersRepository;
-        this.recipientRewriteTable = recipientRewriteTable;
     }
 
     @Override
     public boolean addUser(String userAtDomain, String password) throws Exception {
-        Preconditions.checkArgument(userAtDomain.contains("@"), "The 'user' should contains the 'domain'");
+        Preconditions.checkArgument(userAtDomain.contains("@"), "The 'user' should contain the 'domain'");
         Iterator<String> split = Splitter.on("@").split(userAtDomain).iterator();
-        String user = split.next();
+        split.next();
         String domain = split.next();
 
         domainList.addDomain(domain);
         usersRepository.addUser(userAtDomain, password);
-        recipientRewriteTable.addAddressMapping(user, domain, "ray@yopmail.com");
         return true;
     }
 

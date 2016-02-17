@@ -18,16 +18,13 @@
  ****************************************************************/
 package org.apache.james.mpt.smtp;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.config.EncoderConfig.encoderConfig;
+import static com.jayway.restassured.config.RestAssuredConfig.newConfig;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.net.InetAddress;
-import java.nio.file.FileSystems;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -35,22 +32,28 @@ import org.apache.james.mpt.api.SmtpHostSystem;
 import org.apache.james.mpt.script.AbstractSimpleScriptedTestProtocol;
 import org.apache.james.mpt.smtp.dns.InMemoryDNSService;
 import org.apache.james.mpt.smtp.utils.DockerRule;
+import org.apache.james.rrt.api.RecipientRewriteTable;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TemporaryFolder;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.net.InetAddresses;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
 
 public class ForwardSmtpTest extends AbstractSimpleScriptedTestProtocol {
 
-    public static final String USER = "bob@mydomain.tld";
+    public static final String USER = "bob";
+    public static final String DOMAIN = "mydomain.tld";
+    public static final String USER_AT_DOMAIN = USER + "@" + DOMAIN;
     public static final String PASSWORD = "secret";
 
     private final TemporaryFolder folder = new TemporaryFolder();
-    private final DockerRule fakeSmtp = new DockerRule("munkyboy/fakesmtp");
+    private final DockerRule fakeSmtp = new DockerRule("weave/rest-smtp-sink");
 
     @Rule
     public final RuleChain chain = RuleChain.outerRule(folder).around(fakeSmtp);
@@ -59,26 +62,39 @@ public class ForwardSmtpTest extends AbstractSimpleScriptedTestProtocol {
     private static SmtpHostSystem hostSystem;
 
     @Inject
+    private static RecipientRewriteTable recipientRewriteTable;
+
+    @Inject
     private static InMemoryDNSService dnsService;
 
     public ForwardSmtpTest() throws Exception {
-        super(hostSystem, USER, PASSWORD, "/org/apache/james/smtp/scripts/");
+        super(hostSystem, USER_AT_DOMAIN, PASSWORD, "/org/apache/james/smtp/scripts/");
     }
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         InetAddress containerIp = InetAddresses.forString(fakeSmtp.getContainerIp());
         dnsService.registerRecord("yopmail.com", new InetAddress[]{containerIp}, ImmutableList.of("yopmail.com"), ImmutableList.of());
-        super.setUp();
+        recipientRewriteTable.addAddressMapping(USER, DOMAIN, "ray@yopmail.com");
+
+        RestAssured.port = Integer.valueOf("80");
+        RestAssured.baseURI = "http://" + containerIp.getHostAddress();
+        RestAssured.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset(Charsets.UTF_8));
     }
 
     @Test
     public void authenticateShouldWork() throws Exception {
-        WatchService watcher = FileSystems.getDefault().newWatchService();
-        WatchKey watchKey = Paths.get("/tmp/fakemail").register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
         scriptTest("helo", Locale.US);
-        WatchKey key = watcher.poll(20, TimeUnit.SECONDS);
-        assertThat(key).isNotNull().isEqualTo(watchKey);
-    }
 
+        given()
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+        .when()
+            .get("/api/email")
+        .then()
+            .statusCode(200)
+            .body("[0].from", equalTo("matthieu@yopmail.com"))
+            .body("[0].subject", equalTo("test"));
+    }
 }

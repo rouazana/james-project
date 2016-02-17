@@ -51,7 +51,6 @@ public class DockerRule extends ExternalResource {
         portBindings = Maps.newHashMap();
 
         hostConfig = HostConfig.builder()
-                .binds("/tmp/fakemail:/var/mail")
                 .publishAllPorts(true)
                 .build();
 
