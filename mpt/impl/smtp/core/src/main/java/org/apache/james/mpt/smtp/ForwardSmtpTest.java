@@ -84,7 +84,7 @@ public class ForwardSmtpTest extends AbstractSimpleScriptedTestProtocol {
     }
 
     @Test
-    public void authenticateShouldWork() throws Exception {
+    public void forwardingAnEmailShouldWork() throws Exception {
         scriptTest("helo", Locale.US);
 
         given()
