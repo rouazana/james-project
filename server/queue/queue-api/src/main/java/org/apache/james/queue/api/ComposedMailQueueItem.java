@@ -16,35 +16,32 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-package org.apache.james.queue.activemq;
 
-import javax.inject.Inject;
-import javax.jms.ConnectionFactory;
+package org.apache.james.queue.api;
 
-import org.apache.james.queue.api.MailQueue;
-import org.apache.james.queue.api.MailQueueActionFactory;
-import org.apache.james.queue.api.MailQueueFactory;
-import org.apache.james.queue.jms.JMSMailQueueFactory;
+import org.apache.james.queue.api.MailQueue.MailQueueException;
+import org.apache.james.queue.api.MailQueue.MailQueueItem;
+import org.apache.james.queue.api.MailQueueActionFactory.MailQueueAction;
+import org.apache.mailet.Mail;
 
-/**
- * {@link MailQueueFactory} implementations which return
- * {@link ActiveMQMailQueue} instances
- */
-public class ActiveMQMailQueueFactory extends JMSMailQueueFactory {
+public class ComposedMailQueueItem implements MailQueueItem, MailQueueAction {
+    private final MailQueueItem mailQueueItem;
+    private final MailQueueAction mailQueueAction;
 
-    private boolean useBlob = true;
-
-    @Inject
-    public ActiveMQMailQueueFactory(ConnectionFactory connectionFactory, MailQueueActionFactory mailQueueActionFactory) {
-        super(connectionFactory, mailQueueActionFactory);
-    }
-
-    public void setUseBlobMessages(boolean useBlob) {
-        this.useBlob = useBlob;
+    public ComposedMailQueueItem(MailQueueItem mailQueueItem, MailQueueAction mailQueueAction) {
+        this.mailQueueItem = mailQueueItem;
+        this.mailQueueAction = mailQueueAction;
     }
 
     @Override
-    protected MailQueue createMailQueue(String name) {
-        return new ActiveMQMailQueue(connectionFactory, mailQueueActionFactory, name, useBlob, log);
+    public Mail getMail() {
+        return mailQueueItem.getMail();
     }
+
+    @Override
+    public void done(boolean success) throws MailQueueException {
+        mailQueueItem.done(success);
+        mailQueueAction.done(success);
+    }
+
 }
