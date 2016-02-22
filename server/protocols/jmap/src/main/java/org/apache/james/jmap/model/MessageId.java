@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.jmap.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import org.apache.james.mailbox.MailboxSession.User;
@@ -31,7 +32,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
-public class MessageId {
+public class MessageId implements Serializable {
 
     private static final String SEPARATOR = "|";
 
