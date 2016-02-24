@@ -98,7 +98,7 @@ public class PropertyBuilder {
      * @return value, 
      * or null when no property has the given name and namespace
      */
-    public String getFirstValue(final String namespace, final String localName) {
+    public String getFirstValue(final String namespace, String localName) {
         String result = null;
         for (SimpleProperty property: properties) {
             if (property.isNamed(namespace, localName)) {
@@ -115,7 +115,7 @@ public class PropertyBuilder {
      * @param localName not null
      * @return not null
      */
-    public List<String> getValues(final String namespace, final String localName) {
+    public List<String> getValues(final String namespace, String localName) {
         List<String> results = new ArrayList<String>();
         for (SimpleProperty property: properties) {
             if (property.isNamed(namespace, localName)) {
@@ -131,7 +131,7 @@ public class PropertyBuilder {
      * @param localName not null
      * @param value null to remove property
      */
-    public void setProperty(final String namespace, final String localName, final String value)
+    public void setProperty(final String namespace, String localName, String value)
     {
         for (Iterator<SimpleProperty> it= properties.iterator();it.hasNext();) {
             final SimpleProperty property = it.next();
@@ -151,7 +151,7 @@ public class PropertyBuilder {
      * @param localName not null
      * @param values null to remove property
      */
-    public void setProperty(final String namespace, final String localName, final List<String> values)
+    public void setProperty(final String namespace, String localName, List<String> values)
     {
         for (Iterator<SimpleProperty> it= properties.iterator();it.hasNext();) {
             final SimpleProperty property = it.next();
@@ -188,7 +188,7 @@ public class PropertyBuilder {
      * @param namespace not null
      * @param valuesByLocalName not null
      */
-    public void setProperties(final String namespace, final Map<String,String> valuesByLocalName) {
+    public void setProperties(final String namespace, Map<String,String> valuesByLocalName) {
         for (Iterator<SimpleProperty> it= properties.iterator();it.hasNext();) {
             final SimpleProperty property = it.next();
             if (property.isInSpace(namespace)) {

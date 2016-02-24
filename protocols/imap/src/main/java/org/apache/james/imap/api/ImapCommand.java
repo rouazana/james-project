@@ -48,7 +48,7 @@ public class ImapCommand {
 
     private final String name;
 
-    private ImapCommand(boolean validInAuthenticated, boolean validInSelected, boolean validInNonAuthenticated, final String name) {
+    private ImapCommand(boolean validInAuthenticated, boolean validInSelected, boolean validInNonAuthenticated, String name) {
         super();
         this.validInAuthenticated = validInAuthenticated;
         this.validInSelected = validInSelected;

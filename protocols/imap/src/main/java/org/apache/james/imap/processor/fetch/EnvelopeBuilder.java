@@ -65,7 +65,7 @@ public final class EnvelopeBuilder {
         return new EnvelopeImpl(date, subject, fromAddresses, senderAddresses, replyToAddresses, toAddresses, ccAddresses, bccAddresses, inReplyTo, messageId);
     }
 
-    private String headerValue(final Headers message, final String headerName) throws MailboxException {
+    private String headerValue(final Headers message, String headerName) throws MailboxException {
         final MessageResult.Header header = MessageResultUtils.getMatching(headerName, message.headers());
         final String result;
         if (header == null) {
@@ -91,7 +91,7 @@ public final class EnvelopeBuilder {
         return result;
     }
 
-    private FetchResponse.Envelope.Address[] buildAddresses(final Headers message, final String headerName, final FetchResponse.Envelope.Address[] defaults) throws MailboxException {
+    private FetchResponse.Envelope.Address[] buildAddresses(final Headers message, String headerName, FetchResponse.Envelope.Address[] defaults) throws MailboxException {
         final FetchResponse.Envelope.Address[] results;
         final FetchResponse.Envelope.Address[] addresses = buildAddresses(message, headerName);
         if (addresses == null) {
@@ -111,7 +111,7 @@ public final class EnvelopeBuilder {
      * @return addresses
      * @throws MailboxException
      */
-    private FetchResponse.Envelope.Address[] buildAddresses(final Headers message, final String headerName) throws MailboxException {
+    private FetchResponse.Envelope.Address[] buildAddresses(final Headers message, String headerName) throws MailboxException {
         final MessageResult.Header header = MessageResultUtils.getMatching(headerName, message.headers());
         FetchResponse.Envelope.Address[] results;
         if (header == null) {
@@ -177,7 +177,7 @@ public final class EnvelopeBuilder {
         return buildMailboxAddress(name, atDomainList, localPart, domain);
     }
 
-    private void addAddresses(final Group group, final List<FetchResponse.Envelope.Address> addresses) {
+    private void addAddresses(final Group group, List<FetchResponse.Envelope.Address> addresses) {
         final String groupName = group.getName();
         final FetchResponse.Envelope.Address start = startGroup(groupName);
         addresses.add(start);

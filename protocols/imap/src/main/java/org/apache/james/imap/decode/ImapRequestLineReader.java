@@ -441,7 +441,7 @@ public abstract class ImapRequestLineReader {
         return read(size, extraCRLF);
     }
 
-    private String decode(final Charset charset, final ByteBuffer buffer) throws DecodingException {
+    private String decode(final Charset charset, ByteBuffer buffer) throws DecodingException {
         try {
             return charset.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT).decode(buffer).toString();
 
@@ -563,7 +563,7 @@ public abstract class ImapRequestLineReader {
         return readDigits(0, 0, true, stopOnParen);
     }
     
-    private long readDigits(int add, final long total, final boolean first, boolean stopOnParen
+    private long readDigits(int add, long total, boolean first, boolean stopOnParen
             ) throws DecodingException {
         final char next;
         if (first) {

@@ -71,7 +71,7 @@ public class FilePersistentObjectRepository extends AbstractFileRepository imple
      * org.apache.james.repository.api.ObjectRepository#get(java.lang.String,
      * java.lang.ClassLoader)
      */
-    public synchronized Object get(final String key, final ClassLoader classLoader) {
+    public synchronized Object get(final String key, ClassLoader classLoader) {
         try {
             final InputStream inputStream = getInputStream(key);
 
@@ -102,7 +102,7 @@ public class FilePersistentObjectRepository extends AbstractFileRepository imple
      * org.apache.james.repository.api.ObjectRepository#put(java.lang.String,
      * java.lang.Object)
      */
-    public synchronized void put(final String key, final Object value) {
+    public synchronized void put(final String key, Object value) {
         try {
             final OutputStream outputStream = getOutputStream(key);
 

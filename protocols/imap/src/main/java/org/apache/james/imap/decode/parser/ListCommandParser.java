@@ -81,7 +81,7 @@ public class ListCommandParser extends AbstractUidCommandParser {
         return createMessage(command, referenceName, mailboxPattern, tag);
     }
 
-    protected ImapMessage createMessage(ImapCommand command, final String referenceName, final String mailboxPattern, final String tag) {
+    protected ImapMessage createMessage(ImapCommand command, String referenceName, String mailboxPattern, String tag) {
         return new ListRequest(command, referenceName, mailboxPattern, tag);
     }
 }

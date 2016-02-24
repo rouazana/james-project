@@ -38,8 +38,8 @@ import org.apache.james.mailbox.quota.QuotaRootResolver;
 public class DefaultProcessorChain {
 
     public static ImapProcessor createDefaultChain(final ImapProcessor chainEndProcessor,
-                  final MailboxManager mailboxManager, final SubscriptionManager subscriptionManager,
-                  final StatusResponseFactory statusResponseFactory, MailboxTyper mailboxTyper, final QuotaManager quotaManager,
+                  final MailboxManager mailboxManager, SubscriptionManager subscriptionManager,
+                  final StatusResponseFactory statusResponseFactory, MailboxTyper mailboxTyper, QuotaManager quotaManager,
                   final QuotaRootResolver quotaRootResolver, long idleKeepAlive, TimeUnit milliseconds, Set<String> disabledCaps) {
         final SystemMessageProcessor systemProcessor = new SystemMessageProcessor(chainEndProcessor, mailboxManager);
         final LogoutProcessor logoutProcessor = new LogoutProcessor(systemProcessor, mailboxManager, statusResponseFactory);

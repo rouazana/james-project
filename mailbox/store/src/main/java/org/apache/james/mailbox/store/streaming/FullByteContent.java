@@ -42,7 +42,7 @@ public class FullByteContent implements Content {
     private final byte[] body;
     private final long size;
     
-    public FullByteContent(final byte[] body, final List<MessageResult.Header> headers) throws MailboxException {
+    public FullByteContent(final byte[] body, List<MessageResult.Header> headers) throws MailboxException {
         this.headers = headers;
         this.body = body;
         this.size = caculateSize();

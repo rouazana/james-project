@@ -520,7 +520,7 @@ public class SearchQuery implements Serializable {
      *            false otherwise
      * @return <code>Criterion</code>, not null
      */
-    public static final Criterion flagSet(final Flag flag, final boolean isSet) {
+    public static final Criterion flagSet(final Flag flag, boolean isSet) {
         final Criterion result;
         if (isSet) {
             result = flagIsSet(flag);
@@ -564,7 +564,7 @@ public class SearchQuery implements Serializable {
      *            false otherwise
      * @return <code>Criterion</code>, not null
      */
-    public static final Criterion flagSet(final String flag, final boolean isSet) {
+    public static final Criterion flagSet(final String flag, boolean isSet) {
         final Criterion result;
         if (isSet) {
             result = flagIsSet(flag);
@@ -721,7 +721,7 @@ public class SearchQuery implements Serializable {
             this.highValue = value;
         }
 
-        public NumericRange(final long lowValue, final long highValue) {
+        public NumericRange(final long lowValue, long highValue) {
             super();
             this.lowValue = lowValue;
             this.highValue = highValue;
@@ -815,7 +815,7 @@ public class SearchQuery implements Serializable {
 
         private final List<Criterion> criteria;
 
-        public ConjunctionCriterion(final Conjunction type, final List<Criterion> criteria) {
+        public ConjunctionCriterion(final Conjunction type, List<Criterion> criteria) {
             super();
             this.type = type;
             this.criteria = criteria;
@@ -942,7 +942,7 @@ public class SearchQuery implements Serializable {
 
         private final ContainsOperator operator;
 
-        private TextCriterion(final String value, final Scope type) {
+        private TextCriterion(final String value, Scope type) {
             super();
             this.operator = new ContainsOperator(value);
             this.type = type;
@@ -1027,7 +1027,7 @@ public class SearchQuery implements Serializable {
 
         private final String headerName;
 
-        private HeaderCriterion(final String headerName, final HeaderOperator operator) {
+        private HeaderCriterion(final String headerName, HeaderOperator operator) {
             super();
             this.operator = operator;
             this.headerName = headerName;
@@ -1325,7 +1325,7 @@ public class SearchQuery implements Serializable {
 
         private final BooleanOperator operator;
 
-        private CustomFlagCriterion(final String flag, final BooleanOperator operator) {
+        private CustomFlagCriterion(final String flag, BooleanOperator operator) {
             super();
             this.flag = flag;
             this.operator = operator;
@@ -1414,7 +1414,7 @@ public class SearchQuery implements Serializable {
         private final Flags flag;        
         private final BooleanOperator operator;
 
-        private FlagCriterion(final Flag flag, final BooleanOperator operator) {
+        private FlagCriterion(final Flag flag, BooleanOperator operator) {
             super();
             this.flag = new Flags(flag);
             this.operator = operator;
@@ -1849,7 +1849,7 @@ public class SearchQuery implements Serializable {
 
         private final NumericComparator type;
 
-        private NumericOperator(final long value, final NumericComparator type) {
+        private NumericOperator(final long value, NumericComparator type) {
             super();
             this.value = value;
             this.type = type;
@@ -1943,7 +1943,7 @@ public class SearchQuery implements Serializable {
 
         private final DateResolution res;
 
-        public DateOperator(final DateComparator type, final Date date, final DateResolution res) {
+        public DateOperator(final DateComparator type, Date date, DateResolution res) {
             super();
             this.type = type;
             this.date = date;

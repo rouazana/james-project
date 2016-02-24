@@ -95,7 +95,7 @@ public class Inet6Network implements InetNetwork {
      * @param mask the byte[] represent the netmask
      * @return inetAddress the InetAddress generated of the passed arguments.
      */
-    private static InetAddress maskIP(final byte[] ip, final byte[] mask) {
+    private static InetAddress maskIP(final byte[] ip, byte[] mask) {
         if (ip.length != mask.length) {
             throw new IllegalArgumentException("IP address and mask must be of the same length.");
         }

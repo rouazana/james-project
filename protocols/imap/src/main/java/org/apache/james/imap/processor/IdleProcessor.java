@@ -59,12 +59,12 @@ public class IdleProcessor extends AbstractMailboxProcessor<IdleRequest> impleme
     private final TimeUnit heartbeatIntervalUnit;
     private final long heartbeatInterval;
 
-    public IdleProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
+    public IdleProcessor(final ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         this(next, mailboxManager, factory, DEFAULT_HEARTBEAT_INTERVAL_IN_SECONDS, DEFAULT_HEARTBEAT_INTERVAL_UNIT, Executors.newScheduledThreadPool(DEFAULT_SCHEDULED_POOL_CORE_SIZE));
 
     }
 
-    public IdleProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory, long heartbeatInterval, TimeUnit heartbeatIntervalUnit, ScheduledExecutorService heartbeatExecutor) {
+    public IdleProcessor(final ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory, long heartbeatInterval, TimeUnit heartbeatIntervalUnit, ScheduledExecutorService heartbeatExecutor) {
         super(IdleRequest.class, next, mailboxManager, factory);
         this.heartbeatInterval = heartbeatInterval;
         this.heartbeatIntervalUnit = heartbeatIntervalUnit;

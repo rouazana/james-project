@@ -630,7 +630,7 @@ public class MaildirFolder {
         return uidMap;
     }
 
-    private Map<Long, MaildirMessageName> readUidFile(MailboxSession session, final long from, final long to) throws MailboxException {
+    private Map<Long, MaildirMessageName> readUidFile(MailboxSession session, long from, long to) throws MailboxException {
         final Map<Long, MaildirMessageName> uidMap = new HashMap<Long, MaildirMessageName>();
 
         File uidList = uidFile;
@@ -969,7 +969,7 @@ public class MaildirFolder {
         
     }
     
-    public void setACL(final MailboxSession session, final MailboxACL acl) throws MailboxException {
+    public void setACL(final MailboxSession session, MailboxACL acl) throws MailboxException {
         MailboxACL old = this.acl;
         if (old != acl && (old == null || !old.equals(acl))) {
             /* change only if different */
@@ -979,7 +979,7 @@ public class MaildirFolder {
         
     }
 
-    private void saveACL(final MailboxACL acl, final MailboxSession session) throws MailboxException {
+    private void saveACL(final MailboxACL acl, MailboxSession session) throws MailboxException {
         // FIXME Do we need this locking?
         locker.executeWithLock(session, path, new LockAwareExecution<Void>() {
             

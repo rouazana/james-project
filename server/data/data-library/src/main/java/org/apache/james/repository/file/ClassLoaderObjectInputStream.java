@@ -31,7 +31,7 @@ import java.io.ObjectStreamClass;
 public class ClassLoaderObjectInputStream extends ObjectInputStream {
     private final ClassLoader m_classLoader;
 
-    public ClassLoaderObjectInputStream(final ClassLoader classLoader, final InputStream inputStream) throws IOException {
+    public ClassLoaderObjectInputStream(final ClassLoader classLoader, InputStream inputStream) throws IOException {
         super(inputStream);
         m_classLoader = classLoader;
     }

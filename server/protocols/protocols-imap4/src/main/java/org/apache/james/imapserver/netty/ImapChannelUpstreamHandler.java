@@ -71,11 +71,11 @@ public class ImapChannelUpstreamHandler extends SimpleChannelUpstreamHandler imp
 
     private final boolean plainAuthDisallowed;
     
-    public ImapChannelUpstreamHandler(final String hello, final ImapProcessor processor, ImapEncoder encoder, final Logger logger, boolean compress, boolean plainAuthDisallowed) {
+    public ImapChannelUpstreamHandler(final String hello, ImapProcessor processor, ImapEncoder encoder, Logger logger, boolean compress, boolean plainAuthDisallowed) {
         this(hello, processor, encoder, logger, compress, plainAuthDisallowed, null, null);
     }
 
-    public ImapChannelUpstreamHandler(final String hello, final ImapProcessor processor, ImapEncoder encoder, final Logger logger, boolean compress, boolean plainAuthDisallowed, SSLContext context, String[] enabledCipherSuites) {
+    public ImapChannelUpstreamHandler(final String hello, ImapProcessor processor, ImapEncoder encoder, Logger logger, boolean compress, boolean plainAuthDisallowed, SSLContext context, String[] enabledCipherSuites) {
         this.logger = logger;
         this.hello = hello;
         this.processor = processor;

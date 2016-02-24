@@ -77,7 +77,7 @@ public class StoreSubscriptionManager implements SubscriptionManager {
      * @param mailbox
      * @return subscription 
      */
-    protected Subscription createSubscription(final MailboxSession session, final String mailbox) {
+    protected Subscription createSubscription(final MailboxSession session, String mailbox) {
         return new SimpleSubscription(session.getUser().getUserName(), mailbox);
     }
 

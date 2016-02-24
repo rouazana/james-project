@@ -105,7 +105,7 @@ public class JCRMailboxMessage implements MailboxMessage<JCRId>, JCRImapConstant
     }
     
     public JCRMailboxMessage(JCRId mailboxUUID, Date internalDate, int size, Flags flags, SharedInputStream content,
-                             int bodyStartOctet, final PropertyBuilder propertyBuilder, Logger logger) {
+                             int bodyStartOctet, PropertyBuilder propertyBuilder, Logger logger) {
         super();
         this.mailboxUUID = mailboxUUID;
         this.internalDate = internalDate;

@@ -72,7 +72,7 @@ public class MailboxEventDispatcher<Id extends MailboxId> {
      * Should get called when the message flags were update in a Mailbox. All
      * registered MailboxListener will get triggered then
      */
-    public void flagsUpdated(MailboxSession session, final List<Long> uids, final Mailbox<Id> mailbox, final List<UpdatedFlags> uflags) {
+    public void flagsUpdated(MailboxSession session, List<Long> uids, Mailbox<Id> mailbox, List<UpdatedFlags> uflags) {
         listener.event(eventFactory.flagsUpdated(session, uids, mailbox, uflags));
     }
 

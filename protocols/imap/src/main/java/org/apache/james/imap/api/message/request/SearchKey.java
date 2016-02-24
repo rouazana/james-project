@@ -344,7 +344,7 @@ public final class SearchKey {
 
     private final long modSeq;
 
-    private SearchKey(final int type, final DayMonthYear date, final List<SearchKey> keys, final long number, final String name, final String value, IdRange[] sequence, long seconds, long modSeq) {
+    private SearchKey(final int type, DayMonthYear date, List<SearchKey> keys, long number, String name, String value, IdRange[] sequence, long seconds, long modSeq) {
         super();
         this.type = type;
         this.date = date;

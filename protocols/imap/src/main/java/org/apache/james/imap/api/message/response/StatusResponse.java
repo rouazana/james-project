@@ -329,15 +329,15 @@ public interface StatusResponse extends ImapResponseMessage {
         }
 
         @SuppressWarnings("unchecked")
-        private ResponseCode(final String code, final long number) {
+        private ResponseCode(final String code, long number) {
             this(code, Collections.EMPTY_LIST, number, true);
         }
 
-        private ResponseCode(final String code, final Collection<String> parameters) {
+        private ResponseCode(final String code, Collection<String> parameters) {
             this(code, parameters, NO_NUMBER, true);
         }
 
-        private ResponseCode(final String code, final Collection<String> parameters, final long number, final boolean useParens) {
+        private ResponseCode(final String code, Collection<String> parameters, long number, boolean useParens) {
             super();
             this.useParens = useParens;
             this.code = code;

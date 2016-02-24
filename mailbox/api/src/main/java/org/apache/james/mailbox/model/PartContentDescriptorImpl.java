@@ -34,7 +34,7 @@ public class PartContentDescriptorImpl implements PartContentDescriptor {
         this.path = path;
     }
 
-    public PartContentDescriptorImpl(int content, final MimePath path) {
+    public PartContentDescriptorImpl(int content, MimePath path) {
         super();
         this.content = content;
         this.path = path;

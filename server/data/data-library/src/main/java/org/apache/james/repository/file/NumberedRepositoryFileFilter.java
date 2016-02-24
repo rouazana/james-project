@@ -44,7 +44,7 @@ public class NumberedRepositoryFileFilter implements FilenameFilter {
     /**
      * @see java.io.FilenameFilter#accept(File, String)
      */
-    public boolean accept(final File file, final String name) {
+    public boolean accept(final File file, String name) {
         // System.out.println("check: " + name);
         // System.out.println("post: " + postfix);
         if (!name.endsWith(postfix)) {

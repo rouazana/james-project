@@ -46,7 +46,7 @@ public class ResolvableEhloHeloHandlerTest {
 
 
     private SMTPSession setupMockSession(final String argument,
-             final boolean relaying, final boolean authRequired, final String user, final MailAddress recipient) {
+             final boolean relaying, final boolean authRequired, final String user, MailAddress recipient) {
 
         return new BaseFakeSMTPSession() {
 

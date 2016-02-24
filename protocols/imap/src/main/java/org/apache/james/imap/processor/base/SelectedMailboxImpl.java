@@ -91,7 +91,7 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
 
     private int highestMsn = 0;
     
-    public SelectedMailboxImpl(final MailboxManager mailboxManager, final ImapSession session, final MailboxPath path) throws MailboxException {
+    public SelectedMailboxImpl(final MailboxManager mailboxManager, ImapSession session, MailboxPath path) throws MailboxException {
         this.session = session;
         this.sessionId = ImapSessionUtils.getMailboxSession(session).getSessionId();
         this.mailboxManager = mailboxManager;

@@ -104,7 +104,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
     }
 
     private static MimeDescriptorImpl compositePartDescriptor(
-            final MimeTokenStream parser, final Collection<MessageResult.Header> headers)
+            final MimeTokenStream parser, Collection<MessageResult.Header> headers)
             throws IOException, MimeException {
         MaximalBodyDescriptor descriptor = (MaximalBodyDescriptor) parser
                 .getBodyDescriptor();
@@ -122,7 +122,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
     }
 
     private static MimeDescriptorImpl simplePartDescriptor(
-            final MimeTokenStream parser, final Collection<MessageResult.Header> headers)
+            final MimeTokenStream parser, Collection<MessageResult.Header> headers)
             throws IOException, MimeException {
         MaximalBodyDescriptor descriptor = (MaximalBodyDescriptor) parser
                 .getBodyDescriptor();
@@ -156,7 +156,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
 
     private static MimeDescriptorImpl createDescriptor(long bodyOctets,
             long lines, MaximalBodyDescriptor descriptor,
-            MimeDescriptor embeddedMessage, final Collection<MessageResult.Header> headers) {
+            MimeDescriptor embeddedMessage, Collection<MessageResult.Header> headers) {
         final String contentDescription = descriptor.getContentDescription();
         final String contentId = descriptor.getContentId();
 
@@ -225,13 +225,13 @@ public class MimeDescriptorImpl implements MimeDescriptor {
 
 
     public MimeDescriptorImpl(final long bodyOctets,
-            final String contentDescription, final String contentId,
-            final long lines, final String subType, final String type,
-            final String transferEncoding, final Collection<MessageResult.Header> headers,
-            final Map<String, String> contentTypeParameters, final List<String> languages,
+            String contentDescription, String contentId,
+            long lines, String subType, String type,
+            String transferEncoding, Collection<MessageResult.Header> headers,
+            Map<String, String> contentTypeParameters, List<String> languages,
             String disposition, Map<String, String> dispositionParams,
-            final MimeDescriptor embeddedMessage, final Collection<MimeDescriptor> parts,
-            final String location, final String md5) {
+            MimeDescriptor embeddedMessage, Collection<MimeDescriptor> parts,
+            String location, String md5) {
         super();
         this.type = type;
         this.bodyOctets = bodyOctets;

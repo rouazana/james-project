@@ -30,7 +30,7 @@ public class NamedThreadFactory implements ThreadFactory {
     private final AtomicLong count = new AtomicLong();
     private final int priority;
 
-    public NamedThreadFactory(final String name, final int priority) {
+    public NamedThreadFactory(final String name, int priority) {
         if (priority > Thread.MAX_PRIORITY || priority < Thread.MIN_PRIORITY) {
             throw new IllegalArgumentException("Priority must be <= " + Thread.MAX_PRIORITY + " and >=" + Thread.MIN_PRIORITY);
         }

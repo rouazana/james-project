@@ -35,7 +35,7 @@ import org.apache.james.mailbox.model.MessageRange;
 
 public class CloseProcessor extends AbstractMailboxProcessor<CloseRequest> {
 
-    public CloseProcessor(final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
+    public CloseProcessor(final ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(CloseRequest.class, next, mailboxManager, factory);
     }
 

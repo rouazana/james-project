@@ -132,8 +132,8 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
 
     private int fetchBatchSize;
 
-    public StoreMessageManager(final MessageMapperFactory<Id> mapperFactory, final MessageSearchIndex<Id> index, final MailboxEventDispatcher<Id> dispatcher, final MailboxPathLocker locker, final Mailbox<Id> mailbox, final MailboxACLResolver aclResolver,
-            final GroupMembershipResolver groupMembershipResolver, final QuotaManager quotaManager, final QuotaRootResolver quotaRootResolver) throws MailboxException {
+    public StoreMessageManager(final MessageMapperFactory<Id> mapperFactory, MessageSearchIndex<Id> index, MailboxEventDispatcher<Id> dispatcher, MailboxPathLocker locker, Mailbox<Id> mailbox, MailboxACLResolver aclResolver,
+            final GroupMembershipResolver groupMembershipResolver, QuotaManager quotaManager, QuotaRootResolver quotaRootResolver) throws MailboxException {
         this.mailbox = mailbox;
         this.dispatcher = dispatcher;
         this.mapperFactory = mapperFactory;
@@ -249,7 +249,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
      *      java.util.Date, org.apache.james.mailbox.MailboxSession, boolean,
      *      javax.mail.Flags)
      */
-    public long appendMessage(final InputStream msgIn, Date internalDate, final MailboxSession mailboxSession, final boolean isRecent, final Flags flagsToBeSet) throws MailboxException {
+    public long appendMessage(final InputStream msgIn, Date internalDate, final MailboxSession mailboxSession, boolean isRecent, Flags flagsToBeSet) throws MailboxException {
 
         File file = null;
         TeeInputStream tmpMsgIn = null;
@@ -421,7 +421,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
      * @return membership
      * @throws MailboxException
      */
-    protected MailboxMessage<Id> createMessage(Date internalDate, final int size, int bodyStartOctet, final SharedInputStream content, final Flags flags, final PropertyBuilder propertyBuilder) throws MailboxException {
+    protected MailboxMessage<Id> createMessage(Date internalDate, int size, int bodyStartOctet, SharedInputStream content, Flags flags, PropertyBuilder propertyBuilder) throws MailboxException {
         return new SimpleMailboxMessage<Id>(internalDate, size, bodyStartOctet, content, flags, propertyBuilder, getMailboxEntity().getMailboxId());
     }
 
@@ -674,7 +674,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
 
     }
 
-    protected Map<Long, MessageMetaData> deleteMarkedInMailbox(final MessageRange range, final MailboxSession session) throws MailboxException {
+    protected Map<Long, MessageMetaData> deleteMarkedInMailbox(final MessageRange range, MailboxSession session) throws MailboxException {
 
         final MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(session);
 
@@ -695,7 +695,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
         return index.search(mailboxSession, getMailboxEntity(), query);
     }
 
-    private Iterator<MessageMetaData> copy(final Iterator<MailboxMessage<Id>> originalRows, final MailboxSession session) throws MailboxException {
+    private Iterator<MessageMetaData> copy(final Iterator<MailboxMessage<Id>> originalRows, MailboxSession session) throws MailboxException {
         final List<MessageMetaData> copiedRows = new ArrayList<MessageMetaData>();
         final MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(session);
         QuotaChecker<Id> quotaChecker = new QuotaChecker<Id>(quotaManager, quotaRootResolver, mailbox);
@@ -740,7 +740,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
      *      org.apache.james.mailbox.store.AbstractStoreMessageManager,
      *      org.apache.james.mailbox.MailboxSession)
      */
-    private SortedMap<Long, MessageMetaData> copy(MessageRange set, final StoreMessageManager<Id> to, final MailboxSession session) throws MailboxException {
+    private SortedMap<Long, MessageMetaData> copy(MessageRange set, StoreMessageManager<Id> to, MailboxSession session) throws MailboxException {
         MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(session);
 
         final SortedMap<Long, MessageMetaData> copiedMessages = new TreeMap<Long, MessageMetaData>();
@@ -755,7 +755,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
     }
 
     private SortedMap<Long, MessageMetaData> move(MessageRange set,
-			final StoreMessageManager<Id> to, final MailboxSession session) throws MailboxException {
+			final StoreMessageManager<Id> to, MailboxSession session) throws MailboxException {
         MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(session);
 
         final SortedMap<Long, MessageMetaData> movedMessages = new TreeMap<Long, MessageMetaData>();

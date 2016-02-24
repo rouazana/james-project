@@ -106,7 +106,7 @@ public class ResultUtils {
      * @return result
      * @throws MailboxException
      */
-    public static MessageResult loadMessageResult(final MailboxMessage<?> message, final FetchGroup fetchGroup) throws MailboxException {
+    public static MessageResult loadMessageResult(final MailboxMessage<?> message, FetchGroup fetchGroup) throws MailboxException {
         try {
 
             MessageResultImpl messageResult = new MessageResultImpl(message);
@@ -176,7 +176,7 @@ public class ResultUtils {
         }
     }
 
-    private static PartContentBuilder build(int[] path, final MailboxMessage<?> message)
+    private static PartContentBuilder build(int[] path, MailboxMessage<?> message)
             throws IOException, MimeException {
         final InputStream stream = message.getFullContent();
         PartContentBuilder result = new PartContentBuilder();

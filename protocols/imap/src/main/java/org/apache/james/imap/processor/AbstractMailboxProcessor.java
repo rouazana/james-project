@@ -68,23 +68,23 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
     private final MailboxManager mailboxManager;
     private final StatusResponseFactory factory;
 
-    public AbstractMailboxProcessor(final Class<M> acceptableClass, final ImapProcessor next, final MailboxManager mailboxManager, final StatusResponseFactory factory) {
+    public AbstractMailboxProcessor(final Class<M> acceptableClass, ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(acceptableClass, next);
         this.mailboxManager = mailboxManager;
         this.factory = factory;
     }
 
-    protected final void doProcess(final M acceptableMessage, final Responder responder, final ImapSession session) {
+    protected final void doProcess(final M acceptableMessage, Responder responder, ImapSession session) {
         process(acceptableMessage, responder, session);
     }
 
-    protected final void process(final M message, final Responder responder, final ImapSession session) {
+    protected final void process(final M message, Responder responder, ImapSession session) {
         final ImapCommand command = message.getCommand();
         final String tag = message.getTag();
         doProcess(message, command, tag, responder, session);
     }
 
-    final void doProcess(final M message, final ImapCommand command, final String tag, Responder responder, ImapSession session) {
+    final void doProcess(final M message, ImapCommand command, String tag, Responder responder, ImapSession session) {
         if (!command.validForState(session.getState())) {
             ImapResponseMessage response = factory.taggedNo(tag, command, HumanReadableText.INVALID_COMMAND);
             responder.respond(response);
@@ -113,7 +113,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         responder.respond(untaggedOk);
     }
     
-    protected void unsolicitedResponses(final ImapSession session, final ImapProcessor.Responder responder, boolean useUids) {
+    protected void unsolicitedResponses(final ImapSession session, ImapProcessor.Responder responder, boolean useUids) {
         unsolicitedResponses(session, responder, false, useUids);
     }
 
@@ -121,7 +121,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
      * Sends any unsolicited responses to the client, such as EXISTS and FLAGS
      * responses when the selected mailbox is modified by another user.
      */
-    protected void unsolicitedResponses(final ImapSession session, final ImapProcessor.Responder responder, boolean omitExpunged, boolean useUid) {
+    protected void unsolicitedResponses(final ImapSession session, ImapProcessor.Responder responder, boolean omitExpunged, boolean useUid) {
         final SelectedMailbox selected = session.getSelected();
         if (selected == null) {
             if (session.getLog().isDebugEnabled()) {
@@ -132,7 +132,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         }
     }
 
-    private void unsolicitedResponses(final ImapSession session, final ImapProcessor.Responder responder, final SelectedMailbox selected, boolean omitExpunged, boolean useUid) {
+    private void unsolicitedResponses(final ImapSession session, ImapProcessor.Responder responder, SelectedMailbox selected, boolean omitExpunged, boolean useUid) {
         final boolean sizeChanged = selected.isSizeChanged();
         // New message response
         if (sizeChanged) {
@@ -164,7 +164,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         selected.resetEvents();
     }
 
-    private void addExpungedResponses(SelectedMailbox selected, Collection<Long> expungedUids, final ImapProcessor.Responder responder) {
+    private void addExpungedResponses(SelectedMailbox selected, Collection<Long> expungedUids, ImapProcessor.Responder responder) {
         for (final Long uid : expungedUids) {
             final long uidValue = uid.longValue();
 
@@ -177,7 +177,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         }
     }
     
-    private void addVanishedResponse(SelectedMailbox selected, Collection<Long> expungedUids, final ImapProcessor.Responder responder) {
+    private void addVanishedResponse(SelectedMailbox selected, Collection<Long> expungedUids, ImapProcessor.Responder responder) {
         for (final Long uid : expungedUids) {
             final long uidValue = uid.longValue();
             selected.remove(uidValue);
@@ -186,7 +186,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         responder.respond(new VanishedResponse(uidRange, false));
     }
     
-    private void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, final ImapProcessor.Responder responder, boolean useUid) {
+    private void addFlagsResponses(final ImapSession session, SelectedMailbox selected, ImapProcessor.Responder responder, boolean useUid) {
        
         try {
   
@@ -222,7 +222,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
 
     }
     
-    protected void addFlagsResponses(final ImapSession session, final SelectedMailbox selected, final ImapProcessor.Responder responder, boolean useUid, MessageRange messageSet, MessageManager mailbox, MailboxSession mailboxSession) throws MailboxException {
+    protected void addFlagsResponses(final ImapSession session, SelectedMailbox selected, ImapProcessor.Responder responder, boolean useUid, MessageRange messageSet, MessageManager mailbox, MailboxSession mailboxSession) throws MailboxException {
 
         final MessageResultIterator it = mailbox.getMessages(messageSet, FetchGroupImpl.MINIMAL,  mailboxSession);
         while (it.hasNext()) {
@@ -287,24 +287,24 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         }
     }
     
-    private MessageManager getMailbox(final ImapSession session, final SelectedMailbox selected) throws MailboxException {
+    private MessageManager getMailbox(final ImapSession session, SelectedMailbox selected) throws MailboxException {
         final MailboxManager mailboxManager = getMailboxManager();
         return mailboxManager.getMailbox(selected.getPath(), ImapSessionUtils.getMailboxSession(session));
     }
 
-    private void addRecentResponses(final SelectedMailbox selected, final ImapProcessor.Responder responder) {
+    private void addRecentResponses(final SelectedMailbox selected, ImapProcessor.Responder responder) {
         final int recentCount = selected.recentCount();
         RecentResponse response = new RecentResponse(recentCount);
         responder.respond(response);
     }
 
-    private void addExistsResponses(final ImapSession session, final SelectedMailbox selected, final ImapProcessor.Responder responder) {
+    private void addExistsResponses(final ImapSession session, SelectedMailbox selected, ImapProcessor.Responder responder) {
         final long existsCount = selected.existsCount();
         final ExistsResponse response = new ExistsResponse(existsCount);
         responder.respond(response);
     }
 
-    private void handleResponseException(final ImapProcessor.Responder responder, MailboxException e, final HumanReadableText message, ImapSession session) {
+    private void handleResponseException(final ImapProcessor.Responder responder, MailboxException e, HumanReadableText message, ImapSession session) {
         session.getLog().info(message.toString());
         session.getLog().debug(message.toString(), e);
         // TODO: consider whether error message should be passed to the user
@@ -312,27 +312,27 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         responder.respond(response);
     }
 
-    protected void okComplete(final ImapCommand command, final String tag, final ImapProcessor.Responder responder) {
+    protected void okComplete(final ImapCommand command, String tag, ImapProcessor.Responder responder) {
         final StatusResponse response = factory.taggedOk(tag, command, HumanReadableText.COMPLETED);
         responder.respond(response);
     }
 
-    protected void okComplete(final ImapCommand command, final String tag, final ResponseCode code, final ImapProcessor.Responder responder) {
+    protected void okComplete(final ImapCommand command, String tag, ResponseCode code, ImapProcessor.Responder responder) {
         final StatusResponse response = factory.taggedOk(tag, command, HumanReadableText.COMPLETED, code);
         responder.respond(response);
     }
 
-    protected void no(final ImapCommand command, final String tag, final ImapProcessor.Responder responder, final HumanReadableText displayTextKey) {
+    protected void no(final ImapCommand command, String tag, ImapProcessor.Responder responder, HumanReadableText displayTextKey) {
         final StatusResponse response = factory.taggedNo(tag, command, displayTextKey);
         responder.respond(response);
     }
 
-    protected void no(final ImapCommand command, final String tag, final ImapProcessor.Responder responder, final HumanReadableText displayTextKey, final StatusResponse.ResponseCode responseCode) {
+    protected void no(final ImapCommand command, String tag, ImapProcessor.Responder responder, HumanReadableText displayTextKey, StatusResponse.ResponseCode responseCode) {
         final StatusResponse response = factory.taggedNo(tag, command, displayTextKey, responseCode);
         responder.respond(response);
     }
 
-    protected void taggedBad(final ImapCommand command, final String tag, final ImapProcessor.Responder responder, final HumanReadableText e) {
+    protected void taggedBad(final ImapCommand command, String tag, ImapProcessor.Responder responder, HumanReadableText e) {
         StatusResponse response = factory.taggedBad(tag, command, e);
 
         responder.respond(response);
@@ -343,7 +343,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         responder.respond(response);
     }
 
-    protected void bye(final ImapProcessor.Responder responder, final HumanReadableText key) {
+    protected void bye(final ImapProcessor.Responder responder, HumanReadableText key) {
         final StatusResponse response = factory.bye(key);
         responder.respond(response);
     }
@@ -412,7 +412,7 @@ abstract public class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
         return sb.toString();
     }
 
-    protected String mailboxName(final boolean relative, final MailboxPath path, final char delimiter) {
+    protected String mailboxName(final boolean relative, MailboxPath path, char delimiter) {
         if (relative) {
             return path.getName();
         } else {

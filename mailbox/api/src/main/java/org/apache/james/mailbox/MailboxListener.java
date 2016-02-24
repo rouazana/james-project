@@ -65,7 +65,7 @@ public interface MailboxListener {
         private final MailboxSession session;
         private final MailboxPath path;
 
-        public Event(final MailboxSession session, final MailboxPath path) {
+        public Event(final MailboxSession session, MailboxPath path) {
             this.session = session;
             this.path = path;
         }

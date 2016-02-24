@@ -69,7 +69,7 @@ public abstract class AbstractMessageMapper<Id extends MailboxId> extends Transa
     /**
      * @see org.apache.james.mailbox.store.mail.MessageMapper#updateFlags(org.apache.james.mailbox.store.mail.model.Mailbox, javax.mail.Flags, boolean, boolean, org.apache.james.mailbox.model.MessageRange)
      */
-    public Iterator<UpdatedFlags> updateFlags(final Mailbox<Id> mailbox, final FlagsUpdateCalculator flagsUpdateCalculator, final MessageRange set) throws MailboxException {
+    public Iterator<UpdatedFlags> updateFlags(final Mailbox<Id> mailbox, FlagsUpdateCalculator flagsUpdateCalculator, MessageRange set) throws MailboxException {
         final List<UpdatedFlags> updatedFlags = new ArrayList<UpdatedFlags>();
         Iterator<MailboxMessage<Id>> messages = findInMailbox(mailbox, set, FetchType.Metadata, -1);
         
@@ -122,7 +122,7 @@ public abstract class AbstractMessageMapper<Id extends MailboxId> extends Transa
     /**
      * @see org.apache.james.mailbox.store.mail.MessageMapper#copy(org.apache.james.mailbox.store.mail.model.Mailbox, MailboxMessage)
      */
-    public MessageMetaData copy(final Mailbox<Id> mailbox, final MailboxMessage<Id> original) throws MailboxException {
+    public MessageMetaData copy(final Mailbox<Id> mailbox, MailboxMessage<Id> original) throws MailboxException {
         long uid = uidProvider.nextUid(mailboxSession, mailbox);
         long modSeq = -1;
         if (modSeqProvider != null) {

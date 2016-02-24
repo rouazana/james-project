@@ -78,7 +78,7 @@ final class MimeDescriptorStructure implements FetchResponse.Structure {
         }
     }
 
-    private static List<Structure> createParts(final boolean allowExtensions, final MimeDescriptor descriptor, final EnvelopeBuilder builder) throws MailboxException {
+    private static List<Structure> createParts(final boolean allowExtensions, MimeDescriptor descriptor, EnvelopeBuilder builder) throws MailboxException {
         final List<Structure> results = new ArrayList<Structure>();
         for (Iterator<MimeDescriptor> it = descriptor.parts(); it.hasNext();) {
             final MimeDescriptor partDescriptor = it.next();

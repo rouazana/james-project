@@ -250,7 +250,7 @@ public abstract class AbstractJPAMailboxMessage implements MailboxMessage<JPAId>
     @ElementJoinColumn(name="MAIL_UID", referencedColumnName="MAIL_UID")})
     private final List<JPAUserFlag> userFlags;
     
-    public AbstractJPAMailboxMessage(JPAMailbox mailbox, Date internalDate, Flags flags, final long contentOctets, final int bodyStartOctet, final PropertyBuilder propertyBuilder) {
+    public AbstractJPAMailboxMessage(JPAMailbox mailbox, Date internalDate, Flags flags, long contentOctets, int bodyStartOctet, PropertyBuilder propertyBuilder) {
         this.mailbox = mailbox;
         this.internalDate = internalDate;
         userFlags = new ArrayList<JPAUserFlag>();

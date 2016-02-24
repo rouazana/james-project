@@ -50,7 +50,7 @@ public class ExtensionFileFilter implements FilenameFilter {
         m_extensions = new String[] { extension };
     }
 
-    public boolean accept(final File file, final String name) {
+    public boolean accept(final File file, String name) {
         for (String m_extension : m_extensions) {
             if (name.endsWith(m_extension)) {
                 return true;
