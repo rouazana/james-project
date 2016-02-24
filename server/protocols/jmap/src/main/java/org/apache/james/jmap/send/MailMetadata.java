@@ -60,4 +60,5 @@ public class MailMetadata implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(messageId, username);
-    }}
+    }
+}
