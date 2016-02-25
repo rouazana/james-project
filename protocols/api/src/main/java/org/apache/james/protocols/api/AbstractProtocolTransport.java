@@ -80,7 +80,7 @@ public abstract class AbstractProtocolTransport implements ProtocolTransport{
      * 
      * @param session
      */
-    private  void writeQueuedResponses(final ProtocolSession session) {
+    private  void writeQueuedResponses(ProtocolSession session) {
         
         // dequeue Responses until non is left
         while (true) {

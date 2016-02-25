@@ -60,7 +60,7 @@ public class DefaultDescriptorsExtractor {
         return descriptors;
     }
 
-    public DefaultDescriptorsExtractor extract(final MavenProject project, Log log) {
+    public DefaultDescriptorsExtractor extract(MavenProject project, Log log) {
         final JavaClass[] classes = javaClasses(project);
 
         final URLClassLoader classLoader = classLoader(project, log);
@@ -71,7 +71,7 @@ public class DefaultDescriptorsExtractor {
             final Class<?> mailetClass = classLoader.loadClass(MAILET_CLASS_NAME);
             final Class<?> matcherClass = classLoader.loadClass(MATCHER_CLASS_NAME);
 
-            for (final JavaClass nextClass : classes) {
+            for (JavaClass nextClass : classes) {
                 addDescriptor(log, classLoader, mailetClass, matcherClass, nextClass);
             }
         } catch (ClassNotFoundException e) {
@@ -151,7 +151,7 @@ public class DefaultDescriptorsExtractor {
     }
 
 
-    private MailetMatcherDescriptor buildDescriptor(final Log log, JavaClass nextClass,
+    private MailetMatcherDescriptor buildDescriptor(Log log, JavaClass nextClass,
             final String nameOfClass, Class<?> klass,
             final String infoMethodName, Type type) {
         final MailetMatcherDescriptor result = new MailetMatcherDescriptor();
@@ -183,7 +183,7 @@ public class DefaultDescriptorsExtractor {
     }
 
 
-    private void handleInfoLoadFailure(final Log log, String nameOfClass,
+    private void handleInfoLoadFailure(Log log, String nameOfClass,
             final Type type, Exception e) {
         log.info("Cannot load " + type + " info for " + nameOfClass + ": " + e.getMessage());
         log.debug(e);
@@ -202,10 +202,10 @@ public class DefaultDescriptorsExtractor {
     }
 
 
-    private void logInterfacesImplemented(final Log log, JavaClass nextClass) {
+    private void logInterfacesImplemented(Log log, JavaClass nextClass) {
         if (log.isDebugEnabled()) {
             final List<JavaClass> implementedInterfaces = getAllInterfacesQdox(nextClass);
-            for (final JavaClass implemented: implementedInterfaces) {
+            for (JavaClass implemented: implementedInterfaces) {
                 log.debug("Interface implemented: " + implemented);
             }
         }
@@ -274,7 +274,7 @@ public class DefaultDescriptorsExtractor {
             if (dependencies == null) {
                 log.debug("No project dependencies");
             } else {
-                for (final Artifact artifact: dependencies) {
+                for (Artifact artifact: dependencies) {
                     log.debug("DEP: " + artifact);
                 }
             }

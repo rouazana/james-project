@@ -40,7 +40,7 @@ public class ImmutableStatusResponse implements StatusResponse {
 
     private final ImapCommand command;
 
-    public ImmutableStatusResponse(final Type serverResponseType, String tag, ImapCommand command, HumanReadableText textKey, ResponseCode responseCode) {
+    public ImmutableStatusResponse(Type serverResponseType, String tag, ImapCommand command, HumanReadableText textKey, ResponseCode responseCode) {
         super();
         this.responseCode = responseCode;
         this.serverResponseType = serverResponseType;

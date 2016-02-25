@@ -51,7 +51,7 @@ public class Main {
     private static final char SHABANG_OPTION = 's';
     private static final char VERBOSE_OPTION = 'v';
 
-    public static final void main(final String[] args) throws Exception {
+    public static final void main(String[] args) throws Exception {
         Options options = buildOptions();
         
         try {
@@ -98,7 +98,7 @@ public class Main {
     }
 
     @SuppressWarnings("static-access")
-    private static void addRunScriptOptions(final Options options) {
+    private static void addRunScriptOptions(Options options) {
         // -f <file> runs this script
         options.addOption(OptionBuilder
                     .withArgName("file")

@@ -540,7 +540,7 @@ public class StoreMailboxManager<Id extends MailboxId> implements MailboxManager
     }
 
     @Override
-    public List<MailboxMetaData> search(final MailboxQuery mailboxExpression, MailboxSession session)
+    public List<MailboxMetaData> search(MailboxQuery mailboxExpression, MailboxSession session)
             throws MailboxException {
         final char localWildcard = mailboxExpression.getLocalWildcard();
         final char freeWildcard = mailboxExpression.getFreeWildcard();

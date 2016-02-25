@@ -28,7 +28,7 @@ import org.apache.james.mailbox.MailboxManager;
 
 public class NoopProcessor extends AbstractMailboxProcessor<NoopRequest> {
 
-    public NoopProcessor(final ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
+    public NoopProcessor(ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(NoopRequest.class, next, mailboxManager, factory);
     }
 

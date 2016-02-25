@@ -52,7 +52,7 @@ import org.apache.james.mailbox.model.MessageResultIterator;
 
 public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
 
-    public FetchProcessor(final ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
+    public FetchProcessor(ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(FetchRequest.class, next, mailboxManager, factory);
     }
 
@@ -151,7 +151,7 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
      * @param responder
      * @throws MailboxException
      */
-    protected void processMessageRanges(final ImapSession session, MessageManager mailbox, List<MessageRange> ranges, FetchData fetch, boolean useUids, MailboxSession mailboxSession, Responder responder) throws MailboxException {
+    protected void processMessageRanges(ImapSession session, MessageManager mailbox, List<MessageRange> ranges, FetchData fetch, boolean useUids, MailboxSession mailboxSession, Responder responder) throws MailboxException {
         final FetchResponseBuilder builder = new FetchResponseBuilder(new EnvelopeBuilder(session.getLog()));
         FetchGroup resultToFetch = getFetchGroup(fetch);
 
@@ -205,7 +205,7 @@ public class FetchProcessor extends AbstractMailboxProcessor<FetchRequest> {
 
         Collection<BodyFetchElement> bodyElements = fetch.getBodyElements();
         if (bodyElements != null) {
-            for (final BodyFetchElement element : bodyElements) {
+            for (BodyFetchElement element : bodyElements) {
                 final int sectionType = element.getSectionType();
                 final int[] path = element.getPath();
                 final boolean isBase = (path == null || path.length == 0);

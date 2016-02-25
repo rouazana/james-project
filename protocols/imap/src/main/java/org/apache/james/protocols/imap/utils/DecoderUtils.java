@@ -166,15 +166,15 @@ public final class DecoderUtils {
         return result;
     }
 
-    private static int applyMinuteOffset(final int offset, int minutes) {
+    private static int applyMinuteOffset(int offset, int minutes) {
         return minutes - ((Math.abs(offset) % 100) * (offset == 0 ? 0 : offset > 0 ? 1 : -1));
     }
 
-    private static int applyHourOffset(final int offset, int hours) {
+    private static int applyHourOffset(int offset, int hours) {
         return hours - (offset / 100);
     }
 
-    public static int decodeNumber(final char high, char low) throws DecodingException {
+    public static int decodeNumber(char high, char low) throws DecodingException {
         return (10 * decodeDigit(high)) + decodeDigit(low);
     }
 
@@ -248,7 +248,7 @@ public final class DecoderUtils {
      * @return {@link Calendar} month (<code>JAN</code>=0)
      * @throws DecodingException
      */
-    public static int decodeMonth(final char monthFirstChar, char monthSecondChar, char monthThirdChar) throws DecodingException {
+    public static int decodeMonth(char monthFirstChar, char monthSecondChar, char monthThirdChar) throws DecodingException {
         final int result;
         // Bitwise magic! Eliminate possibility by three switches
         int possibleMonths = ALL_MONTH_BITS;

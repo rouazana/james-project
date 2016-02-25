@@ -62,7 +62,7 @@ abstract public class AbstractChainedProcessor<M extends ImapMessage> implements
      *            <code>ImapMessage</code>, not null
      * @return true if the given message is processable by this processable
      */
-    protected boolean isAcceptable(final ImapMessage message) {
+    protected boolean isAcceptable(ImapMessage message) {
         return acceptableClass.isInstance(message);
     }
 
@@ -77,5 +77,5 @@ abstract public class AbstractChainedProcessor<M extends ImapMessage> implements
      * @param session
      *            <code>ImapSession</code>, not null
      */
-    abstract protected void doProcess(final M acceptableMessage, Responder responder, ImapSession session);
+    abstract protected void doProcess(M acceptableMessage, Responder responder, ImapSession session);
 }

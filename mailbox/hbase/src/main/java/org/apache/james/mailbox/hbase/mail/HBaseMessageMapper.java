@@ -92,7 +92,7 @@ public class HBaseMessageMapper extends NonTransactionalMapper implements Messag
     private final UidProvider<HBaseId> uidProvider;
     private final ModSeqProvider<HBaseId> modSeqProvider;
 
-    public HBaseMessageMapper(final MailboxSession session,
+    public HBaseMessageMapper(MailboxSession session,
             final UidProvider<HBaseId> uidProvider,
             ModSeqProvider<HBaseId> modSeqProvider, Configuration conf) {
         this.mailboxSession = session;
@@ -494,7 +494,7 @@ public class HBaseMessageMapper extends NonTransactionalMapper implements Messag
      * @see org.apache.james.mailbox.store.mail.MessageMapper#updateFlags(org.apache.james.mailbox.store.mail.model.Mailbox, javax.mail.Flags, boolean, boolean, org.apache.james.mailbox.MessageRange)
      */
     @Override
-    public Iterator<UpdatedFlags> updateFlags(final Mailbox<HBaseId> mailbox, FlagsUpdateCalculator flagsUpdateCalculator, MessageRange set) throws MailboxException {
+    public Iterator<UpdatedFlags> updateFlags(Mailbox<HBaseId> mailbox, FlagsUpdateCalculator flagsUpdateCalculator, MessageRange set) throws MailboxException {
 
         final List<UpdatedFlags> updatedFlags = new ArrayList<UpdatedFlags>();
         Iterator<MailboxMessage<HBaseId>> messagesFound = findInMailbox(mailbox, set, FetchType.Metadata, -1);

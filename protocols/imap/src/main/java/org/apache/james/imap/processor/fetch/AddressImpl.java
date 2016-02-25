@@ -33,7 +33,7 @@ final class AddressImpl implements FetchResponse.Envelope.Address {
 
     private final String personalName;
 
-    public AddressImpl(final String atDomainList, String hostName, String mailboxName, String personalName) {
+    public AddressImpl(String atDomainList, String hostName, String mailboxName, String personalName) {
         super();
         this.atDomainList = atDomainList;
         this.hostName = hostName;

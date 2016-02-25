@@ -61,7 +61,7 @@ public class FetchPartPathDecoder {
     public FetchPartPathDecoder() {
     }
 
-    public int decode(final CharSequence sectionSpecification) throws DecodingException {
+    public int decode(CharSequence sectionSpecification) throws DecodingException {
         init();
         sectionType = decode(0, sectionSpecification);
         prunePath();
@@ -79,7 +79,7 @@ public class FetchPartPathDecoder {
         }
     }
 
-    private int decode(final int at, CharSequence sectionSpecification) throws DecodingException {
+    private int decode(int at, CharSequence sectionSpecification) throws DecodingException {
         int result;
         int length = sectionSpecification.length();
         if (at < length) {
@@ -334,13 +334,13 @@ public class FetchPartPathDecoder {
         return result;
     }
 
-    private void readHeaderNames(final int at, CharSequence sectionSpecification) throws DecodingException {
+    private void readHeaderNames(int at, CharSequence sectionSpecification) throws DecodingException {
         names = new ArrayList<String>();
         int firstWordStart = skipSpaces(at, sectionSpecification);
         readHeaderNames(firstWordStart, firstWordStart, sectionSpecification);
     }
 
-    private void readHeaderNames(final int at, int lastWordStart, CharSequence sectionSpecification) throws DecodingException {
+    private void readHeaderNames(int at, int lastWordStart, CharSequence sectionSpecification) throws DecodingException {
         if (at < sectionSpecification.length()) {
             final char next = sectionSpecification.charAt(at);
             switch (next) {
@@ -360,7 +360,7 @@ public class FetchPartPathDecoder {
         }
     }
 
-    private void readName(final int wordStart, int wordFinish, CharSequence sectionSpecification) {
+    private void readName(int wordStart, int wordFinish, CharSequence sectionSpecification) {
         if (wordStart <= wordFinish) {
             CharSequence word = sectionSpecification.subSequence(wordStart, wordFinish);
             String name = word.toString();
@@ -368,7 +368,7 @@ public class FetchPartPathDecoder {
         }
     }
 
-    private int skipSpaces(final int at, CharSequence sectionSpecification) {
+    private int skipSpaces(int at, CharSequence sectionSpecification) {
         int result;
         if (at < sectionSpecification.length()) {
             char next = sectionSpecification.charAt(at);
@@ -395,7 +395,7 @@ public class FetchPartPathDecoder {
         return TEXT;
     }
 
-    private int digit(final int at, CharSequence sectionSpecification, int digit) throws DecodingException {
+    private int digit(int at, CharSequence sectionSpecification, int digit) throws DecodingException {
         int result;
         digit(digit);
         result = decode(at + 1, sectionSpecification);

@@ -67,7 +67,7 @@ public class LSubProcessor extends AbstractSubscriptionProcessor<LsubRequest> {
 
         final MailboxQuery expression = new MailboxQuery(basePath, CharsetUtil.decodeModifiedUTF7(mailboxName), mailboxSession.getPathDelimiter());
         final Collection<String> mailboxResponses = new ArrayList<String>();
-        for (final String mailbox : mailboxes) {
+        for (String mailbox : mailboxes) {
             respond(responder, expression, mailbox, true, mailboxes, mailboxResponses, mailboxSession.getPathDelimiter());
         }
     }
@@ -97,7 +97,7 @@ public class LSubProcessor extends AbstractSubscriptionProcessor<LsubRequest> {
      * @param referenceName
      *            IMAP reference name, possibly null
      */
-    private void respondWithHierarchyDelimiter(final Responder responder, char delimiter) {
+    private void respondWithHierarchyDelimiter(Responder responder, char delimiter) {
         final LSubResponse response = new LSubResponse("", true, delimiter);
         responder.respond(response);
     }

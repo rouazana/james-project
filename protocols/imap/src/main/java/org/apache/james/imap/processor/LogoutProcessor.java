@@ -32,7 +32,7 @@ import org.apache.james.mailbox.exception.MailboxException;
 
 public class LogoutProcessor extends AbstractMailboxProcessor<LogoutRequest> {
 
-    public LogoutProcessor(final ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
+    public LogoutProcessor(ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(LogoutRequest.class, next, mailboxManager, factory);
     }
 

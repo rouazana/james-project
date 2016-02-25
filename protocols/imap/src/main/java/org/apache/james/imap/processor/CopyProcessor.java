@@ -43,11 +43,11 @@ import org.apache.james.mailbox.model.MessageRange;
 
 public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
 
-    public CopyProcessor(final ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
+    public CopyProcessor(ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         this(CopyRequest.class, next, mailboxManager, factory);
     }
 
-    protected CopyProcessor(final Class<? extends CopyRequest> acceptableClass, ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
+    protected CopyProcessor(Class<? extends CopyRequest> acceptableClass, ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(CopyRequest.class, next, mailboxManager, factory);
     }
 
@@ -115,7 +115,7 @@ public class CopyProcessor extends AbstractMailboxProcessor<CopyRequest> {
         }
     }
 
-	protected List<MessageRange> process(final MailboxPath targetMailbox,
+	protected List<MessageRange> process(MailboxPath targetMailbox,
 			final SelectedMailbox currentMailbox,
 			final MailboxSession mailboxSession,
 			final MailboxManager mailboxManager, MessageRange messageSet)

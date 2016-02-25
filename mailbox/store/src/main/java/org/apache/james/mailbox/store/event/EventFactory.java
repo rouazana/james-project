@@ -44,7 +44,7 @@ public class EventFactory<Id extends MailboxId> {
         private final Map<Long, MessageMetaData> added;
         private final Mailbox<LocalId> mailbox;
 
-        public AddedImpl(final MailboxSession session, Mailbox<LocalId> mailbox, SortedMap<Long, MessageMetaData> added) {
+        public AddedImpl(MailboxSession session, Mailbox<LocalId> mailbox, SortedMap<Long, MessageMetaData> added) {
             super(session, new StoreMailboxPath<LocalId>(mailbox));
             this.added = ImmutableMap.copyOf(added);
             this.mailbox = mailbox;
@@ -150,7 +150,7 @@ public class EventFactory<Id extends MailboxId> {
         private final MailboxPath newPath;
         private final Mailbox<LocalId> newMailbox;
 
-        public MailboxRenamedEventImpl(final MailboxSession session, MailboxPath oldPath, Mailbox<LocalId> newMailbox) {
+        public MailboxRenamedEventImpl(MailboxSession session, MailboxPath oldPath, Mailbox<LocalId> newMailbox) {
             super(session, oldPath);
             this.newPath = new StoreMailboxPath<LocalId>(newMailbox);
             this.newMailbox = newMailbox;
@@ -170,7 +170,7 @@ public class EventFactory<Id extends MailboxId> {
         return new AddedImpl<Id>(session, mailbox, uids);
     }
 
-    public MailboxListener.Expunged expunged(final MailboxSession session,  Map<Long, MessageMetaData> uids, Mailbox<Id> mailbox) {
+    public MailboxListener.Expunged expunged(MailboxSession session,  Map<Long, MessageMetaData> uids, Mailbox<Id> mailbox) {
         return new ExpungedImpl<Id>(session, mailbox, uids);
     }
 

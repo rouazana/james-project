@@ -119,12 +119,12 @@ public class MessageSearches implements Iterable<Long> {
      *         <code>false</code> otherwise
      * @throws MailboxException
      */
-    protected boolean isMatch(final SearchQuery query, MailboxMessage<?> message, Logger log) throws MailboxException {
+    protected boolean isMatch(SearchQuery query, MailboxMessage<?> message, Logger log) throws MailboxException {
         final List<SearchQuery.Criterion> criteria = query.getCriterias();
         final Collection<Long> recentMessageUids = query.getRecentMessageUids();
         boolean result = true;
         if (criteria != null) {
-            for (final SearchQuery.Criterion criterion : criteria) {
+            for (SearchQuery.Criterion criterion : criteria) {
                 if (!isMatch(criterion, message, recentMessageUids, log)) {
                     result = false;
                     break;
@@ -315,7 +315,7 @@ public class MessageSearches implements Iterable<Long> {
         NumericRange[] ranges = operator.getRange();
         long uid = message.getUid();
         boolean result = false;
-        for (final NumericRange numericRange : ranges) {
+        for (NumericRange numericRange : ranges) {
             if (numericRange.isIn(uid)) {
                 result = true;
                 break;

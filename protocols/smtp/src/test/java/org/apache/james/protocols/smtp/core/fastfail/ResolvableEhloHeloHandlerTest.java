@@ -45,7 +45,7 @@ public class ResolvableEhloHeloHandlerTest {
     public final static String VALID_HOST = "james.apache.org";
 
 
-    private SMTPSession setupMockSession(final String argument,
+    private SMTPSession setupMockSession(String argument,
              final boolean relaying, final boolean authRequired, final String user, MailAddress recipient) {
 
         return new BaseFakeSMTPSession() {

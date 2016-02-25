@@ -64,7 +64,7 @@ public class MailboxEventDispatcher<Id extends MailboxId> {
      * @param uids Sorted map with uids and message meta data
      * @param mailbox The mailbox
      */
-    public void expunged(final MailboxSession session,  Map<Long, MessageMetaData> uids, Mailbox<Id> mailbox) {
+    public void expunged(MailboxSession session,  Map<Long, MessageMetaData> uids, Mailbox<Id> mailbox) {
         listener.event(eventFactory.expunged(session, uids, mailbox));
     }
 

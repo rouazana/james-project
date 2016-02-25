@@ -904,7 +904,7 @@ public class SearchCommandParser extends AbstractUidCommandParser {
         return result;
     }
 
-    private ImapMessage unsupportedCharset(final String tag, ImapCommand command) {
+    private ImapMessage unsupportedCharset(String tag, ImapCommand command) {
         final StatusResponseFactory factory = getStatusResponseFactory();
         final ResponseCode badCharset = StatusResponse.ResponseCode.badCharset(CharsetUtil.getAvailableCharsetNames());
         return factory.taggedNo(tag, command, HumanReadableText.BAD_CHARSET, badCharset);

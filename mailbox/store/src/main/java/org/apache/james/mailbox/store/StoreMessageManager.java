@@ -132,7 +132,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
 
     private int fetchBatchSize;
 
-    public StoreMessageManager(final MessageMapperFactory<Id> mapperFactory, MessageSearchIndex<Id> index, MailboxEventDispatcher<Id> dispatcher, MailboxPathLocker locker, Mailbox<Id> mailbox, MailboxACLResolver aclResolver,
+    public StoreMessageManager(MessageMapperFactory<Id> mapperFactory, MessageSearchIndex<Id> index, MailboxEventDispatcher<Id> dispatcher, MailboxPathLocker locker, Mailbox<Id> mailbox, MailboxACLResolver aclResolver,
             final GroupMembershipResolver groupMembershipResolver, QuotaManager quotaManager, QuotaRootResolver quotaRootResolver) throws MailboxException {
         this.mailbox = mailbox;
         this.dispatcher = dispatcher;
@@ -234,7 +234,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
      * @see org.apache.james.mailbox.MessageManager#expunge(org.apache.james.mailbox.model.MessageRange,
      *      org.apache.james.mailbox.MailboxSession)
      */
-    public Iterator<Long> expunge(final MessageRange set, MailboxSession mailboxSession) throws MailboxException {
+    public Iterator<Long> expunge(MessageRange set, MailboxSession mailboxSession) throws MailboxException {
         if (!isWriteable(mailboxSession)) {
             throw new ReadOnlyException(new StoreMailboxPath<Id>(getMailboxEntity()), mailboxSession.getPathDelimiter());
         }
@@ -249,7 +249,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
      *      java.util.Date, org.apache.james.mailbox.MailboxSession, boolean,
      *      javax.mail.Flags)
      */
-    public long appendMessage(final InputStream msgIn, Date internalDate, final MailboxSession mailboxSession, boolean isRecent, Flags flagsToBeSet) throws MailboxException {
+    public long appendMessage(InputStream msgIn, Date internalDate, final MailboxSession mailboxSession, boolean isRecent, Flags flagsToBeSet) throws MailboxException {
 
         File file = null;
         TeeInputStream tmpMsgIn = null;
@@ -631,7 +631,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
      *      org.apache.james.mailbox.model.MessageResult.FetchGroup,
      *      org.apache.james.mailbox.MailboxSession)
      */
-    public MessageResultIterator getMessages(final MessageRange set, FetchGroup fetchGroup, MailboxSession mailboxSession) throws MailboxException {
+    public MessageResultIterator getMessages(MessageRange set, FetchGroup fetchGroup, MailboxSession mailboxSession) throws MailboxException {
         final MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(mailboxSession);
         return new StoreMessageResultIterator<Id>(messageMapper, mailbox, set, fetchBatchSize, fetchGroup);
     }
@@ -695,7 +695,7 @@ public class StoreMessageManager<Id extends MailboxId> implements org.apache.jam
         return index.search(mailboxSession, getMailboxEntity(), query);
     }
 
-    private Iterator<MessageMetaData> copy(final Iterator<MailboxMessage<Id>> originalRows, MailboxSession session) throws MailboxException {
+    private Iterator<MessageMetaData> copy(Iterator<MailboxMessage<Id>> originalRows, MailboxSession session) throws MailboxException {
         final List<MessageMetaData> copiedRows = new ArrayList<MessageMetaData>();
         final MessageMapper<Id> messageMapper = mapperFactory.getMessageMapper(session);
         QuotaChecker<Id> quotaChecker = new QuotaChecker<Id>(quotaManager, quotaRootResolver, mailbox);

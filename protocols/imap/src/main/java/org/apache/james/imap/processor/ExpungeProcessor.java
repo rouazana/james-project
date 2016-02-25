@@ -48,7 +48,7 @@ public class ExpungeProcessor extends AbstractMailboxProcessor<ExpungeRequest> i
 
     private final static List<String> UIDPLUS = Collections.unmodifiableList(Arrays.asList("UIDPLUS"));
 
-    public ExpungeProcessor(final ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
+    public ExpungeProcessor(ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(ExpungeRequest.class, next, mailboxManager, factory);
     }
 

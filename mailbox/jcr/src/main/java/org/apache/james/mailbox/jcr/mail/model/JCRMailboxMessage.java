@@ -120,7 +120,7 @@ public class JCRMailboxMessage implements MailboxMessage<JCRId>, JCRImapConstant
         this.subType = propertyBuilder.getSubType();
         final List<Property> properties = propertyBuilder.toProperties();
         this.properties = new ArrayList<JCRProperty>(properties.size());
-        for (final Property property:properties) {
+        for (Property property:properties) {
             this.properties.add(new JCRProperty(property,logger));
         }
         
@@ -151,7 +151,7 @@ public class JCRMailboxMessage implements MailboxMessage<JCRId>, JCRImapConstant
         this.subType = message.getSubType();
         final List<Property> properties = pBuilder.toProperties();
         this.properties = new ArrayList<JCRProperty>(properties.size());
-        for (final Property property:properties) {
+        for (Property property:properties) {
             this.properties.add(new JCRProperty(property,  logger));
         }
     }

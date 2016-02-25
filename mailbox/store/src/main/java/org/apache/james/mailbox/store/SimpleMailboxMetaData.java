@@ -41,7 +41,7 @@ public class SimpleMailboxMetaData implements MailboxMetaData, Comparable<Mailbo
         this(path, delimiter, Children.CHILDREN_ALLOWED_BUT_UNKNOWN, Selectability.NONE);
     }
 
-    public SimpleMailboxMetaData(final MailboxPath path, char delimiter, Children inferiors, Selectability selectability) {
+    public SimpleMailboxMetaData(MailboxPath path, char delimiter, Children inferiors, Selectability selectability) {
         super();
         this.path = path;
         this.delimiter = delimiter;

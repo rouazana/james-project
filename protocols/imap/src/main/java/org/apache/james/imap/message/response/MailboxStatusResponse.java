@@ -40,7 +40,7 @@ public class MailboxStatusResponse implements ImapResponseMessage {
 
     private final Long highestModSeq;
 
-    public MailboxStatusResponse(final Long messages, Long recent, Long uidNext, Long highestModSeq, Long uidValidity, Long unseen, String mailbox) {
+    public MailboxStatusResponse(Long messages, Long recent, Long uidNext, Long highestModSeq, Long uidValidity, Long unseen, String mailbox) {
         super();
         this.messages = messages;
         this.recent = recent;

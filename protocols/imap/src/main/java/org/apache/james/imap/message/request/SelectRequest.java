@@ -23,7 +23,7 @@ import org.apache.james.imap.api.message.IdRange;
 
 public class SelectRequest extends AbstractMailboxSelectionRequest {
 
-    public SelectRequest(final ImapCommand command, String mailboxName, boolean condstore, Long lastKnownUidValidity, Long knownModSeq, IdRange[] uidSet, IdRange[] knownUidSet, IdRange[] knownSequenceSet, String tag) {
+    public SelectRequest(ImapCommand command, String mailboxName, boolean condstore, Long lastKnownUidValidity, Long knownModSeq, IdRange[] uidSet, IdRange[] knownUidSet, IdRange[] knownSequenceSet, String tag) {
         super(command, mailboxName, condstore, lastKnownUidValidity, knownModSeq, uidSet, knownUidSet, knownSequenceSet, tag);
     }
 }

@@ -59,7 +59,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
         return "message".equalsIgnoreCase(mediaType) || "multipart".equalsIgnoreCase(mediaType);
     }
 
-    public static MimeDescriptorImpl build(final InputStream stream) throws IOException, MimeException {
+    public static MimeDescriptorImpl build(InputStream stream) throws IOException, MimeException {
         // Disable line length limit
         // See https://issues.apache.org/jira/browse/IMAP-132
         MimeConfig config = MimeConfig.custom().setMaxLineLen(-1).setMaxHeaderLen(-1).build();
@@ -224,7 +224,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
     private final String md5;
 
 
-    public MimeDescriptorImpl(final long bodyOctets,
+    public MimeDescriptorImpl(long bodyOctets,
             String contentDescription, String contentId,
             long lines, String subType, String type,
             String transferEncoding, Collection<MessageResult.Header> headers,
@@ -338,7 +338,7 @@ public class MimeDescriptorImpl implements MimeDescriptor {
     @Override
     public long size() throws MailboxException {
         long result = 0;
-        for (final MessageResult.Header header : headers) {
+        for (MessageResult.Header header : headers) {
             if (header != null) {
                 result += header.size();
                 result += 2;

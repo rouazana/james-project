@@ -61,7 +61,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
     private final static List<String> CAPS = Collections.unmodifiableList(Arrays.asList(ImapConstants.SUPPORTS_QRESYNC, ImapConstants.SUPPORTS_CONDSTORE));
 
     
-    public AbstractSelectionProcessor(final Class<M> acceptableClass, ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory statusResponseFactory, boolean openReadOnly) {
+    public AbstractSelectionProcessor(Class<M> acceptableClass, ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory statusResponseFactory, boolean openReadOnly) {
         super(acceptableClass, next, mailboxManager, statusResponseFactory);
         this.statusResponseFactory = statusResponseFactory;
         this.openReadOnly = openReadOnly;
@@ -335,13 +335,13 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
         responder.respond(untaggedOk);        
     }
 
-    private void uidNext(final Responder responder, MessageManager.MetaData metaData) throws MailboxException {
+    private void uidNext(Responder responder, MessageManager.MetaData metaData) throws MailboxException {
         final long uid = metaData.getUidNext();
         final StatusResponse untaggedOk = statusResponseFactory.untaggedOk(HumanReadableText.UIDNEXT, ResponseCode.uidNext(uid));
         responder.respond(untaggedOk);
     }
 
-    private void taggedOk(final Responder responder, String tag, ImapCommand command, MetaData metaData, HumanReadableText text) {
+    private void taggedOk(Responder responder, String tag, ImapCommand command, MetaData metaData, HumanReadableText text) {
         final boolean writeable = metaData.isWriteable() && !openReadOnly;
         final ResponseCode code;
         if (writeable) {
@@ -422,7 +422,7 @@ abstract class AbstractSelectionProcessor<M extends AbstractMailboxSelectionRequ
     }
 
 
-    private void addRecent(final MessageManager.MetaData metaData, SelectedMailbox sessionMailbox) throws MailboxException {
+    private void addRecent(MessageManager.MetaData metaData, SelectedMailbox sessionMailbox) throws MailboxException {
         final List<Long> recentUids = metaData.getRecent();
         for (Long uid : recentUids) {
             sessionMailbox.addRecent(uid);

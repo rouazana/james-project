@@ -264,7 +264,7 @@ public abstract class AbstractJPAMailboxMessage implements MailboxMessage<JPAId>
         final List<Property> properties = propertyBuilder.toProperties();
         this.properties = new ArrayList<JPAProperty>(properties.size());
         int order = 0;
-        for (final Property property:properties) {
+        for (Property property:properties) {
             this.properties.add(new JPAProperty(property, order++));
         }
         
@@ -302,7 +302,7 @@ public abstract class AbstractJPAMailboxMessage implements MailboxMessage<JPAId>
         final List<Property> properties = pBuilder.toProperties();
         this.properties = new ArrayList<JPAProperty>(properties.size());
         int order = 0;
-        for (final Property property:properties) {
+        for (Property property:properties) {
             this.properties.add(new JPAProperty(property, order++));
         }
     }

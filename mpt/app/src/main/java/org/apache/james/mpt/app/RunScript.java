@@ -42,7 +42,7 @@ class RunScript {
     private final String shabang;
     private final SystemLoggingMonitor monitor;
     
-    public RunScript(final File file, int port, String host, String shabang, boolean verbose) {
+    public RunScript(File file, int port, String host, String shabang, boolean verbose) {
         super();
         this.file = file;
         this.port = port;

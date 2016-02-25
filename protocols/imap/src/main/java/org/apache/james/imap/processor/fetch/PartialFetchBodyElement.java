@@ -38,7 +38,7 @@ final class PartialFetchBodyElement implements BodyElement {
 
     private final String name;
 
-    public PartialFetchBodyElement(final BodyElement delegate, long firstOctet, long numberOfOctets) {
+    public PartialFetchBodyElement(BodyElement delegate, long firstOctet, long numberOfOctets) {
         super();
         this.delegate = delegate;
         this.firstOctet = firstOctet;

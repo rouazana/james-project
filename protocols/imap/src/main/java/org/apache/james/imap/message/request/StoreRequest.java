@@ -39,7 +39,7 @@ public class StoreRequest extends AbstractImapRequest {
 
     private final long unchangedSince;
 
-    public StoreRequest(final ImapCommand command, IdRange[] idSet, boolean silent, Flags flags, boolean useUids, String tag, Boolean sign, long unchangedSince) {
+    public StoreRequest(ImapCommand command, IdRange[] idSet, boolean silent, Flags flags, boolean useUids, String tag, Boolean sign, long unchangedSince) {
         super(tag, command);
         this.idSet = idSet;
         this.silent = silent;

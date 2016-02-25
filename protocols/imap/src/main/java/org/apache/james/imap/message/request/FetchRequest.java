@@ -29,7 +29,7 @@ public class FetchRequest extends AbstractImapRequest {
 
     private final FetchData fetch;
 
-    public FetchRequest(final ImapCommand command, boolean useUids, IdRange[] idSet, FetchData fetch, String tag) {
+    public FetchRequest(ImapCommand command, boolean useUids, IdRange[] idSet, FetchData fetch, String tag) {
         super(tag, command);
         this.useUids = useUids;
         this.idSet = idSet;

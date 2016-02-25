@@ -36,7 +36,7 @@ public class ListCommandParser extends AbstractUidCommandParser {
         super(ImapCommand.authenticatedStateCommand(ImapConstants.LIST_COMMAND_NAME));
     }
 
-    protected ListCommandParser(final ImapCommand command) {
+    protected ListCommandParser(ImapCommand command) {
         super(command);
     }
 

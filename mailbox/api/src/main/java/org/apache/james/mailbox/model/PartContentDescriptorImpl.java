@@ -29,7 +29,7 @@ public class PartContentDescriptorImpl implements PartContentDescriptor {
 
     private final MimePath path;
 
-    public PartContentDescriptorImpl(final MimePath path) {
+    public PartContentDescriptorImpl(MimePath path) {
         super();
         this.path = path;
     }

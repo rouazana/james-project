@@ -37,11 +37,11 @@ public class ExternalSessionFactory implements SessionFactory {
     protected final Monitor monitor;
     protected final String shabang;
 
-    public ExternalSessionFactory(final Monitor monitor, String shabang) {
+    public ExternalSessionFactory(Monitor monitor, String shabang) {
         this(null, monitor, shabang);
     }
     
-    public ExternalSessionFactory(final String host, int port, Monitor monitor, String shabang) {
+    public ExternalSessionFactory(String host, int port, Monitor monitor, String shabang) {
         this(new InetSocketAddress(host, port), monitor, shabang);
     }
 

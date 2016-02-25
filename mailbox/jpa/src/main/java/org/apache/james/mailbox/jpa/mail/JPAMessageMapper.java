@@ -56,7 +56,7 @@ public class JPAMessageMapper extends AbstractMessageMapper<JPAId> implements Me
     protected EntityManagerFactory entityManagerFactory;
     protected EntityManager entityManager;
 
-    public JPAMessageMapper(final MailboxSession session, UidProvider<JPAId> uidProvider,
+    public JPAMessageMapper(MailboxSession session, UidProvider<JPAId> uidProvider,
             ModSeqProvider<JPAId> modSeqProvider, EntityManagerFactory entityManagerFactory) {
         super(session, uidProvider, modSeqProvider);
         this.entityManagerFactory = entityManagerFactory;

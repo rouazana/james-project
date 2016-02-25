@@ -36,7 +36,7 @@ import org.apache.james.mailbox.model.MailboxPath;
 
 public class RenameProcessor extends AbstractMailboxProcessor<RenameRequest> {
 
-    public RenameProcessor(final ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
+    public RenameProcessor(ImapProcessor next, MailboxManager mailboxManager, StatusResponseFactory factory) {
         super(RenameRequest.class, next, mailboxManager, factory);
     }
 

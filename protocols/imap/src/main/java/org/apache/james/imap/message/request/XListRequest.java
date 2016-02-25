@@ -25,7 +25,7 @@ import org.apache.james.imap.api.ImapCommand;
  */
 public class XListRequest extends ListRequest {
 
-    public XListRequest(final ImapCommand command, String referenceName, String mailboxPattern, String tag) {
+    public XListRequest(ImapCommand command, String referenceName, String mailboxPattern, String tag) {
         super(command, referenceName, mailboxPattern, tag);
     }
 

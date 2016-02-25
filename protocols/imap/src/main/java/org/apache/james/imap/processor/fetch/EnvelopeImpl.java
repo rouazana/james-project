@@ -46,7 +46,7 @@ final class EnvelopeImpl implements FetchResponse.Envelope {
 
     private final Address[] to;
 
-    public EnvelopeImpl(final String date, String subject, Address[] from, Address[] sender, Address[] replyTo, Address[] to, Address[] cc, Address[] bcc, String inReplyTo, String messageId) {
+    public EnvelopeImpl(String date, String subject, Address[] from, Address[] sender, Address[] replyTo, Address[] to, Address[] cc, Address[] bcc, String inReplyTo, String messageId) {
         super();
         this.bcc = bcc;
         this.cc = cc;
