@@ -47,9 +47,9 @@ import com.google.common.collect.ImmutableList;
 public class FirstUserConnectionFilter implements Filter {
 
     private static final ImmutableList<String> DEFAULT_MAILBOXES = ImmutableList.of("INBOX", "Outbox", "Sent");
-    public static final Logger LOGGER = LoggerFactory.getLogger(FirstUserConnectionFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirstUserConnectionFilter.class);
     private final UsersRepository usersRepository;
-    private MailboxManager mailboxManager;
+    private final MailboxManager mailboxManager;
 
     @Inject
     private FirstUserConnectionFilter(UsersRepository usersRepository, MailboxManager mailboxManager) {
