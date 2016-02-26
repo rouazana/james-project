@@ -21,13 +21,13 @@ package org.apache.james.jmap.methods;
 
 import java.io.IOException;
 import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -72,6 +72,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.fge.lambdas.functions.ThrowingFunction;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -91,7 +92,9 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
     @VisibleForTesting
     SetMessagesCreationProcessor(MailboxMapperFactory<Id> mailboxMapperFactory,
                                  MailboxManager mailboxManager,
-                                 MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, MIMEMessageConverter mimeMessageConverter, MailSpool mailSpool) {
+                                 MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory,
+                                 MIMEMessageConverter mimeMessageConverter,
+                                 MailSpool mailSpool) {
         this.mailboxMapperFactory = mailboxMapperFactory;
         this.mailboxManager = mailboxManager;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
@@ -110,22 +113,25 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
         }
 
         // handle errors
+        Predicate<CreationMessage> validMessagesTester = CreationMessage::isValid;
+        Predicate<CreationMessage> invalidMessagesTester = validMessagesTester.negate();
         SetMessagesResponse.Builder responseBuilder = SetMessagesResponse.builder()
-                .notCreated(handleCreationErrors(request));
+                .notCreated(handleCreationErrors(invalidMessagesTester, request));
 
         return request.getCreate().entrySet().stream()
+                .filter(e -> validMessagesTester.test(e.getValue()))
                 .map(e -> new MessageWithId.CreationMessageEntry(e.getKey(), e.getValue()))
-                .filter(e -> e.getMessage().isValid())
                 .map(nuMsg -> createMessageInOutboxAndSend(nuMsg, mailboxSession, outbox, buildMessageIdFunc(mailboxSession, outbox)))
                 .map(msg -> SetMessagesResponse.builder().created(ImmutableMap.of(msg.getCreationId(), msg.getMessage())).build())
                 .reduce(responseBuilder, SetMessagesResponse.Builder::accumulator, SetMessagesResponse.Builder::combiner)
                 .build();
     }
 
-    private Map<CreationMessageId, SetError> handleCreationErrors(SetMessagesRequest request) {
+    private Map<CreationMessageId, SetError> handleCreationErrors(Predicate<CreationMessage> invalidMessagesTester,
+                                                                  SetMessagesRequest request) {
         return request.getCreate().entrySet().stream()
-                .filter(e1 -> !e1.getValue().isValid())
-                .map(e1 -> new AbstractMap.SimpleEntry<>(e1.getKey(), buildSetErrorFromValidationResult(e1.getValue().validate())))
+                .filter(e -> invalidMessagesTester.test(e.getValue()))
+                .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), buildSetErrorFromValidationResult(e.getValue().validate())))
                 .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
     }
 
@@ -133,9 +139,10 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
         String formattedValidationErrorMessage = validationErrors.stream()
                 .map(err -> err.getProperty() + ": " + err.getErrorMessage())
                 .collect(Collectors.joining("\\n"));
+        Splitter propertiesSplitter = Splitter.on(',').trimResults().omitEmptyStrings();
         Set<MessageProperties.MessageProperty> properties = validationErrors.stream()
-                .flatMap(err -> Arrays.stream(err.getProperty().split(",")).filter(p -> p != null)
-                        .flatMap(p -> MessageProperties.MessageProperty.find(p.trim())))
+                .flatMap(err -> propertiesSplitter.splitToList(err.getProperty()).stream())
+                .flatMap(p -> MessageProperties.MessageProperty.find(p.trim()))
                 .collect(Collectors.toSet());
         return SetError.builder()
                 .type("invalidProperties")
