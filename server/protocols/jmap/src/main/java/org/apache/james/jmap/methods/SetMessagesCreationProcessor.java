@@ -231,8 +231,7 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
     private void sendMessage(MailboxMessage<Id> mailboxMessage, Message jmapMessage, MailboxSession session) throws MessagingException, IOException {
         Mail mail = buildMail(mailboxMessage, jmapMessage);
         MailMetadata metadata = new MailMetadata(jmapMessage.getId(), session.getUser().getUserName());
-        mail.setAttribute(MailMetadata.MAIL_METADATA_ATTRIBUTE, metadata);
-        mailSpool.send(mail);
+        mailSpool.send(mail, metadata);
     }
 
     private Mail buildMail(MailboxMessage<Id> mailboxMessage, Message jmapMessage) throws MessagingException, IOException {
