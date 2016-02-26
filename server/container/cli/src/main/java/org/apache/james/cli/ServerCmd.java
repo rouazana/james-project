@@ -102,6 +102,7 @@ public class ServerCmd {
         } catch (IOException ioe) {
             failWithMessage("Error connecting to remote JMX agent : " + ioe.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
             failWithMessage("Error while executing command:" + e.getMessage());
         }
 

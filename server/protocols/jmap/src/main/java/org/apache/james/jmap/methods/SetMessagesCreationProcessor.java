@@ -19,6 +19,7 @@
 
 package org.apache.james.jmap.methods;
 
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Date;
@@ -31,12 +32,16 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.mail.Flags;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.SharedInputStream;
 import javax.mail.util.SharedByteArrayInputStream;
 
+import org.apache.james.core.MailImpl;
 import org.apache.james.jmap.exceptions.MailboxRoleNotFoundException;
 import org.apache.james.jmap.model.CreationMessage;
 import org.apache.james.jmap.model.CreationMessageId;
+import org.apache.james.jmap.model.Emailer;
 import org.apache.james.jmap.model.Message;
 import org.apache.james.jmap.model.MessageId;
 import org.apache.james.jmap.model.MessageProperties;
@@ -44,6 +49,8 @@ import org.apache.james.jmap.model.SetError;
 import org.apache.james.jmap.model.SetMessagesRequest;
 import org.apache.james.jmap.model.SetMessagesResponse;
 import org.apache.james.jmap.model.mailbox.Role;
+import org.apache.james.jmap.send.MailMetadata;
+import org.apache.james.jmap.send.MailSpool;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.exception.MailboxException;
@@ -58,6 +65,8 @@ import org.apache.james.mailbox.store.mail.model.MailboxId;
 import org.apache.james.mailbox.store.mail.model.MailboxMessage;
 import org.apache.james.mailbox.store.mail.model.impl.PropertyBuilder;
 import org.apache.james.mailbox.store.mail.model.impl.SimpleMailboxMessage;
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +74,8 @@ import com.github.fge.lambdas.functions.ThrowingFunction;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMessagesProcessor<Id> {
 
@@ -74,16 +85,18 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
     private final MailboxManager mailboxManager;
     private final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;
     private final MIMEMessageConverter mimeMessageConverter;
+    private final MailSpool mailSpool;
 
     @Inject
     @VisibleForTesting
     SetMessagesCreationProcessor(MailboxMapperFactory<Id> mailboxMapperFactory,
                                  MailboxManager mailboxManager,
-                                 MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, MIMEMessageConverter mimeMessageConverter) {
+                                 MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory, MIMEMessageConverter mimeMessageConverter, MailSpool mailSpool) {
         this.mailboxMapperFactory = mailboxMapperFactory;
         this.mailboxManager = mailboxManager;
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
         this.mimeMessageConverter = mimeMessageConverter;
+        this.mailSpool = mailSpool;
     }
 
     @Override
@@ -103,7 +116,7 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
         return request.getCreate().entrySet().stream()
                 .map(e -> new MessageWithId.CreationMessageEntry(e.getKey(), e.getValue()))
                 .filter(e -> e.getMessage().isValid())
-                .map(nuMsg -> createMessageInOutbox(nuMsg, mailboxSession, outbox, buildMessageIdFunc(mailboxSession, outbox)))
+                .map(nuMsg -> createMessageInOutboxAndSend(nuMsg, mailboxSession, outbox, buildMessageIdFunc(mailboxSession, outbox)))
                 .map(msg -> SetMessagesResponse.builder().created(ImmutableMap.of(msg.getCreationId(), msg.getMessage())).build())
                 .reduce(responseBuilder, SetMessagesResponse.Builder::accumulator, SetMessagesResponse.Builder::combiner)
                 .build();
@@ -132,18 +145,24 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
     }
 
     @VisibleForTesting
-    protected MessageWithId<Message> createMessageInOutbox(MessageWithId.CreationMessageEntry createdEntry,
+    protected MessageWithId<Message> createMessageInOutboxAndSend(MessageWithId.CreationMessageEntry createdEntry,
                                                            MailboxSession session,
                                                            Mailbox<Id> outbox, Function<Long, MessageId> buildMessageIdFromUid) {
         try {
             MessageMapper<Id> messageMapper = mailboxSessionMapperFactory.createMessageMapper(session);
             MailboxMessage<Id> newMailboxMessage = buildMailboxMessage(createdEntry, outbox);
             messageMapper.add(outbox, newMailboxMessage);
-            return new MessageWithId<>(createdEntry.getCreationId(), Message.fromMailboxMessage(newMailboxMessage, buildMessageIdFromUid));
+            Message jmapMessage = Message.fromMailboxMessage(newMailboxMessage, buildMessageIdFromUid);
+            sendMessage(newMailboxMessage, jmapMessage, session);
+            return new MessageWithId<>(createdEntry.getCreationId(), jmapMessage);
         } catch (MailboxException e) {
             throw Throwables.propagate(e);
         } catch (MailboxRoleNotFoundException e) {
             LOGGER.error("Could not find mailbox '%s' while trying to save message.", e.getRole().serialize());
+            throw Throwables.propagate(e);
+        } catch (MessagingException e) {
+            throw Throwables.propagate(e);
+        } catch (IOException e) {
             throw Throwables.propagate(e);
         }
     }
@@ -207,5 +226,40 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
             result.add(Flags.Flag.DRAFT);
         }
         return result;
+    }
+
+    private void sendMessage(MailboxMessage<Id> mailboxMessage, Message jmapMessage, MailboxSession session) throws MessagingException, IOException {
+        Mail mail = buildMail(mailboxMessage, jmapMessage);
+        MailMetadata metadata = new MailMetadata(jmapMessage.getId(), session.getUser().getUserName());
+        mail.setAttribute(MailMetadata.MAIL_METADATA_ATTRIBUTE, metadata);
+        mailSpool.send(mail);
+    }
+
+    private Mail buildMail(MailboxMessage<Id> mailboxMessage, Message jmapMessage) throws MessagingException, IOException {
+        MailAddress sender = jmapMessage.getFrom()
+                .map(this::emailerToMailAddress)
+                .orElseThrow(() -> new RuntimeException("Sender is mandatory"));
+        Set<MailAddress> to = emailersToMailAddressSet(jmapMessage.getTo());
+        Set<MailAddress> cc = emailersToMailAddressSet(jmapMessage.getCc());
+        Set<MailAddress> bcc = emailersToMailAddressSet(jmapMessage.getBcc());
+        ImmutableSet<MailAddress> recipients = Sets.union(
+                Sets.union(to, cc),
+                bcc).immutableCopy();
+        return new MailImpl(jmapMessage.getId().serialize(), sender, recipients, mailboxMessage.getBodyContent());
+    }
+
+    private MailAddress emailerToMailAddress(Emailer emailer) {
+        try {
+            return new MailAddress(emailer.getEmail());
+        } catch (AddressException e) {
+            LOGGER.error("Invalid mail address", emailer.getEmail());
+            throw Throwables.propagate(e);
+        }
+    }
+
+    private Set<MailAddress> emailersToMailAddressSet(List<Emailer> emailers) {
+        return emailers.stream()
+            .map(this::emailerToMailAddress)
+            .collect(Collectors.toSet());
     }
 }

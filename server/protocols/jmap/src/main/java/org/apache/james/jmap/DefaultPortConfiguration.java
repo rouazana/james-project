@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public class DefaultPortConfiguration implements PortConfiguration {
 
-    private static final int DEFAULT_PORT = 80;
+    private static final int DEFAULT_PORT = 1080;
 
     @Override
     public Optional<Integer> getPort() {
