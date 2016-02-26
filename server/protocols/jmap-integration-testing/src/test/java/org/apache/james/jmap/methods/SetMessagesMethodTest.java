@@ -703,6 +703,7 @@ public abstract class SetMessagesMethodTest {
     @Test
     public void setMessagesShouldCreateMessageInOutboxWhenSendingMessage() throws MailboxException {
         // Given
+        jmapServer.serverProbe().createMailbox(MailboxConstants.USER_NAMESPACE, username, "sent");
         String messageCreationId = "user|inbox|1";
         String presumedMessageId = "username@domain.tld|outbox|1";
         String messageSubject = "Thank you for joining example.com!";
@@ -743,6 +744,25 @@ public abstract class SetMessagesMethodTest {
                 .body(ARGUMENTS + ".list", hasSize(1))
                 .body(ARGUMENTS + ".list[0].subject", equalTo(messageSubject))
                 .log().ifValidationFails();
+        
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String presumedMessageId2 = "username@domain.tld|sent|1";
+        with()
+        .accept(ContentType.JSON)
+        .contentType(ContentType.JSON)
+        .header("Authorization", accessToken.serialize())
+        .body("[[\"getMessages\", {\"ids\": [\"" + presumedMessageId2 + "\"]}, \"#0\"]]")
+        .post("/jmap")
+        .then()
+        .body(NAME, equalTo("messages"))
+        .body(ARGUMENTS + ".list", hasSize(1))
+        .body(ARGUMENTS + ".list[0].subject", equalTo(messageSubject))
+        .log().ifValidationFails();
     }
 
     @Test

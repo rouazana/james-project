@@ -24,6 +24,8 @@ import org.apache.mailet.MailAddress;
 import org.apache.mailet.Mail;
 
 import javax.mail.MessagingException;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -100,6 +102,33 @@ public class MailImplTest extends MailTestAllImplementations {
         MailImpl duplicate = (MailImpl) mail.duplicate(newName);
         assertEquals("new name set", newName, duplicate.getName());
         helperTestInitialState(duplicate);
+        helperTestMessageSize(duplicate, 0);
+    }
+    
+    private static class Attribute implements Serializable {
+        private final String value;
+        public Attribute(String value) {
+            this.value = value;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+
+    @Test
+    public void testDuplicateWithAttribute() throws MessagingException {
+        String newName = "aNewName";
+
+        MailImpl mail = new MailImpl();
+        assertFalse("before + after names differ", newName.equals(mail.getName()));
+        mail.setAttribute("attribute", new Attribute("value"));
+
+        MailImpl duplicate = (MailImpl) mail.duplicate(newName);
+        assertEquals("new name set", newName, duplicate.getName());
+        Attribute attribute = (Attribute) mail.getAttribute("value");
+        Attribute duplicatedAttribute = (Attribute) duplicate.getAttribute("value");
+        assertEquals(attribute, duplicatedAttribute);
+//        helperTestInitialState(duplicate);
         helperTestMessageSize(duplicate, 0);
     }
 }
