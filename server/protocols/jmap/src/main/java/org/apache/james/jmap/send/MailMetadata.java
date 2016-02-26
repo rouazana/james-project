@@ -19,15 +19,15 @@
 
 package org.apache.james.jmap.send;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 import org.apache.james.jmap.model.MessageId;
 
 import com.google.common.base.Preconditions;
 
-public class MailMetadata implements Serializable {
-    public static final String MAIL_METADATA_ATTRIBUTE = "org.apache.james.jmap.send.MailMetaData";
+public class MailMetadata {
+    public static final String MAIL_METADATA_MESSAGE_ID_ATTRIBUTE = "org.apache.james.jmap.send.MailMetaData.messageId";
+    public static final String MAIL_METADATA_USERNAME_ATTRIBUTE = "org.apache.james.jmap.send.MailMetaData.username";
 
     private final MessageId messageId;
     private final String username;

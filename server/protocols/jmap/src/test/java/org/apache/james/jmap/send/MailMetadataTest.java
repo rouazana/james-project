@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.james.jmap.send;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.apache.james.jmap.model.MessageId;
 import org.junit.Test;
 
@@ -41,19 +34,5 @@ public class MailMetadataTest {
     @Test(expected=NullPointerException.class)
     public void constructorShouldThrowWhenNullUsername() {
         new MailMetadata(MESSAGE_ID, null);
-    }
-
-    @Test
-    public void MailMetadataShouldBeSerializable() throws Exception {
-        MailMetadata expected = new MailMetadata(MESSAGE_ID, USERNAME);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(out);
-        objectOutputStream.writeObject(expected);
-        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-        ObjectInputStream objectInputStream = new ObjectInputStream(in);
-
-        MailMetadata actual = (MailMetadata) objectInputStream.readObject();
-        
-        assertThat(actual).isEqualTo(expected);
     }
 }

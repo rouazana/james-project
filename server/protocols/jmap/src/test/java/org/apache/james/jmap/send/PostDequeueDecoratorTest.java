@@ -66,7 +66,6 @@ public class PostDequeueDecoratorTest {
     private static final MailboxPath OUTBOX_MAILBOX_PATH = new MailboxPath(MailboxConstants.USER_NAMESPACE, USERNAME, OUTBOX);
     private static final MailboxPath SENT_MAILBOX_PATH = new MailboxPath(MailboxConstants.USER_NAMESPACE, USERNAME, SENT);
     private static final String MESSAGE_ID = USERNAME + "|" + OUTBOX_MAILBOX_PATH.getName() + "|" + UID;
-    private static final MailMetadata MAIL_METADATA = new MailMetadata(MessageId.of(MESSAGE_ID), USERNAME);
     
     private InMemoryMailboxSessionMapperFactory mailboxSessionMapperFactory;
     private StoreMailboxManager<InMemoryId> mailboxManager;
@@ -103,7 +102,8 @@ public class PostDequeueDecoratorTest {
     public void doneShouldThrowWhenMetadataHasNotAnExistingMessageId() throws Exception {
         MailboxSession mailboxSession = mailboxManager.createSystemSession(USERNAME, LOGGER);
         mailboxManager.createMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
-        mail.setAttribute(MailMetadata.MAIL_METADATA_ATTRIBUTE, MAIL_METADATA);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE, MESSAGE_ID);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE, USERNAME);
 
         testee.done(true);
     }
@@ -115,7 +115,8 @@ public class PostDequeueDecoratorTest {
         MessageManager messageManager = mailboxManager.getMailbox(SENT_MAILBOX_PATH, mailboxSession);
         messageManager.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), mailboxSession, false, new Flags());
         MessageId inSentMessageId = MessageId.of(USERNAME + "|" + SENT_MAILBOX_PATH.getName() + "|" + UID);
-        mail.setAttribute(MailMetadata.MAIL_METADATA_ATTRIBUTE, new MailMetadata(inSentMessageId, USERNAME));
+        mail.setAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE, inSentMessageId.serialize());
+        mail.setAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE, USERNAME);
         
         testee.done(true);
     }
@@ -126,7 +127,8 @@ public class PostDequeueDecoratorTest {
         mailboxManager.createMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
         MessageManager messageManager = mailboxManager.getMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
         messageManager.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), mailboxSession, false, new Flags());
-        mail.setAttribute(MailMetadata.MAIL_METADATA_ATTRIBUTE, MAIL_METADATA);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE, MESSAGE_ID);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE, USERNAME);
 
         testee.done(true);
     }
@@ -138,7 +140,8 @@ public class PostDequeueDecoratorTest {
         mailboxManager.createMailbox(SENT_MAILBOX_PATH, mailboxSession);
         MessageManager messageManager = mailboxManager.getMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
         messageManager.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), mailboxSession, false, new Flags());
-        mail.setAttribute(MailMetadata.MAIL_METADATA_ATTRIBUTE, MAIL_METADATA);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE, MESSAGE_ID);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE, USERNAME);
         
         testee.done(true);
         
@@ -155,7 +158,8 @@ public class PostDequeueDecoratorTest {
         mailboxManager.createMailbox(SENT_MAILBOX_PATH, mailboxSession);
         MessageManager messageManager = mailboxManager.getMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
         messageManager.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), mailboxSession, false, new Flags());
-        mail.setAttribute(MailMetadata.MAIL_METADATA_ATTRIBUTE, MAIL_METADATA);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE, MESSAGE_ID);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE, USERNAME);
         
         testee.done(true);
         
@@ -172,7 +176,8 @@ public class PostDequeueDecoratorTest {
         mailboxManager.createMailbox(SENT_MAILBOX_PATH, mailboxSession);
         MessageManager messageManager = mailboxManager.getMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
         messageManager.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), mailboxSession, false, new Flags());
-        mail.setAttribute(MailMetadata.MAIL_METADATA_ATTRIBUTE, MAIL_METADATA);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE, MESSAGE_ID);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE, USERNAME);
         
         testee.done(false);
         
@@ -189,6 +194,58 @@ public class PostDequeueDecoratorTest {
         mailboxManager.createMailbox(SENT_MAILBOX_PATH, mailboxSession);
         MessageManager messageManager = mailboxManager.getMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
         messageManager.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), mailboxSession, false, new Flags());
+        
+        testee.done(true);
+        
+        Mailbox<InMemoryId> mailbox = mailboxSessionMapperFactory.getMailboxMapper(mailboxSession).findMailboxByPath(OUTBOX_MAILBOX_PATH);
+        MessageMapper<InMemoryId> messageMapper = mailboxSessionMapperFactory.getMessageMapper(mailboxSession);
+        Iterator<MailboxMessage<InMemoryId>> resultIterator = messageMapper.findInMailbox(mailbox, MessageRange.one(UID), MessageMapper.FetchType.Full, 1);
+        assertThat(resultIterator).hasSize(1);
+    }
+    
+    @Test
+    public void doneShouldNotMoveMailFromOutboxToSentWhenUsernameNotProvided() throws Exception {
+        MailboxSession mailboxSession = mailboxManager.createSystemSession(USERNAME, LOGGER);
+        mailboxManager.createMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
+        mailboxManager.createMailbox(SENT_MAILBOX_PATH, mailboxSession);
+        MessageManager messageManager = mailboxManager.getMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
+        messageManager.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), mailboxSession, false, new Flags());
+        mail.setAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE, MESSAGE_ID);
+        
+        testee.done(true);
+        
+        Mailbox<InMemoryId> mailbox = mailboxSessionMapperFactory.getMailboxMapper(mailboxSession).findMailboxByPath(OUTBOX_MAILBOX_PATH);
+        MessageMapper<InMemoryId> messageMapper = mailboxSessionMapperFactory.getMessageMapper(mailboxSession);
+        Iterator<MailboxMessage<InMemoryId>> resultIterator = messageMapper.findInMailbox(mailbox, MessageRange.one(UID), MessageMapper.FetchType.Full, 1);
+        assertThat(resultIterator).hasSize(1);
+    }
+    
+    @Test
+    public void doneShouldNotMoveMailFromOutboxToSentWhenMessageIdNotProvided() throws Exception {
+        MailboxSession mailboxSession = mailboxManager.createSystemSession(USERNAME, LOGGER);
+        mailboxManager.createMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
+        mailboxManager.createMailbox(SENT_MAILBOX_PATH, mailboxSession);
+        MessageManager messageManager = mailboxManager.getMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
+        messageManager.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), mailboxSession, false, new Flags());
+        mail.setAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE, USERNAME);
+        
+        testee.done(true);
+        
+        Mailbox<InMemoryId> mailbox = mailboxSessionMapperFactory.getMailboxMapper(mailboxSession).findMailboxByPath(OUTBOX_MAILBOX_PATH);
+        MessageMapper<InMemoryId> messageMapper = mailboxSessionMapperFactory.getMessageMapper(mailboxSession);
+        Iterator<MailboxMessage<InMemoryId>> resultIterator = messageMapper.findInMailbox(mailbox, MessageRange.one(UID), MessageMapper.FetchType.Full, 1);
+        assertThat(resultIterator).hasSize(1);
+    }
+    
+    @Test
+    public void doneShouldNotMoveMailFromOutboxToSentWhenInvalidMessageIdProvided() throws Exception {
+        MailboxSession mailboxSession = mailboxManager.createSystemSession(USERNAME, LOGGER);
+        mailboxManager.createMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
+        mailboxManager.createMailbox(SENT_MAILBOX_PATH, mailboxSession);
+        MessageManager messageManager = mailboxManager.getMailbox(OUTBOX_MAILBOX_PATH, mailboxSession);
+        messageManager.appendMessage(new ByteArrayInputStream("Subject: test\r\n\r\ntestmail".getBytes()), new Date(), mailboxSession, false, new Flags());
+        mail.setAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE, USERNAME);
+        mail.setAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE, "invalid");
         
         testee.done(true);
         
