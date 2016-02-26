@@ -37,7 +37,9 @@ public class MailSpool {
         queue = queueFactory.getQueue(MailQueueFactory.SPOOL);
     }
 
-    public void send(Mail mail) throws MailQueueException {
+    public void send(Mail mail, MailMetadata metadata) throws MailQueueException {
+        mail.setAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE, metadata.getMessageId().serialize());
+        mail.setAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE, metadata.getUsername());
         queue.enQueue(mail);
     }
 }

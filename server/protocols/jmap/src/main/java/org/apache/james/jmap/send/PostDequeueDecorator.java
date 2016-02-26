@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.jmap.send;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 import org.apache.james.jmap.model.MessageId;
@@ -71,10 +72,9 @@ public class PostDequeueDecorator<Id extends MailboxId> extends MailQueueItemDec
     @Override
     public void done(boolean success) throws MailQueueException {
         mailQueueItem.done(success);
-        MailMetadata jmapSpecificMetadata = (MailMetadata) getMail().getAttribute(MailMetadata.MAIL_METADATA_ATTRIBUTE);
-        if (success && jmapSpecificMetadata != null) {
-            MessageId messageId = jmapSpecificMetadata.getMessageId();
-            String username = jmapSpecificMetadata.getUsername();
+        if (success && mandatoryJmapMetaDataIsPresent()) {
+            MessageId messageId = MessageId.of((String) getMail().getAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE));
+            String username = (String) getMail().getAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE);
             try {
                 MailboxSession mailboxSession = mailboxManager.createSystemSession(username, LOG);
                 Pair<MailboxMessage<Id>, MailboxPath> mailboxMessageAndMailboxPath = getMailboxMessageAndMailboxPath(messageId, mailboxSession);
@@ -83,6 +83,30 @@ public class PostDequeueDecorator<Id extends MailboxId> extends MailQueueItemDec
                 throw new MailQueueException(e.getMessage(), e);
             }
         }
+    }
+
+    private boolean mandatoryJmapMetaDataIsPresent() {
+        return checkMessageIdAttribute()
+            && checkUsernameAttribute();
+    }
+
+    private boolean checkMessageIdAttribute() {
+        Serializable messageId = getMail().getAttribute(MailMetadata.MAIL_METADATA_MESSAGE_ID_ATTRIBUTE);
+        if (messageId == null || ! (messageId instanceof String)) {
+            return false;
+        }
+        try {
+            MessageId.of((String) messageId);
+        } catch (Exception e) {
+            LOG.error("Invalid messageId: " + (String) messageId);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkUsernameAttribute() {
+        Serializable username = getMail().getAttribute(MailMetadata.MAIL_METADATA_USERNAME_ATTRIBUTE);
+        return (username != null && username instanceof String);
     }
 
     public Pair<MailboxMessage<Id>, MailboxPath> getMailboxMessageAndMailboxPath(MessageId messageId, MailboxSession mailboxSession) throws MailQueueException, MailboxException {
