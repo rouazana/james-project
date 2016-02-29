@@ -79,7 +79,7 @@ public class SetMessagesDestructionProcessor<Id extends MailboxId> implements Se
             try {
                 Mailbox<Id> mailbox = mailboxMapperFactory
                         .getMailboxMapper(mailboxSession)
-                        .findMailboxByPath(messageId.getMailboxPath(mailboxSession));
+                        .findMailboxByPath(messageId.getMailboxPath());
 
                 MailboxMessage<Id> mailboxMessage = getMailboxMessage(messageMapper, messageId, mailbox);
 
