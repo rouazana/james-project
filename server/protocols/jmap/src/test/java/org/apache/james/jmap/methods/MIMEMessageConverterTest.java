@@ -194,24 +194,6 @@ public class MIMEMessageConverterTest {
                 CreationMessageId.of("user|mailbox|1"), testMessage));
     }
 
-    @Test(expected=NotImplementedException.class)
-    public void convertToMimeShouldFailWhenEmptyHtmlBodyAndEmptyTxtBodyProvided() {
-        // Given
-        MIMEMessageConverter sut = new MIMEMessageConverter();
-
-        CreationMessage testMessage = CreationMessage.builder()
-                .mailboxIds(ImmutableList.of("dead-bada55"))
-                .subject("subject")
-                .from(DraftEmailer.builder().name("sender").build())
-                .textBody("")
-                .htmlBody("")
-                .build();
-
-        // When
-        sut.convertToMime(new MessageWithId.CreationMessageEntry(
-                CreationMessageId.of("user|mailbox|1"), testMessage));
-    }
-
     @Test
     public void convertToMimeShouldSetMimeTypeWhenTextBody() {
         // Given
@@ -250,5 +232,49 @@ public class MIMEMessageConverterTest {
 
         // Then
         assertThat(result.getMimeType()).isEqualTo("text/html");
+    }
+
+    @Test
+    public void convertToMimeShouldSetEmptyHtmlBodyWhenProvided() {
+        // Given
+        MIMEMessageConverter sut = new MIMEMessageConverter();
+        TextBody expected = new BasicBodyFactory().textBody("", Charsets.UTF_8);
+
+        CreationMessage testMessage = CreationMessage.builder()
+                .mailboxIds(ImmutableList.of("dead-bada55"))
+                .subject("subject")
+                .from(DraftEmailer.builder().name("sender").build())
+                .htmlBody("")
+                .build();
+
+        // When
+        Message result = sut.convertToMime(new MessageWithId.CreationMessageEntry(
+                CreationMessageId.of("user|mailbox|1"), testMessage));
+
+        // Then
+        assertThat(result.getBody()).isEqualToComparingOnlyGivenFields(expected, "content", "charset");
+        assertThat(result.getMimeType()).isEqualTo("text/html");
+    }
+
+    @Test
+    public void convertToMimeShouldSetEmptyTextBodyWhenProvided() {
+        // Given
+        MIMEMessageConverter sut = new MIMEMessageConverter();
+        TextBody expected = new BasicBodyFactory().textBody("", Charsets.UTF_8);
+
+        CreationMessage testMessage = CreationMessage.builder()
+                .mailboxIds(ImmutableList.of("dead-bada55"))
+                .subject("subject")
+                .from(DraftEmailer.builder().name("sender").build())
+                .textBody("")
+                .build();
+
+        // When
+        Message result = sut.convertToMime(new MessageWithId.CreationMessageEntry(
+                CreationMessageId.of("user|mailbox|1"), testMessage));
+
+        // Then
+        assertThat(result.getBody()).isEqualToComparingOnlyGivenFields(expected, "content", "charset");
+        assertThat(result.getMimeType()).isEqualTo("text/plain");
     }
 }
