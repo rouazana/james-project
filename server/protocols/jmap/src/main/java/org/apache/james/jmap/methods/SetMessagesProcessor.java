@@ -25,5 +25,5 @@ import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.store.mail.model.MailboxId;
 
 public interface SetMessagesProcessor<Id extends MailboxId> {
-    SetMessagesResponse process(SetMessagesRequest request, MailboxSession mailboxSession);
+    SetMessagesResponse process(SetMessagesRequest<Id> request, MailboxSession mailboxSession);
 }

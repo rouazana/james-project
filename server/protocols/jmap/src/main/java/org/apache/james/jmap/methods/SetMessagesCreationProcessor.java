@@ -37,6 +37,7 @@ import javax.mail.internet.SharedInputStream;
 import javax.mail.util.SharedByteArrayInputStream;
 
 import org.apache.james.jmap.exceptions.MailboxRoleNotFoundException;
+import org.apache.james.jmap.methods.MessageWithId.CreationMessageEntry;
 import org.apache.james.jmap.model.CreationMessage;
 import org.apache.james.jmap.model.CreationMessageId;
 import org.apache.james.jmap.model.Message;
@@ -81,7 +82,7 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
     private final MailboxMapperFactory<Id> mailboxMapperFactory;
     private final MailboxManager mailboxManager;
     private final MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory;
-    private final MIMEMessageConverter mimeMessageConverter;
+    private final MIMEMessageConverter<Id> mimeMessageConverter;
     private final MailSpool mailSpool;
     private final MailFactory<Id> mailFactory;
 
@@ -90,7 +91,7 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
     SetMessagesCreationProcessor(MailboxMapperFactory<Id> mailboxMapperFactory,
                                  MailboxManager mailboxManager,
                                  MailboxSessionMapperFactory<Id> mailboxSessionMapperFactory,
-                                 MIMEMessageConverter mimeMessageConverter,
+                                 MIMEMessageConverter<Id> mimeMessageConverter,
                                  MailSpool mailSpool,
                                  MailFactory<Id> mailFactory) {
         this.mailboxMapperFactory = mailboxMapperFactory;
@@ -102,32 +103,34 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
     }
 
     @Override
-    public SetMessagesResponse process(SetMessagesRequest request, MailboxSession mailboxSession) {
-        Mailbox<Id> outbox;
-        try {
-            outbox = getOutbox(mailboxSession).orElseThrow(() -> new MailboxRoleNotFoundException(Role.OUTBOX));
-        } catch (MailboxException | MailboxRoleNotFoundException e) {
-            LOGGER.error("Unable to find a mailbox with role 'outbox'!");
-            throw Throwables.propagate(e);
-        }
+    public SetMessagesResponse process(SetMessagesRequest<Id> request, MailboxSession mailboxSession) {
+        Mailbox<Id> outbox = getMailboxWithRole(mailboxSession, Role.OUTBOX).orElseThrow(() -> new MailboxRoleNotFoundException(Role.OUTBOX));
+        Mailbox<Id> draft = getMailboxWithRole(mailboxSession, Role.DRAFTS).orElseThrow(() -> new MailboxRoleNotFoundException(Role.DRAFTS));
 
         // handle errors
-        Predicate<CreationMessage> validMessagesTester = CreationMessage::isValid;
-        Predicate<CreationMessage> invalidMessagesTester = validMessagesTester.negate();
+        Predicate<CreationMessage<Id>> validMessagesTester = x -> x.isValid(outbox, draft);
+        Predicate<CreationMessage<Id>> invalidMessagesTester = validMessagesTester.negate();
         SetMessagesResponse.Builder responseBuilder = SetMessagesResponse.builder()
                 .notCreated(handleCreationErrors(invalidMessagesTester, request));
 
         return request.getCreate().entrySet().stream()
                 .filter(e -> validMessagesTester.test(e.getValue()))
-                .map(e -> new MessageWithId.CreationMessageEntry(e.getKey(), e.getValue()))
-                .map(nuMsg -> createMessageInOutboxAndSend(nuMsg, mailboxSession, outbox, buildMessageIdFunc(mailboxSession, outbox)))
+                .map(e -> new MessageWithId.CreationMessageEntry<Id>(e.getKey(), e.getValue()))
+                .map(nuMsg -> dispatchCreation(nuMsg, mailboxSession, outbox, draft, buildMessageIdFunc(mailboxSession, outbox)))
+//                .map(nuMsg -> createMessageInOutboxAndSend(nuMsg, mailboxSession, outbox, buildMessageIdFunc(mailboxSession, outbox)))
                 .map(msg -> SetMessagesResponse.builder().created(ImmutableMap.of(msg.getCreationId(), msg.getMessage())).build())
                 .reduce(responseBuilder, SetMessagesResponse.Builder::accumulator, SetMessagesResponse.Builder::combiner)
                 .build();
     }
 
-    private Map<CreationMessageId, SetError> handleCreationErrors(Predicate<CreationMessage> invalidMessagesTester,
-                                                                  SetMessagesRequest request) {
+    private MessageWithId<Message> dispatchCreation(CreationMessageEntry<Id> nuMsg, MailboxSession mailboxSession, Mailbox<Id> outbox, Mailbox<Id> draft, Function<Long, MessageId> buildMessageIdFunc) {
+//        nuMsg.getMessage().getMailboxIds().
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Map<CreationMessageId, SetError> handleCreationErrors(Predicate<CreationMessage<Id>> invalidMessagesTester,
+                                                                  SetMessagesRequest<Id> request) {
         return request.getCreate().entrySet().stream()
                 .filter(e -> invalidMessagesTester.test(e.getValue()))
                 .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), buildSetErrorFromValidationResult(e.getValue().validate())))
@@ -151,7 +154,7 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
     }
 
     @VisibleForTesting
-    protected MessageWithId<Message> createMessageInOutboxAndSend(MessageWithId.CreationMessageEntry createdEntry,
+    protected MessageWithId<Message> createMessageInOutboxAndSend(MessageWithId.CreationMessageEntry<Id> createdEntry,
                                                            MailboxSession session,
                                                            Mailbox<Id> outbox, Function<Long, MessageId> buildMessageIdFromUid) {
         try {
@@ -174,7 +177,7 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
         return uid -> new MessageId(session.getUser(), outboxPath, uid);
     }
 
-    private MailboxMessage<Id> buildMailboxMessage(MessageWithId.CreationMessageEntry createdEntry, Mailbox<Id> outbox) {
+    private MailboxMessage<Id> buildMailboxMessage(MessageWithId.CreationMessageEntry<Id> createdEntry, Mailbox<Id> outbox) {
         byte[] messageContent = mimeMessageConverter.convert(createdEntry);
         SharedInputStream content = new SharedByteArrayInputStream(messageContent);
         long size = messageContent.length;
@@ -190,18 +193,23 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
     }
 
     @VisibleForTesting
-    protected Optional<Mailbox<Id>> getOutbox(MailboxSession session) throws MailboxException {
-        return mailboxManager.search(MailboxQuery.builder(session)
-                .privateUserMailboxes().build(), session).stream()
-            .map(MailboxMetaData::getPath)
-            .filter(this::hasRoleOutbox)
-            .map(loadMailbox(session))
-            .findFirst();
+    protected Optional<Mailbox<Id>> getMailboxWithRole(MailboxSession session, Role role) {
+        try {
+            return mailboxManager.search(MailboxQuery.builder(session)
+                    .privateUserMailboxes().build(), session).stream()
+                    .map(MailboxMetaData::getPath)
+                    .filter(x -> hasRole(x, role))
+                    .map(loadMailbox(session))
+                    .findFirst();
+        } catch (MailboxException | MailboxRoleNotFoundException e) {
+            LOGGER.error("Unable to find a mailbox with role 'outbox'!");
+            throw Throwables.propagate(e);
+        }
     }
 
-    private boolean hasRoleOutbox(MailboxPath mailBoxPath) {
+    private boolean hasRole(MailboxPath mailBoxPath, Role role) {
         return Role.from(mailBoxPath.getName())
-                .map(Role.OUTBOX::equals)
+                .map(role::equals)
                 .orElse(false);
     }
 
@@ -213,7 +221,7 @@ public class SetMessagesCreationProcessor<Id extends MailboxId> implements SetMe
         return new PropertyBuilder();
     }
 
-    private Flags getMessageFlags(CreationMessage message) {
+    private Flags getMessageFlags(CreationMessage<Id> message) {
         Flags result = new Flags();
         if (!message.isIsUnread()) {
             result.add(Flags.Flag.SEEN);

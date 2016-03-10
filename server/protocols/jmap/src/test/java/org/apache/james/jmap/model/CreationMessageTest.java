@@ -19,11 +19,12 @@
 
 package org.apache.james.jmap.model;
 
-import static org.apache.james.jmap.model.CreationMessage.DraftEmailer;
-import static org.apache.james.jmap.model.MessageProperties.MessageProperty;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.james.jmap.methods.ValidationResult;
+import org.apache.james.jmap.model.CreationMessage.DraftEmailer;
+import org.apache.james.jmap.model.MessageProperties.MessageProperty;
+import org.apache.james.mailbox.store.TestId;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,11 +33,11 @@ import com.google.common.collect.ImmutableMap;
 
 public class CreationMessageTest {
 
-    private CreationMessage.Builder testedBuilder;
+    private CreationMessage.Builder<TestId> testedBuilder;
 
     @Before
     public void setUp() {
-        testedBuilder = CreationMessage.builder()
+        testedBuilder = CreationMessage.<TestId>builder()
                 .mailboxIds(ImmutableList.of("ba9-0f-dead-beef"))
                 .headers(ImmutableMap.of())
                 .subject("anything");
@@ -44,7 +45,7 @@ public class CreationMessageTest {
 
     @Test
     public void validateShouldReturnErrorWhenFromIsMissing() {
-        CreationMessage sut = testedBuilder.build();
+        CreationMessage<TestId> sut = testedBuilder.build();
 
         assertThat(sut.validate()).contains(ValidationResult.builder()
                 .message("'from' address is mandatory")
@@ -55,7 +56,7 @@ public class CreationMessageTest {
 
     @Test
     public void validateShouldReturnErrorWhenFromIsInvalid() {
-        CreationMessage sut = testedBuilder.from(DraftEmailer.builder().name("bob").email("bob@domain.com@example.com").build()).build();
+        CreationMessage<TestId> sut = testedBuilder.from(DraftEmailer.builder().name("bob").email("bob@domain.com@example.com").build()).build();
 
         assertThat(sut.validate()).contains(ValidationResult.builder()
                 .message("'from' address is mandatory")
@@ -66,7 +67,7 @@ public class CreationMessageTest {
 
     @Test
     public void validateShouldReturnErrorWhenNoRecipientSet () {
-        CreationMessage  sut = testedBuilder
+        CreationMessage<TestId>  sut = testedBuilder
                 .from(DraftEmailer.builder().name("bob").email("bob@example.com").build()).build();
 
         assertThat(sut.validate()).extracting(ValidationResult::getErrorMessage).contains("no recipient address set");
@@ -74,7 +75,7 @@ public class CreationMessageTest {
 
     @Test
     public void validateShouldReturnErrorWhenNoValidRecipientSet () {
-        CreationMessage sut = testedBuilder
+        CreationMessage<TestId> sut = testedBuilder
                 .from(DraftEmailer.builder().name("bob").email("bob@example.com").build())
                 .to(ImmutableList.of(DraftEmailer.builder().name("riri").email("riri@acme.com@example.com").build()))
                 .cc(ImmutableList.of(DraftEmailer.builder().name("fifi").email("fifi@acme.com@example.com").build()))

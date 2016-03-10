@@ -61,7 +61,7 @@ public class SetMessagesDestructionProcessor<Id extends MailboxId> implements Se
     }
 
     @Override
-    public SetMessagesResponse process(SetMessagesRequest request, MailboxSession mailboxSession) {
+    public SetMessagesResponse process(SetMessagesRequest<Id> request, MailboxSession mailboxSession) {
         MessageMapper<Id> messageMapper;
         try {
             messageMapper = mailboxSessionMapperFactory.createMessageMapper(mailboxSession);

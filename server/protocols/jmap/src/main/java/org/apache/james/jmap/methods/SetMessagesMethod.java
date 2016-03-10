@@ -56,12 +56,13 @@ public class SetMessagesMethod<Id extends MailboxId> implements Method {
         return SetMessagesRequest.class;
     }
 
+    @SuppressWarnings("unchecked")
     public Stream<JmapResponse> process(JmapRequest request, ClientId clientId, MailboxSession mailboxSession) {
         Preconditions.checkArgument(request instanceof SetMessagesRequest);
         try {
             return Stream.of(
                     JmapResponse.builder().clientId(clientId)
-                    .response(setMessagesResponse((SetMessagesRequest) request, mailboxSession))
+                    .response(setMessagesResponse((SetMessagesRequest<Id>) request, mailboxSession))
                     .responseName(RESPONSE_NAME)
                     .build());
         } catch (MailboxException e) {
@@ -73,7 +74,7 @@ public class SetMessagesMethod<Id extends MailboxId> implements Method {
         }
     }
 
-    private SetMessagesResponse setMessagesResponse(SetMessagesRequest request, MailboxSession mailboxSession) throws MailboxException {
+    private SetMessagesResponse setMessagesResponse(SetMessagesRequest<Id> request, MailboxSession mailboxSession) throws MailboxException {
         return messagesProcessors.stream()
                 .map(processor -> processor.process(request, mailboxSession))
                 .reduce(SetMessagesResponse.builder(),

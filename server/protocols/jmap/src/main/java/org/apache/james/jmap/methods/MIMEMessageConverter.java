@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.apache.james.jmap.model.CreationMessage;
 import org.apache.james.jmap.model.CreationMessageId;
+import org.apache.james.mailbox.store.mail.model.MailboxId;
 import org.apache.james.mime4j.Charsets;
 import org.apache.james.mime4j.codec.DecodeMonitor;
 import org.apache.james.mime4j.dom.FieldParser;
@@ -54,7 +55,7 @@ import org.apache.james.mime4j.stream.RawField;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 
-public class MIMEMessageConverter {
+public class MIMEMessageConverter<Id extends MailboxId> {
 
     private final MessageBuilder messageBuilder;
     private final BodyFactory bodyFactory;
@@ -64,7 +65,7 @@ public class MIMEMessageConverter {
         this.bodyFactory = new BasicBodyFactory();
     }
 
-    public byte[] convert(MessageWithId.CreationMessageEntry creationMessageEntry) {
+    public byte[] convert(MessageWithId.CreationMessageEntry<Id> creationMessageEntry) {
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         DefaultMessageWriter writer = new DefaultMessageWriter();
@@ -76,7 +77,7 @@ public class MIMEMessageConverter {
         return buffer.toByteArray();
     }
 
-    @VisibleForTesting Message convertToMime(MessageWithId.CreationMessageEntry creationMessageEntry) {
+    @VisibleForTesting Message convertToMime(MessageWithId.CreationMessageEntry<Id> creationMessageEntry) {
         if (creationMessageEntry == null || creationMessageEntry.getMessage() == null) {
             throw new IllegalArgumentException("creationMessageEntry is either null or has null message");
         }
@@ -87,7 +88,7 @@ public class MIMEMessageConverter {
         return message;
     }
 
-    private Header buildMimeHeaders(CreationMessageId creationId, CreationMessage newMessage) {
+    private Header buildMimeHeaders(CreationMessageId creationId, CreationMessage<Id> newMessage) {
         Header messageHeaders = new HeaderImpl();
 
         // add From: and Sender: headers
@@ -136,7 +137,7 @@ public class MIMEMessageConverter {
         };
     }
 
-    private TextBody createTextBody(CreationMessage newMessage) {
+    private TextBody createTextBody(CreationMessage<Id> newMessage) {
         try {
             return bodyFactory.textBody(
                     InputStreams.create(newMessage.getTextBody().orElse(""), Charsets.UTF_8),

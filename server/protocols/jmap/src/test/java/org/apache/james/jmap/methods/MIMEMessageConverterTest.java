@@ -29,6 +29,7 @@ import java.time.ZonedDateTime;
 
 import org.apache.james.jmap.model.CreationMessage;
 import org.apache.james.jmap.model.CreationMessageId;
+import org.apache.james.mailbox.store.TestId;
 import org.apache.james.mime4j.dom.Message;
 import org.apache.james.mime4j.dom.address.Mailbox;
 import org.apache.james.mime4j.stream.Field;
@@ -40,10 +41,10 @@ public class MIMEMessageConverterTest {
     @Test
     public void convertToMimeShouldAddInReplyToHeaderWhenProvided() {
         // Given
-        MIMEMessageConverter sut = new MIMEMessageConverter();
+        MIMEMessageConverter<TestId> sut = new MIMEMessageConverter<>();
 
         String matchingMessageId = "unique-message-id";
-        CreationMessage messageHavingInReplyTo = CreationMessage.builder()
+        CreationMessage<TestId> messageHavingInReplyTo = CreationMessage.<TestId>builder()
                 .from(DraftEmailer.builder().name("sender").build())
                 .inReplyToMessageId(matchingMessageId)
                 .mailboxIds(ImmutableList.of("dead-beef-1337"))
@@ -51,7 +52,7 @@ public class MIMEMessageConverterTest {
                 .build();
 
         // When
-        Message result = sut.convertToMime(new MessageWithId.CreationMessageEntry(
+        Message result = sut.convertToMime(new MessageWithId.CreationMessageEntry<TestId>(
                 CreationMessageId.of("user|mailbox|1"), messageHavingInReplyTo));
 
         // Then
@@ -61,25 +62,25 @@ public class MIMEMessageConverterTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void convertToMimeShouldThrowWhenMessageIsNull() {
-        MIMEMessageConverter sut = new MIMEMessageConverter();
+        MIMEMessageConverter<TestId> sut = new MIMEMessageConverter<>();
 
-        sut.convertToMime(new MessageWithId.CreationMessageEntry(CreationMessageId.of("any"), null));
+        sut.convertToMime(new MessageWithId.CreationMessageEntry<TestId>(CreationMessageId.of("any"), null));
     }
 
     @Test
     public void convertToMimeShouldSetBothFromAndSenderHeaders() {
         // Given
-        MIMEMessageConverter sut = new MIMEMessageConverter();
+        MIMEMessageConverter<TestId> sut = new MIMEMessageConverter<>();
 
         String joesEmail = "joe@example.com";
-        CreationMessage testMessage = CreationMessage.builder()
+        CreationMessage<TestId> testMessage = CreationMessage.<TestId>builder()
                 .mailboxIds(ImmutableList.of("deadbeef-dead-beef-dead-beef"))
                 .subject("subject")
                 .from(DraftEmailer.builder().email(joesEmail).name("joe").build())
                 .build();
 
         // When
-        Message result = sut.convertToMime(new MessageWithId.CreationMessageEntry(
+        Message result = sut.convertToMime(new MessageWithId.CreationMessageEntry<TestId>(
                 CreationMessageId.of("user|mailbox|1"), testMessage));
 
         // Then
@@ -90,12 +91,12 @@ public class MIMEMessageConverterTest {
     @Test
     public void convertToMimeShouldSetCorrectLocalDate() {
         // Given
-        MIMEMessageConverter sut = new MIMEMessageConverter();
+        MIMEMessageConverter<TestId> sut = new MIMEMessageConverter<>();
 
         Instant now = Instant.now();
         ZonedDateTime messageDate = ZonedDateTime.ofInstant(now, ZoneId.systemDefault());
 
-        CreationMessage testMessage = CreationMessage.builder()
+        CreationMessage<TestId> testMessage = CreationMessage.<TestId>builder()
                 .mailboxIds(ImmutableList.of("dead-bada55"))
                 .subject("subject")
                 .from(DraftEmailer.builder().name("sender").build())
@@ -103,7 +104,7 @@ public class MIMEMessageConverterTest {
                 .build();
 
         // When
-        Message result = sut.convertToMime(new MessageWithId.CreationMessageEntry(
+        Message result = sut.convertToMime(new MessageWithId.CreationMessageEntry<TestId>(
                 CreationMessageId.of("user|mailbox|1"), testMessage));
 
         // Then

@@ -21,6 +21,7 @@ package org.apache.james.jmap.methods;
 
 import org.apache.james.jmap.model.CreationMessage;
 import org.apache.james.jmap.model.CreationMessageId;
+import org.apache.james.mailbox.store.mail.model.MailboxId;
 
 public class MessageWithId<T> {
 
@@ -40,8 +41,8 @@ public class MessageWithId<T> {
         return message;
     }
 
-    public static class CreationMessageEntry extends MessageWithId<CreationMessage> {
-        public CreationMessageEntry(CreationMessageId creationId, CreationMessage message) {
+    public static class CreationMessageEntry<Id extends MailboxId> extends MessageWithId<CreationMessage<Id>> {
+        public CreationMessageEntry(CreationMessageId creationId, CreationMessage<Id> message) {
             super(creationId, message);
         }
     }

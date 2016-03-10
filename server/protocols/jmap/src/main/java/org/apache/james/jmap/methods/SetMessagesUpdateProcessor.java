@@ -71,7 +71,7 @@ public class SetMessagesUpdateProcessor<Id extends MailboxId> implements SetMess
         this.mailboxSessionMapperFactory = mailboxSessionMapperFactory;
     }
 
-    public SetMessagesResponse process(SetMessagesRequest request,  MailboxSession mailboxSession) {
+    public SetMessagesResponse process(SetMessagesRequest<Id> request,  MailboxSession mailboxSession) {
         SetMessagesResponse.Builder responseBuilder = SetMessagesResponse.builder();
         request.buildUpdatePatches(updatePatchConverter).forEach( (id, patch) -> {
             if (patch.isValid()) {

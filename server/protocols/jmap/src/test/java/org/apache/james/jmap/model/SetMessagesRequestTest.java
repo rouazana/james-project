@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.Optional;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.james.mailbox.store.TestId;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -48,9 +49,9 @@ public class SetMessagesRequestTest {
     public void builderShouldWork() {
         ImmutableList<MessageId> destroy = ImmutableList.of(MessageId.of("user|destroy|1"));
 
-        SetMessagesRequest expected = new SetMessagesRequest(Optional.empty(), Optional.empty(), ImmutableMap.of(), ImmutableMap.of(), destroy);
+        SetMessagesRequest<TestId> expected = new SetMessagesRequest<>(Optional.empty(), Optional.empty(), ImmutableMap.of(), ImmutableMap.of(), destroy);
 
-        SetMessagesRequest setMessagesRequest = SetMessagesRequest.builder()
+        SetMessagesRequest<TestId> setMessagesRequest = SetMessagesRequest.<TestId>builder()
             .accountId(null)
             .ifInState(null)
             .create(ImmutableMap.of())

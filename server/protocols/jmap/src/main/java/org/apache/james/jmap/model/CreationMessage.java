@@ -19,8 +19,6 @@
 
 package org.apache.james.jmap.model;
 
-import static org.apache.james.jmap.model.MessageProperties.MessageProperty;
-
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +30,9 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.james.jmap.methods.ValidationResult;
+import org.apache.james.jmap.model.MessageProperties.MessageProperty;
+import org.apache.james.mailbox.store.mail.model.Mailbox;
+import org.apache.james.mailbox.store.mail.model.MailboxId;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -42,18 +43,18 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 @JsonDeserialize(builder = CreationMessage.Builder.class)
-public class CreationMessage {
+public class CreationMessage<Id extends MailboxId> {
 
     private static final String RECIPIENT_PROPERTY_NAMES = ImmutableList.of(MessageProperty.to, MessageProperty.cc, MessageProperty.bcc).stream()
             .map(MessageProperty::asFieldName)
             .collect(Collectors.joining(", "));
 
-    public static Builder builder() {
-        return new Builder();
+    public static <Id extends MailboxId> Builder<Id> builder() {
+        return new Builder<Id>();
     }
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
+    public static class Builder<Id extends MailboxId> {
         private ImmutableList<String> mailboxIds;
         private String inReplyToMessageId;
         private boolean isUnread;
@@ -83,92 +84,92 @@ public class CreationMessage {
             headers = ImmutableMap.builder();
         }
 
-        public Builder mailboxIds(ImmutableList<String> mailboxIds) {
+        public Builder<Id> mailboxIds(ImmutableList<String> mailboxIds) {
             this.mailboxIds = mailboxIds;
             return this;
         }
 
-        public Builder inReplyToMessageId(String inReplyToMessageId) {
+        public Builder<Id> inReplyToMessageId(String inReplyToMessageId) {
             this.inReplyToMessageId = inReplyToMessageId;
             return this;
         }
 
-        public Builder isUnread(boolean isUnread) {
+        public Builder<Id> isUnread(boolean isUnread) {
             this.isUnread = isUnread;
             return this;
         }
 
-        public Builder isFlagged(boolean isFlagged) {
+        public Builder<Id> isFlagged(boolean isFlagged) {
             this.isFlagged = isFlagged;
             return this;
         }
 
-        public Builder isAnswered(boolean isAnswered) {
+        public Builder<Id> isAnswered(boolean isAnswered) {
             this.isAnswered = isAnswered;
             return this;
         }
 
-        public Builder isDraft(boolean isDraft) {
+        public Builder<Id> isDraft(boolean isDraft) {
             this.isDraft = isDraft;
             return this;
         }
 
-        public Builder headers(ImmutableMap<String, String> headers) {
+        public Builder<Id> headers(ImmutableMap<String, String> headers) {
             this.headers.putAll(headers);
             return this;
         }
 
-        public Builder from(DraftEmailer from) {
+        public Builder<Id> from(DraftEmailer from) {
             this.from = Optional.ofNullable(from);
             return this;
         }
 
-        public Builder to(List<DraftEmailer> to) {
+        public Builder<Id> to(List<DraftEmailer> to) {
             this.to.addAll(to);
             return this;
         }
 
-        public Builder cc(List<DraftEmailer> cc) {
+        public Builder<Id> cc(List<DraftEmailer> cc) {
             this.cc.addAll(cc);
             return this;
         }
 
-        public Builder bcc(List<DraftEmailer> bcc) {
+        public Builder<Id> bcc(List<DraftEmailer> bcc) {
             this.bcc.addAll(bcc);
             return this;
         }
 
-        public Builder replyTo(List<DraftEmailer> replyTo) {
+        public Builder<Id> replyTo(List<DraftEmailer> replyTo) {
             this.replyTo.addAll(replyTo);
             return this;
         }
 
-        public Builder subject(String subject) {
+        public Builder<Id> subject(String subject) {
             this.subject = subject;
             return this;
         }
 
-        public Builder date(ZonedDateTime date) {
+        public Builder<Id> date(ZonedDateTime date) {
             this.date = date;
             return this;
         }
 
-        public Builder textBody(String textBody) {
+        public Builder<Id> textBody(String textBody) {
             this.textBody = textBody;
             return this;
         }
 
-        public Builder htmlBody(String htmlBody) {
+        public Builder<Id> htmlBody(String htmlBody) {
             this.htmlBody = htmlBody;
             return this;
         }
 
-        public Builder attachments(List<Attachment> attachments) {
+        public Builder<Id> attachments(List<Attachment> attachments) {
             this.attachments.addAll(attachments);
             return this;
         }
 
-        public Builder attachedMessages(Map<String, SubMessage> attachedMessages) {
+        public Builder<Id> attachedMessages(Map<String, SubMessage> attachedMessages) {
             this.attachedMessages.putAll(attachedMessages);
             return this;
         }
@@ -179,7 +180,7 @@ public class CreationMessage {
                     .allMatch(attachedMessages::containsKey);
         }
 
-        public CreationMessage build() {
+        public CreationMessage<Id> build() {
             Preconditions.checkState(mailboxIds != null, "'mailboxIds' is mandatory");
             Preconditions.checkState(headers != null, "'headers' is mandatory");
             ImmutableList<Attachment> attachments = this.attachments.build();
@@ -190,7 +191,7 @@ public class CreationMessage {
                 date = ZonedDateTime.now();
             }
 
-            return new CreationMessage(mailboxIds, Optional.ofNullable(inReplyToMessageId), isUnread, isFlagged, isAnswered, isDraft, headers.build(), from,
+            return new CreationMessage<Id>(mailboxIds, Optional.ofNullable(inReplyToMessageId), isUnread, isFlagged, isAnswered, isDraft, headers.build(), from,
                     to.build(), cc.build(), bcc.build(), replyTo.build(), subject, date, Optional.ofNullable(textBody), Optional.ofNullable(htmlBody), attachments, attachedMessages);
         }
     }
@@ -310,7 +311,7 @@ public class CreationMessage {
         return attachedMessages;
     }
 
-    public boolean isValid() {
+    public boolean isValid(Mailbox<Id> outbox, Mailbox<Id> draft) {
         return validate().isEmpty();
     }
 

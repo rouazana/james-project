@@ -38,6 +38,7 @@ import org.apache.james.jmap.model.Message;
 import org.apache.james.jmap.model.MessageId;
 import org.apache.james.jmap.model.SetMessagesRequest;
 import org.apache.james.jmap.model.SetMessagesResponse;
+import org.apache.james.jmap.model.mailbox.Role;
 import org.apache.james.jmap.send.MailFactory;
 import org.apache.james.jmap.send.MailMetadata;
 import org.apache.james.jmap.send.MailSpool;
@@ -72,14 +73,14 @@ public class SetMessagesCreationProcessorTest {
     public void processShouldReturnEmptyCreatedWhenRequestHasEmptyCreate() {
         SetMessagesCreationProcessor<TestId> sut = new SetMessagesCreationProcessor<TestId>(null, null, null, null, null, null) {
             @Override
-            protected Optional<Mailbox<TestId>> getOutbox(MailboxSession session) throws MailboxException {
+            protected Optional<Mailbox<TestId>> getMailboxWithRole(MailboxSession session, Role role) {
                 @SuppressWarnings("unchecked")
 				Mailbox<TestId> fakeOutbox = (Mailbox<TestId>) mock(Mailbox.class);
-                when(fakeOutbox.getName()).thenReturn("outbox");
+                when(fakeOutbox.getName()).thenReturn("outbox");//TODO
                 return Optional.of(fakeOutbox);
             }
         };
-        SetMessagesRequest requestWithEmptyCreate = SetMessagesRequest.builder().build();
+        SetMessagesRequest<TestId> requestWithEmptyCreate = SetMessagesRequest.<TestId>builder().build();
 
         SetMessagesResponse result = sut.process(requestWithEmptyCreate, buildStubbedSession());
 
@@ -99,7 +100,7 @@ public class SetMessagesCreationProcessorTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void processShouldReturnNonEmptyCreatedWhenRequestHasNonEmptyCreate() throws MailboxException {
+    public void processShouldReturnNonEmptyCreatedWhenRequestHasNonEmptyCreateInOutbox() throws MailboxException {
         // Given
         MessageMapper<TestId> stubMapper = mock(MessageMapper.class);
         MailboxSessionMapperFactory<TestId> mockSessionMapperFactory = mock(MailboxSessionMapperFactory.class);
@@ -108,18 +109,47 @@ public class SetMessagesCreationProcessorTest {
 
         SetMessagesCreationProcessor<TestId> sut = new SetMessagesCreationProcessor<TestId>(null, null, mockSessionMapperFactory, null, null, null) {
             @Override
-            protected MessageWithId<Message> createMessageInOutboxAndSend(MessageWithId.CreationMessageEntry createdEntry, MailboxSession session, Mailbox<TestId> outbox, Function<Long, MessageId> buildMessageIdFromUid) {
+            protected MessageWithId<Message> createMessageInOutboxAndSend(MessageWithId.CreationMessageEntry<TestId> createdEntry, MailboxSession session, Mailbox<TestId> outbox, Function<Long, MessageId> buildMessageIdFromUid) {
                 return new MessageWithId<>(createdEntry.getCreationId(), FAKE_MESSAGE);
             }
             @Override
-            protected Optional<Mailbox<TestId>> getOutbox(MailboxSession session) throws MailboxException {
+            protected Optional<Mailbox<TestId>> getMailboxWithRole(MailboxSession session, Role role) {
                 Mailbox<TestId> fakeOutbox = mock(Mailbox.class);
-                when(fakeOutbox.getName()).thenReturn("outbox");
+                when(fakeOutbox.getName()).thenReturn("outbox");//TODO
                 return Optional.of(fakeOutbox);
             }
         };
         // When
-        SetMessagesResponse result = sut.process(buildFakeCreationRequest(), buildStubbedSession());
+        SetMessagesResponse result = sut.process(buildFakeCreationInOutboxRequest(), buildStubbedSession());
+
+        // Then
+        assertThat(result.getCreated()).isNotEmpty();
+        assertThat(result.getNotCreated()).isEmpty();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void processShouldReturnNonEmptyCreatedWhenRequestHasNonEmptyCreateInDraft() throws MailboxException {
+        // Given
+        MessageMapper<TestId> stubMapper = mock(MessageMapper.class);
+        MailboxSessionMapperFactory<TestId> mockSessionMapperFactory = mock(MailboxSessionMapperFactory.class);
+        when(mockSessionMapperFactory.createMessageMapper(any(MailboxSession.class)))
+                .thenReturn(stubMapper);
+
+        SetMessagesCreationProcessor<TestId> sut = new SetMessagesCreationProcessor<TestId>(null, null, mockSessionMapperFactory, null, null, null) {
+            @Override
+            protected MessageWithId<Message> createMessageInOutboxAndSend(MessageWithId.CreationMessageEntry<TestId> createdEntry, MailboxSession session, Mailbox<TestId> outbox, Function<Long, MessageId> buildMessageIdFromUid) {
+                return new MessageWithId<>(createdEntry.getCreationId(), FAKE_MESSAGE);
+            }
+            @Override
+            protected Optional<Mailbox<TestId>> getMailboxWithRole(MailboxSession session, Role role) {
+                Mailbox<TestId> fakeOutbox = mock(Mailbox.class);
+                when(fakeOutbox.getName()).thenReturn("outbox");//TODO
+                return Optional.of(fakeOutbox);
+            }
+        };
+        // When
+        SetMessagesResponse result = sut.process(buildFakeCreationInDraftRequest(), buildStubbedSession());
 
         // Then
         assertThat(result.getCreated()).isNotEmpty();
@@ -131,12 +161,12 @@ public class SetMessagesCreationProcessorTest {
         // Given
         SetMessagesCreationProcessor<TestId> sut = new SetMessagesCreationProcessor<TestId>(null, null, null, null, null, null) {
             @Override
-            protected Optional<Mailbox<TestId>> getOutbox(MailboxSession session) throws MailboxException {
+            protected Optional<Mailbox<TestId>> getMailboxWithRole(MailboxSession session, Role role) {
                 return Optional.empty();
             }
         };
         // When
-        sut.process(buildFakeCreationRequest(), null);
+        sut.process(buildFakeCreationInOutboxRequest(), null);
     }
 
     @Test
@@ -152,9 +182,9 @@ public class SetMessagesCreationProcessorTest {
         MailFactory<TestId> mockedMailFactory = mock(MailFactory.class);
 
         SetMessagesCreationProcessor<TestId> sut = new SetMessagesCreationProcessor<TestId>(null, null,
-                stubSessionMapperFactory, new MIMEMessageConverter(), mockedMailSpool, mockedMailFactory) {
+                stubSessionMapperFactory, new MIMEMessageConverter<TestId>(), mockedMailSpool, mockedMailFactory) {
             @Override
-            protected Optional<Mailbox<TestId>> getOutbox(MailboxSession session) throws MailboxException {
+            protected Optional<Mailbox<TestId>> getMailboxWithRole(MailboxSession session, Role role) {
                 TestId stubMailboxId = mock(TestId.class);
                 when(stubMailboxId.serialize()).thenReturn("user|outbox|12345");
                 when(fakeOutbox.getMailboxId()).thenReturn(stubMailboxId);
@@ -163,7 +193,7 @@ public class SetMessagesCreationProcessorTest {
             }
         };
         // When
-        sut.process(buildFakeCreationRequest(), buildStubbedSession());
+        sut.process(buildFakeCreationInOutboxRequest(), buildStubbedSession());
 
         // Then
         verify(mockMapper).add(eq(fakeOutbox), any(MailboxMessage.class));
@@ -182,30 +212,42 @@ public class SetMessagesCreationProcessorTest {
         MailFactory<TestId> mockedMailFactory = mock(MailFactory.class);
 
         SetMessagesCreationProcessor<TestId> sut = new SetMessagesCreationProcessor<TestId>(null, null,
-                stubSessionMapperFactory, new MIMEMessageConverter(), mockedMailSpool, mockedMailFactory) {
+                stubSessionMapperFactory, new MIMEMessageConverter<TestId>(), mockedMailSpool, mockedMailFactory) {
             @Override
-            protected Optional<Mailbox<TestId>> getOutbox(MailboxSession session) throws MailboxException {
+            protected Optional<Mailbox<TestId>> getMailboxWithRole(MailboxSession session, Role role) {
                 TestId stubMailboxId = mock(TestId.class);
                 when(stubMailboxId.serialize()).thenReturn("user|outbox|12345");
                 when(fakeOutbox.getMailboxId()).thenReturn(stubMailboxId);
-                when(fakeOutbox.getName()).thenReturn("outbox");
+                when(fakeOutbox.getName()).thenReturn("outbox");//TODO
                 return Optional.of(fakeOutbox);
             }
         };
         // When
-        sut.process(buildFakeCreationRequest(), buildStubbedSession());
+        sut.process(buildFakeCreationInOutboxRequest(), buildStubbedSession());
 
         // Then
         verify(mockedMailSpool).send(any(Mail.class), any(MailMetadata.class));
     }
 
-    private SetMessagesRequest buildFakeCreationRequest() {
-        return SetMessagesRequest.builder()
-                .create(ImmutableMap.of(CreationMessageId.of("anything-really"), CreationMessage.builder()
+    private SetMessagesRequest<TestId> buildFakeCreationInOutboxRequest() {
+        return SetMessagesRequest.<TestId>builder()
+                .create(ImmutableMap.of(CreationMessageId.of("anything-really"), CreationMessage.<TestId>builder()
                     .from(DraftEmailer.builder().name("alice").email("alice@example.com").build())
                     .to(ImmutableList.of(DraftEmailer.builder().name("bob").email("bob@example.com").build()))
                     .subject("Hey! ")
-                    .mailboxIds(ImmutableList.of("mailboxId"))
+                    .mailboxIds(ImmutableList.of("outbox-id"))
+                    .build()
+                ))
+                .build();
+    }
+
+    private SetMessagesRequest<TestId> buildFakeCreationInDraftRequest() {
+        return SetMessagesRequest.<TestId>builder()
+                .create(ImmutableMap.of(CreationMessageId.of("anything-really"), CreationMessage.<TestId>builder()
+                    .from(DraftEmailer.builder().name("alice").email("alice@example.com").build())
+                    .to(ImmutableList.of(DraftEmailer.builder().name("bob").email("bob@example.com").build()))
+                    .subject("Hey! ")
+                    .mailboxIds(ImmutableList.of("draft-id"))
                     .build()
                 ))
                 .build();
