@@ -80,6 +80,9 @@ public class JamesCapabilitiesServerTest {
         server = new CassandraJamesServer(createModule(mailboxManager));
         
         server.start();
+        
+        // In case of non-failure
+        server.stop();
     }
 
     @Test
