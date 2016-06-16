@@ -51,7 +51,6 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.jboss.netty.util.HashedWheelTimer;
 import org.slf4j.Logger;
 
 /**
@@ -116,18 +115,11 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
 
     private MBeanServer mbeanServer;
 
-    private HashedWheelTimer timer;
-
     @Inject
     public final void setFileSystem(FileSystem filesystem) {
         this.fileSystem = filesystem;
     }
 
-    @Inject
-    public void setHashWheelTimer(HashedWheelTimer timer) {
-        this.timer = timer;
-    }
-    
     /**
      * @see org.apache.james.lifecycle.api.LogEnabled#setLog(org.slf4j.Logger)
      */
@@ -585,7 +577,7 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
     
     @Override
     protected ChannelPipelineFactory createPipelineFactory(ChannelGroup group) {
-        return new AbstractExecutorAwareChannelPipelineFactory(getTimeout(), connectionLimit, connPerIP, group, enabledCipherSuites, getExecutionHandler(), timer) {
+        return new AbstractExecutorAwareChannelPipelineFactory(getTimeout(), connectionLimit, connPerIP, group, enabledCipherSuites, getExecutionHandler()) {
             @Override
             protected SSLContext getSSLContext() {
                 if (encryption == null) {

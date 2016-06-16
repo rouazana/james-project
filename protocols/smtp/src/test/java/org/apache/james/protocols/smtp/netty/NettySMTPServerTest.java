@@ -24,7 +24,6 @@ import org.apache.james.protocols.api.Protocol;
 import org.apache.james.protocols.api.ProtocolServer;
 import org.apache.james.protocols.netty.NettyServer;
 import org.apache.james.protocols.smtp.AbstractSMTPServerTest;
-import org.jboss.netty.util.HashedWheelTimer;
 
 /**
  * Integration tests which use netty implementation
@@ -36,7 +35,7 @@ public class NettySMTPServerTest extends AbstractSMTPServerTest{
     
     @Override
     protected ProtocolServer createServer(Protocol protocol, InetSocketAddress address) {
-        NettyServer server =  new NettyServer(protocol, new HashedWheelTimer());
+        NettyServer server =  new NettyServer(protocol);
         server.setListenAddresses(address);
         return server;
     }

@@ -25,13 +25,12 @@ import org.apache.james.protocols.api.Protocol;
 import org.apache.james.protocols.api.ProtocolServer;
 import org.apache.james.protocols.netty.NettyServer;
 import org.apache.james.protocols.smtp.AbstractStartTlsSMTPServerTest;
-import org.jboss.netty.util.HashedWheelTimer;
 
 public class NettyStartTlsSMTPServerTest extends AbstractStartTlsSMTPServerTest{
 
     @Override
     protected ProtocolServer createServer(Protocol protocol, InetSocketAddress address, Encryption enc) {
-        NettyServer server = new NettyServer(protocol, enc, new HashedWheelTimer());
+        NettyServer server = new NettyServer(protocol, enc);
         server.setListenAddresses(address);
         
         return server;
