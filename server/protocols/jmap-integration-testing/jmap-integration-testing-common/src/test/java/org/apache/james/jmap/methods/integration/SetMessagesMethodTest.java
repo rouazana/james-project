@@ -2032,6 +2032,6 @@ public abstract class SetMessagesMethodTest {
         calmlyAwait.atMost(30, TimeUnit.SECONDS).until( () -> isAnyMessageFoundInInbox(accessToken));
 
         Headers headers = jmapServer.serverProbe().getHeaders(username, new MailboxPath(MailboxConstants.USER_NAMESPACE, username, "sent"), 1);
-        assertThat(headers.headers()).hasSize(10);
+        assertThat(headers.headers()).hasSize(8);
     }
 }

@@ -41,6 +41,7 @@ import org.apache.james.mime4j.dom.TextBody;
 import org.apache.james.mime4j.dom.address.Mailbox;
 import org.apache.james.mime4j.message.BasicBodyFactory;
 import org.apache.james.mime4j.stream.Field;
+import org.javatuples.Pair;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -230,14 +231,15 @@ public class MIMEMessageConverterTest {
                 "Hello <b>all</b>!\r\n";
 
         // When
-        byte[] convert = sut.convert(new MessageWithId.CreationMessageEntry(
+        Pair<byte[], Integer> result = sut.convert(new MessageWithId.CreationMessageEntry(
                 CreationMessageId.of("user|mailbox|1"), testMessage), ImmutableList.of());
 
         // Then
-        String actual = new String(convert, Charsets.UTF_8);
+        String actual = new String(result.getValue0(), Charsets.UTF_8);
         assertThat(actual).startsWith(expectedHeaders);
         assertThat(actual).contains(expectedPart1);
         assertThat(actual).contains(expectedPart2);
+        assertThat(result.getValue1()).isEqualTo(214);
     }
 
     @Test

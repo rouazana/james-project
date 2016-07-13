@@ -76,6 +76,7 @@ import org.apache.james.mailbox.store.mail.model.impl.PropertyBuilder;
 import org.apache.james.mailbox.store.mail.model.impl.SimpleMailboxMessage;
 import org.apache.james.util.streams.ImmutableCollectors;
 import org.apache.mailet.Mail;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -303,10 +304,12 @@ public class SetMessagesCreationProcessor implements SetMessagesProcessor {
 
     private MailboxMessage buildMailboxMessage(MailboxSession session, MessageWithId.CreationMessageEntry createdEntry, Mailbox outbox) throws MailboxException {
         ImmutableList<MessageAttachment> messageAttachments = getMessageAttachments(session, createdEntry.getValue().getAttachments());
-        byte[] messageContent = mimeMessageConverter.convert(createdEntry, messageAttachments);
+//        byte[] messageContent = mimeMessageConverter.convert(createdEntry, messageAttachments);
+        Pair<byte[], Integer> converted = mimeMessageConverter.convert(createdEntry, messageAttachments);
+        byte[] messageContent = converted.getValue0();
         SharedInputStream content = new SharedByteArrayInputStream(messageContent);
         long size = messageContent.length;
-        int bodyStartOctet = 0;
+        int bodyStartOctet = converted.getValue1();
 
         Flags flags = getMessageFlags(createdEntry.getValue());
         PropertyBuilder propertyBuilder = buildPropertyBuilder();

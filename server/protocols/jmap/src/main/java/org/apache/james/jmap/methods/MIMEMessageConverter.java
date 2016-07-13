@@ -52,6 +52,7 @@ import org.apache.james.mime4j.message.MultipartBuilder;
 import org.apache.james.mime4j.stream.Field;
 import org.apache.james.mime4j.stream.NameValuePair;
 import org.apache.james.mime4j.stream.RawField;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,16 +83,21 @@ public class MIMEMessageConverter {
         this.bodyFactory = new BasicBodyFactory();
     }
 
-    public byte[] convert(ValueWithId.CreationMessageEntry creationMessageEntry, ImmutableList<MessageAttachment> messageAttachments) {
+    public Pair<byte[], Integer> convert(ValueWithId.CreationMessageEntry creationMessageEntry, ImmutableList<MessageAttachment> messageAttachments) {
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         DefaultMessageWriter writer = new DefaultMessageWriter();
+        int size;
         try {
-            writer.writeMessage(convertToMime(creationMessageEntry, messageAttachments), buffer);
+            Message message = convertToMime(creationMessageEntry, messageAttachments);
+            writer.writeMessage(message, buffer);
+            ByteArrayOutputStream headersOnly = new ByteArrayOutputStream();
+            writer.writeHeader(message.getHeader(), headersOnly);
+            size = headersOnly.size();
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
-        return buffer.toByteArray();
+        return Pair.with(buffer.toByteArray(), size);
     }
 
     @VisibleForTesting Message convertToMime(ValueWithId.CreationMessageEntry creationMessageEntry, ImmutableList<MessageAttachment> messageAttachments) {
