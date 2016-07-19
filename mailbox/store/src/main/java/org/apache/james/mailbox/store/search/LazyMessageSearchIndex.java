@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.mailbox.store.search;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -112,5 +113,11 @@ public class LazyMessageSearchIndex extends ListeningMessageSearchIndex {
     @Override
     public void update(MailboxSession session, Mailbox mailbox, List<UpdatedFlags> updatedFlagsList) throws MailboxException {
         index.update(session, mailbox, updatedFlagsList);
+    }
+    
+
+    @Override
+    public Map<MailboxId, Collection<Long>> search(MailboxSession session, MultimailboxesSearchQuery searchQuery) throws MailboxException {
+        throw new UnsupportedSearchException();
     }
 }
