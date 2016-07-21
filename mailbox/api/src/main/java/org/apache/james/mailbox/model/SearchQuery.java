@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * <p>
@@ -629,7 +631,7 @@ public class SearchQuery implements Serializable {
         return AllCriterion.all();
     }
 
-    private final Set<Long> recentMessageUids = new HashSet<Long>();
+    private final Map<MailboxId, Collection<Long>> recentMessageUids = new HashMap<MailboxId, Collection<Long>>();
 
     private final List<Criterion> criterias = new ArrayList<Criterion>();
 
@@ -675,7 +677,7 @@ public class SearchQuery implements Serializable {
      * 
      * @return mutable <code>Set</code> of <code>Long</code> UIDS
      */
-    public Set<Long> getRecentMessageUids() {
+    public Map<MailboxId, Collection<Long>> getRecentMessageUids() {
         return recentMessageUids;
     }
 
@@ -685,8 +687,8 @@ public class SearchQuery implements Serializable {
      * @param uids
      *            not null
      */
-    public void addRecentMessageUids(Collection<Long> uids) {
-        recentMessageUids.addAll(uids);
+    public void addRecentMessageUids(MailboxId mailboxId, Collection<Long> uids) {
+        recentMessageUids.put(mailboxId, ImmutableSet.copyOf(uids));
     }
 
     @Override

@@ -262,7 +262,7 @@ public class SearchProcessor extends AbstractMailboxProcessor<SearchRequest> imp
         final SearchQuery result = new SearchQuery();
         final SelectedMailbox selected = session.getSelected();
         if (selected != null) {
-            result.addRecentMessageUids(selected.getRecent());
+            result.addRecentMessageUids(selected.getMailboxId(), selected.getRecent());
         }
         final SearchQuery.Criterion criterion = toCriterion(key, session);
         result.andCriteria(criterion);

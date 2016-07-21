@@ -56,6 +56,7 @@ import org.apache.james.mailbox.model.MailboxACL.MailboxACLEntryKey;
 import org.apache.james.mailbox.model.MailboxACL.MailboxACLRight;
 import org.apache.james.mailbox.model.MailboxACL.MailboxACLRights;
 import org.apache.james.mailbox.model.MailboxAnnotation;
+import org.apache.james.mailbox.model.MailboxId;
 import org.apache.james.mailbox.model.MailboxMetaData;
 import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.model.MailboxQuery;
@@ -319,6 +320,11 @@ public class MailboxEventAnalyserTest {
                 public MetaData getMetaData(boolean resetRecent, MailboxSession mailboxSession, org.apache.james.mailbox.MessageManager.MetaData.FetchGroup fetchGroup) throws MailboxException {
                     throw new UnsupportedOperationException("Not implemented");
 
+                }
+
+                @Override
+                public MailboxId getMailboxId() {
+                    throw new UnsupportedOperationException("Not implemented");
                 }
                 
             };

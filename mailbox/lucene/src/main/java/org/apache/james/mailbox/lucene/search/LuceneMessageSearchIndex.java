@@ -29,12 +29,10 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import javax.mail.Flags;
@@ -115,6 +113,7 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.IOUtils;
 import org.apache.lucene.util.Version;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
@@ -937,7 +936,7 @@ public class LuceneMessageSearchIndex extends ListeningMessageSearchIndex {
      * @return query
      * @throws UnsupportedSearchException
      */
-    private Query createFlagQuery(String flag, boolean isSet, Query inMailboxes, Collection<Long> recentUids) throws MailboxException, UnsupportedSearchException {
+    private Query createFlagQuery(String flag, boolean isSet, Query inMailboxes, Map<MailboxId, Collection<Long>> recentUids) throws MailboxException, UnsupportedSearchException {
         BooleanQuery query = new BooleanQuery();
         
         if (isSet) {   
@@ -956,24 +955,29 @@ public class LuceneMessageSearchIndex extends ListeningMessageSearchIndex {
         IndexSearcher searcher = null;
 
         try {
-            Set<Long> uids = new HashSet<Long>();
+            Multimap<MailboxId, Long> uids = HashMultimap.create();
             searcher = new IndexSearcher(IndexReader.open(writer, true));
             
             // query for all the documents sorted by uid
             TopDocs docs = searcher.search(query, null, maxQueryResults, new Sort(UID_SORT));
             ScoreDoc[] sDocs = docs.scoreDocs;
             for (ScoreDoc sDoc : sDocs) {
-                long uid = Long.valueOf(searcher.doc(sDoc.doc).get(UID_FIELD));
-                uids.add(uid);
+                Document doc = searcher.doc(sDoc.doc);
+                long uid = Long.valueOf(doc.get(UID_FIELD));
+                MailboxId mailboxId = mailboxIdFactory.fromString(doc.get(MAILBOX_ID_FIELD));
+                uids.put(mailboxId, uid);
             }
             
             // add or remove recent uids
             if (flag.equalsIgnoreCase("\\RECENT")){
-                if (isSet) {
-                    uids.addAll(recentUids);
-                } else {
-                    uids.removeAll(recentUids);
-                }
+                    for (Map.Entry<MailboxId, Collection<Long>> recents: recentUids.entrySet()) {
+                        if (isSet) {
+                            uids.putAll(recents.getKey(), recents.getValue());
+                        } else {
+                            for (Long recent: recents.getValue()) {
+                                uids.remove(recents.getKey(), recent);
+                            }
+                    }
             }
             
             List<MessageRange> ranges = MessageRange.toRanges(new ArrayList<Long>(uids));
@@ -1166,7 +1170,7 @@ public class LuceneMessageSearchIndex extends ListeningMessageSearchIndex {
      * @return query
      * @throws UnsupportedSearchException
      */
-    private Query createConjunctionQuery(SearchQuery.ConjunctionCriterion crit, Query inMailboxes, Collection<Long> recentUids) throws UnsupportedSearchException, MailboxException {
+    private Query createConjunctionQuery(SearchQuery.ConjunctionCriterion crit, Query inMailboxes, Map<MailboxId, Collection<Long>> recentUids) throws UnsupportedSearchException, MailboxException {
         List<Criterion> crits = crit.getCriteria();
         BooleanQuery conQuery = new BooleanQuery();
         switch (crit.getType()) {
@@ -1202,7 +1206,7 @@ public class LuceneMessageSearchIndex extends ListeningMessageSearchIndex {
      * @return query
      * @throws UnsupportedSearchException
      */
-    private Query createQuery(Criterion criterion, Query inMailboxes, Collection<Long> recentUids) throws UnsupportedSearchException, MailboxException {
+    private Query createQuery(Criterion criterion, Query inMailboxes, Map<MailboxId, Collection<Long>> recentUids) throws UnsupportedSearchException, MailboxException {
         if (criterion instanceof SearchQuery.InternalDateCriterion) {
             SearchQuery.InternalDateCriterion crit = (SearchQuery.InternalDateCriterion) criterion;
             return createInternalDateQuery(crit);

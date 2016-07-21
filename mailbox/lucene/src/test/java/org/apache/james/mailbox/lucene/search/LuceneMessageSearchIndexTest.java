@@ -133,13 +133,13 @@ public class LuceneMessageSearchIndexTest extends AbstractMessageSearchIndexTest
     public void modSeqEqualsShouldReturnUidsOfMessageHavingAGivenModSeq() throws Exception {
     }
 
-    @Ignore
-    @Override
-    public void multimailboxSearchShouldReturnUidOfMessageMarkedAsSeenInTwoMailboxes() throws MailboxException {
-    }
-
-    @Ignore
-    @Override
-    public void multimailboxSearchShouldReturnUidOfMessageMarkedAsSeenInAllMailboxes() throws MailboxException {
-    }
+//    @Ignore
+//    @Override
+//    public void multimailboxSearchShouldReturnUidOfMessageMarkedAsSeenInTwoMailboxes() throws MailboxException {
+//    }
+//
+//    @Ignore
+//    @Override
+//    public void multimailboxSearchShouldReturnUidOfMessageMarkedAsSeenInAllMailboxes() throws MailboxException {
+//    }
 }

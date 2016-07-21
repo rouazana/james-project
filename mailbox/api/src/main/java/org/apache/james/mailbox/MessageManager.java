@@ -30,6 +30,7 @@ import javax.mail.Flags;
 import org.apache.james.mailbox.exception.MailboxException;
 import org.apache.james.mailbox.exception.UnsupportedCriteriaException;
 import org.apache.james.mailbox.model.MailboxACL;
+import org.apache.james.mailbox.model.MailboxId;
 import org.apache.james.mailbox.model.MessageRange;
 import org.apache.james.mailbox.model.MessageResult;
 import org.apache.james.mailbox.model.MessageResult.FetchGroup;
@@ -316,4 +317,6 @@ public interface MessageManager {
         MailboxACL getACL();
 
     }
+    
+    MailboxId getMailboxId();
 }

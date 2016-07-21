@@ -38,8 +38,10 @@ import org.apache.james.imap.api.process.SelectedMailbox;
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.exception.MailboxException;
 import org.apache.james.mailbox.model.FetchGroupImpl;
+import org.apache.james.mailbox.model.MailboxId;
 import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.model.MessageRange;
 import org.apache.james.mailbox.model.MessageResult;
@@ -90,6 +92,8 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
     private long highestUid = 0;
 
     private int highestMsn = 0;
+
+    private MailboxId id;
     
     public SelectedMailboxImpl(MailboxManager mailboxManager, ImapSession session, MailboxPath path) throws MailboxException {
         this.session = session;
@@ -117,7 +121,9 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
         
         mailboxManager.addListener(path, this, mailboxSession);
 
-        MessageResultIterator messages = mailboxManager.getMailbox(path, mailboxSession).getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
+        MessageManager mailbox = mailboxManager.getMailbox(path, mailboxSession);
+        this.id = mailbox.getMailboxId();
+        MessageResultIterator messages = mailbox.getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, mailboxSession);
         synchronized (this) {
             while(messages.hasNext()) {
                 MessageResult mr = messages.next();
@@ -268,6 +274,11 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener{
     
     public synchronized MailboxPath getPath() {
         return path;
+    }
+
+    @Override
+    public MailboxId getMailboxId() {
+        return id;
     }
 
     private void checkExpungedRecents() {
