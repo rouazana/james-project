@@ -21,6 +21,8 @@ package org.apache.james.mailbox.model;
 
 import java.util.Arrays;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
 public class MultimailboxesSearchQuery {
@@ -45,15 +47,17 @@ public class MultimailboxesSearchQuery {
         }
         
         public MultimailboxesSearchQuery build() {
+            Preconditions.checkNotNull(searchQuery);
             return new MultimailboxesSearchQuery(searchQuery, mailboxIds.build());
         }
         
     }
 
-    private SearchQuery searchQuery;
-    private ImmutableSet<MailboxId> mailboxIds;
+    private final SearchQuery searchQuery;
+    private final ImmutableSet<MailboxId> mailboxIds;
 
-    public MultimailboxesSearchQuery(SearchQuery searchQuery, ImmutableSet<MailboxId> mailboxIds) {
+    @VisibleForTesting
+    MultimailboxesSearchQuery(SearchQuery searchQuery, ImmutableSet<MailboxId> mailboxIds) {
         this.searchQuery = searchQuery;
         this.mailboxIds = mailboxIds;
     }
