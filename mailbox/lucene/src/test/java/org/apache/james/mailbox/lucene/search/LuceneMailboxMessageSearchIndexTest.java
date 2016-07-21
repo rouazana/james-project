@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.james.mailbox.lucene.search;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -46,8 +48,6 @@ import org.apache.james.mailbox.store.mail.model.Mailbox;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class LuceneMailboxMessageSearchIndexTest {
 
@@ -277,71 +277,71 @@ public class LuceneMailboxMessageSearchIndexTest {
     
     @Test
     public void flagSearchShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.flagIsSet(Flag.DELETED));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.flagIsSet(Flag.DELETED));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 3L);
     }
     
     @Test
     public void bodySearchShouldMatchSeveralEmails() throws Exception {    
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.bodyContains("body"));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.bodyContains("body"));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 2L, 3L);
     }
     
     @Test
     public void textSearchShouldMatchSeveralEmails() throws Exception {    
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.mailContains("body"));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.mailContains("body"));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 2L, 3L);
     }
     
     @Test
     public void headerSearchShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.headerContains("Subject", "test"));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.headerContains("Subject", "test"));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 3L);
     }
     
     @Test
     public void headerExistsShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.headerExists("Subject"));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.headerExists("Subject"));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 3L);
     }
     
     @Test
     public void flagUnsetShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.flagIsUnSet(Flag.DRAFT));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.flagIsUnSet(Flag.DRAFT));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 2L, 3L);
     }
     
     @Test
     public void internalDateBeforeShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
+        SearchQuery query = new SearchQuery();
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        q.andCriteria(SearchQuery.internalDateBefore(cal.getTime(), DateResolution.Day));
+        query.andCriteria(SearchQuery.internalDateBefore(cal.getTime(), DateResolution.Day));
         
-        Iterator<Long> result = index.search(null, mailbox, q);
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L);
     }
     
     
     @Test
     public void internalDateAfterShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
+        SearchQuery query = new SearchQuery();
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        q.andCriteria(SearchQuery.internalDateAfter(cal.getTime(), DateResolution.Day));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        query.andCriteria(SearchQuery.internalDateAfter(cal.getTime(), DateResolution.Day));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(3L);
     }
     
@@ -349,242 +349,242 @@ public class LuceneMailboxMessageSearchIndexTest {
     
     @Test
     public void internalDateOnShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
+        SearchQuery query = new SearchQuery();
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        q.andCriteria(SearchQuery.internalDateOn(cal.getTime(), DateResolution.Day));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        query.andCriteria(SearchQuery.internalDateOn(cal.getTime(), DateResolution.Day));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L);
     }
     
     @Test
     public void uidSearchShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
+        SearchQuery query = new SearchQuery();
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        q.andCriteria(SearchQuery.uid(new SearchQuery.NumericRange[] {new SearchQuery.NumericRange(1)}));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        query.andCriteria(SearchQuery.uid(new SearchQuery.NumericRange[] {new SearchQuery.NumericRange(1)}));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L);
     }
     
     @Test
     public void uidRangeSearchShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
+        SearchQuery query = new SearchQuery();
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        q.andCriteria(SearchQuery.uid(new SearchQuery.NumericRange[] {new SearchQuery.NumericRange(1), new SearchQuery.NumericRange(2,3)}));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        query.andCriteria(SearchQuery.uid(new SearchQuery.NumericRange[] {new SearchQuery.NumericRange(1), new SearchQuery.NumericRange(2,3)}));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 2L, 3L);
     }
     
     @Test
     public void sizeEqualsShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.sizeEquals(200));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.sizeEquals(200));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L);
     }
     
     @Test
     public void sizeLessThanShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.sizeLessThan(200));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.sizeLessThan(200));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 3L);
     }
     
     @Test
     public void sizeGreaterThanShouldMatch() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.sizeGreaterThan(6));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.sizeGreaterThan(6));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 2L, 3L);
     }
     
     @Test
     public void uidShouldBeSorted() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 2L, 3L);
     }
     
     @Test
     public void uidReverseSortShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.Uid, true)));
-        q.andCriteria(SearchQuery.all());
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.Uid, true)));
+        query.andCriteria(SearchQuery.all());
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(3L, 2L, 1L);
     }
     
     @Test
     public void sortOnSentDateShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.SentDate, false)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.SentDate, false)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 3L, 1L);
     }
     
     @Test
     public void reverseSortOnSentDateShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.SentDate, true)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.SentDate, true)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 3L, 2L);
     }
 
     @Test
     public void sortOnSubjectShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.BaseSubject, false)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.BaseSubject, false)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 1L, 3L);
     }
     
     @Test
     public void reverseSortOnSubjectShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.BaseSubject, true)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.BaseSubject, true)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(3L, 1L, 2L);
     }
     
     @Test
     public void sortOnMailboxFromShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxFrom, false)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxFrom, false)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 3L, 1L);
     }
     
     @Test
     public void reverseSortOnMailboxFromShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxFrom, true)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxFrom, true)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 3L, 2L);
     }
     
     @Test
     public void sortOnMailboxCCShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxCc, false)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxCc, false)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 2L, 3L);
     }
     
     @Test
     public void reverseSortOnMailboxCCShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxCc, true)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxCc, true)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 3L, 1L);
     }
     
     @Test
     public void sortOnMailboxToShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxTo, false)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxTo, false)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(3L, 1L, 2L);
     }
     
     @Test
     public void reverseSortOnMailboxToShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxTo, true)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.MailboxTo, true)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 1L, 3L);
     }
     
     @Test
     public void sortOnDisplayToShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.DisplayTo, false)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.DisplayTo, false)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(3L, 1L, 2L);
     }
     
     @Test
     public void reverseSortOnDisplayToShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.DisplayTo, true)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.DisplayTo, true)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 1L, 3L);
     }
     
     @Test
     public void sortOnDisplayFromShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.DisplayFrom, false)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.DisplayFrom, false)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 3L, 1L);
     }
     
     @Test
     public void reverseSortOnDisplayFromShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.DisplayFrom, true)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.DisplayFrom, true)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 3L, 2L);
     }
     
     @Test
     public void sortOnArrivalDateShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.Arrival, false)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.Arrival, false)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 1L, 3L);
     }
     
     @Test
     public void reverseSortOnArrivalDateShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.Arrival, true)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.Arrival, true)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(3L, 1L, 2L);
     }
     
     @Test
     public void sortOnSizeShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.Size, false)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.Size, false)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 3L, 1L);
     }
     
     @Test
     public void reverseSortOnSizeShouldReturnWellOrderedResults() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.all());
-        q.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.Size, true)));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.all());
+        query.setSorts(Arrays.asList(new SearchQuery.Sort(SortClause.Size, true)));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(1L, 2L, 3L);
     }
     
     @Test
     public void notOperatorShouldReverseMatching() throws Exception {
-        SearchQuery q = new SearchQuery();
-        q.andCriteria(SearchQuery.not(SearchQuery.uid(new SearchQuery.NumericRange[] { new SearchQuery.NumericRange(1)})));
-        Iterator<Long> result = index.search(null, mailbox, q);
+        SearchQuery query = new SearchQuery();
+        query.andCriteria(SearchQuery.not(SearchQuery.uid(new SearchQuery.NumericRange[] { new SearchQuery.NumericRange(1)})));
+        Iterator<Long> result = index.search(null, mailbox, query);
         assertThat(result).containsExactly(2L, 3L);
     }
     
