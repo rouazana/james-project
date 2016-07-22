@@ -362,7 +362,6 @@ public abstract class GetMessageListMethodTest {
             .body(ARGUMENTS + ".messageIds", contains("username@domain.tld|mailbox|1"));
     }
 
-    @Ignore("Temporay break inMailboxes/notInMailboxes support")
     @Test
     public void getMessageListShouldFilterMessagesWhenInMailboxesFilterDoesntMatches() throws Exception {
         jmapServer.serverProbe().createMailbox(MailboxConstants.USER_NAMESPACE, username, "mailbox");
@@ -373,7 +372,7 @@ public abstract class GetMessageListMethodTest {
 
         given()
             .header("Authorization", accessToken.serialize())
-            .body("[[\"getMessageList\", {\"filter\":{\"inMailboxes\":[\"mailbox2\"]}}, \"#0\"]]")
+            .body("[[\"getMessageList\", {\"filter\":{\"inMailboxes\":[\"2\"]}}, \"#0\"]]")
         .when()
             .post("/jmap")
         .then()
