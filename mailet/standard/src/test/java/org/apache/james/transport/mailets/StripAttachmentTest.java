@@ -55,6 +55,8 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 
 public class StripAttachmentTest {
 
@@ -217,7 +219,7 @@ public class StripAttachmentTest {
                 MimeMessageBuilder.bodyPartBuilder()
                     .data("simple text")
                     .build(),
-                createAttachmentBodyPart(expectedAttachmentContent, "temp.tmp", TEXT_HEADERS),
+                createAttachmentBodyPart(expectedAttachmentContent, "temp_filname.tmp", TEXT_HEADERS),
                 createAttachmentBodyPart("\u0014\u00A3\u00E1\u00E2\u00E4", "winmail.dat", TEXT_HEADERS))
             .build();
 
@@ -232,9 +234,22 @@ public class StripAttachmentTest {
         assertThat(savedAttachments).isNotNull();
         assertThat(savedAttachments).hasSize(2);
 
-        String attachmentFilename = savedAttachments.iterator().next();
-
+        String attachmentFilename = retrieveFilenameStartingWith(savedAttachments, "temp_filname");
+        assertThat(attachmentFilename).isNotNull();
         assertThat(new File(folderPath + attachmentFilename)).hasContent(expectedAttachmentContent);
+    }
+
+    private String retrieveFilenameStartingWith(Collection<String> savedAttachments, final String filename) {
+        return FluentIterable.from(savedAttachments)
+                .filter(new Predicate<String>() {
+
+                    @Override
+                    public boolean apply(String attachmentFilename) {
+                        return attachmentFilename.startsWith(filename);
+                    }
+                })
+                .first()
+                .get();
     }
 
     @Test
