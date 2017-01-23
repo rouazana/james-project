@@ -775,6 +775,35 @@ public class StripAttachmentTest {
     }
 
     @Test
+    public void processMultipartPartMessageShouldSetFilenameToMatchingAttachmentsWhenAttachmentWithoutFilename() throws Exception {
+        //Given
+        StripAttachment mailet = new StripAttachment();
+
+        FakeMailetConfig mci = FakeMailetConfig.builder()
+                .mailetName("Test")
+                .setProperty("remove", "matched")
+                .setProperty("directory", folderPath)
+                .setProperty("pattern", ".*")
+                .build();
+        mailet.init(mci);
+
+        MimeMessage mimeMessage = MimeMessageBuilder.mimeMessageBuilder()
+            .setMultipartWithBodyParts(
+                MimeMessageBuilder.bodyPartBuilder()
+                    .build())
+            .build();
+
+        Mail mail = FakeMail.builder().build();
+        //When
+        boolean actual = mailet.processMultipartPartMessage(mimeMessage, mail);
+        //Then
+        assertThat(actual).isTrue();
+        @SuppressWarnings("unchecked")
+        List<String> values = (List<String>)mail.getAttribute(StripAttachment.SAVED_ATTACHMENTS_ATTRIBUTE_KEY);
+        assertThat(values).hasSize(1);
+    }
+
+    @Test
     public void saveAttachmentShouldUsePartNameIfNoFilename() throws Exception {
         //Given
         StripAttachment mailet = new StripAttachment();
