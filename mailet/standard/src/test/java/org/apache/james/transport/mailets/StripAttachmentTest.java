@@ -230,7 +230,7 @@ public class StripAttachmentTest {
         @SuppressWarnings("unchecked")
         Collection<String> savedAttachments = (Collection<String>) mail.getAttribute(StripAttachment.SAVED_ATTACHMENTS_ATTRIBUTE_KEY);
         assertThat(savedAttachments).isNotNull();
-        assertThat(savedAttachments).hasSize(1);
+        assertThat(savedAttachments).hasSize(2);
 
         String attachmentFilename = savedAttachments.iterator().next();
 
