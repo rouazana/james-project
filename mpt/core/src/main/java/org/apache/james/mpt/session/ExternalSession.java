@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.apache.james.mpt.api.Monitor;
 import org.apache.james.mpt.api.Session;
+import org.jmock.util.NotImplementedException;
 
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.Duration;
@@ -149,6 +150,10 @@ public final class ExternalSession implements Session {
             monitor.note("connecting...");
             Thread.sleep(10);
         }
+    }
+
+    public void restart() throws Exception {
+        throw new NotImplementedException("Restart is not implemented for ExternalSession");
     }
 
     public void stop() throws Exception {
