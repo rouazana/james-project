@@ -26,10 +26,10 @@ import java.nio.charset.Charset;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.apache.james.mpt.api.Monitor;
 import org.apache.james.mpt.api.Session;
-import org.jmock.util.NotImplementedException;
 
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.Duration;
