@@ -49,7 +49,7 @@ public class UserRepositoryAuthorizatorTest {
     }
 
     @Test
-    public void canLoginAsOtherUserShouldReturnFalseWhenIsAdministratorThrows() throws Exception {
+    public void canLoginAsOtherUserShouldThrowMailboxExceptionWhenIsAdministratorThrows() throws Exception {
         when(usersRepository.isAdministrator(ADMIN))
             .thenThrow(new UsersRepositoryException("expected error"));
 
