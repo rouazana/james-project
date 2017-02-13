@@ -31,7 +31,7 @@ import org.apache.james.user.api.UsersRepositoryException;
  */
 public class UserRepositoryAuthorizator implements Authorizator {
 
-    private UsersRepository repos;
+    private final UsersRepository repos;
 
     @Inject
     public UserRepositoryAuthorizator(UsersRepository repos) {
