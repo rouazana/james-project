@@ -59,7 +59,7 @@ public class UserRepositoryAuthorizatorTest {
     }
 
     @Test
-    public void canLoginAsOtherUserShouldReturnFalseWhenNotAdminAndNoUser() throws Exception {
+    public void canLoginAsOtherUserShouldReturnNotAdminWhenNotAdminAndNoUser() throws Exception {
         when(usersRepository.isAdministrator(ADMIN))
             .thenReturn(false);
         when(usersRepository.contains(USER))
@@ -69,7 +69,7 @@ public class UserRepositoryAuthorizatorTest {
     }
 
     @Test
-    public void canLoginAsOtherUserShouldReturnFalseWhenNotAdminAndUser() throws Exception {
+    public void canLoginAsOtherUserShouldReturnNotAdminWhenNotAdminAndUser() throws Exception {
         when(usersRepository.isAdministrator(ADMIN))
             .thenReturn(false);
         when(usersRepository.contains(USER))
@@ -79,7 +79,7 @@ public class UserRepositoryAuthorizatorTest {
     }
 
     @Test
-    public void canLoginAsOtherUserShouldReturnFalseWhenUserIsNotInRepository() throws Exception {
+    public void canLoginAsOtherUserShouldReturnUnknownUserWhenUserIsNotInRepository() throws Exception {
         when(usersRepository.isAdministrator(ADMIN))
             .thenReturn(true);
         when(usersRepository.contains(USER))
@@ -89,7 +89,7 @@ public class UserRepositoryAuthorizatorTest {
     }
 
     @Test
-    public void canLoginAsOtherUserShouldReturnTrueWhenAdminAndUserIsInRepository() throws Exception {
+    public void canLoginAsOtherUserShouldReturnAllowedWhenAdminAndUserIsInRepository() throws Exception {
         when(usersRepository.isAdministrator(ADMIN))
             .thenReturn(true);
         when(usersRepository.contains(USER))
