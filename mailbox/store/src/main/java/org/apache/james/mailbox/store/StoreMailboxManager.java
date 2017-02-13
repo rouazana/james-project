@@ -420,18 +420,18 @@ public class StoreMailboxManager implements MailboxManager {
     }
 
     @Override
-    public MailboxSession loginAsOtherUser(String adminUserid, String passwd, String realUserId, Logger log) throws MailboxException {
+    public MailboxSession loginAsOtherUser(String adminUserid, String passwd, String otherUserId, Logger log) throws MailboxException {
         if (! login(adminUserid, passwd)) {
             throw new BadCredentialsException();
         }
-        Authorizator.AuthorizationState authorizationState = authorizator.canLoginAsOtherUser(adminUserid, realUserId);
+        Authorizator.AuthorizationState authorizationState = authorizator.canLoginAsOtherUser(adminUserid, otherUserId);
         switch (authorizationState) {
             case ALLOWED:
-                return createSystemSession(realUserId, log);
+                return createSystemSession(otherUserId, log);
             case NOT_ADMIN:
                 throw new NotAdminException();
             case UNKNOWN_USER:
-                throw new UserDoesNotExistException(realUserId);
+                throw new UserDoesNotExistException(otherUserId);
             default:
                 throw new RuntimeException("Unknown AuthorizationState " + authorizationState);
         }

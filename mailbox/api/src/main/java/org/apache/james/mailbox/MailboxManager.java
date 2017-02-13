@@ -292,14 +292,14 @@ public interface MailboxManager extends RequestAware, MailboxListenerSupport {
 
     /**
      * Autenticates the given administrator against the given password,
-     * then switch to the real user<br>
-     * When authenticated and authorized, a session for the real user will be supplied
+     * then switch to an other user<br>
+     * When authenticated and authorized, a session for the other user will be supplied
      * 
      * @param adminUserId
      *            user name of the admin user, matching the credentials
      * @param passwd
      *            password supplied for the admin user
-     * @param realUserId
+     * @param otherUserId
      *            user name of the real user
      * @param log
      *            context sensitive log
@@ -310,7 +310,7 @@ public interface MailboxManager extends RequestAware, MailboxListenerSupport {
      * @throws MailboxException
      *             when the creation fails for other reasons
      */
-    MailboxSession loginAsOtherUser(String adminUserId, String passwd, String realUserId, Logger log) throws BadCredentialsException, MailboxException;
+    MailboxSession loginAsOtherUser(String adminUserId, String passwd, String otherUserId, Logger log) throws BadCredentialsException, MailboxException;
 
     /**
      * <p>
