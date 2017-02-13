@@ -472,7 +472,7 @@ public class ProtocolSession implements ProtocolInteractor {
         private final int sessionNumber;
 
         public ContinuationElement(int sessionNumber) throws Exception {
-            this.sessionNumber = sessionNumber < 0 ? 0 : sessionNumber;
+            this.sessionNumber = Math.max(0, sessionNumber);
         }
 
         public void testProtocol(Session[] sessions, boolean continueAfterFailure) throws Exception {
@@ -507,7 +507,7 @@ public class ProtocolSession implements ProtocolInteractor {
         private final int sessionNumber;
 
         public ReinitElement(int sessionNumber) {
-            this.sessionNumber = sessionNumber < 0 ? 0 : sessionNumber;
+            this.sessionNumber = Math.max(0, sessionNumber);
         }
 
         public void testProtocol(Session[] sessions, boolean continueAfterFailure) throws Exception {
