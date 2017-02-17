@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.james.mpt.imapmailbox.cassandra.host;
 
+import java.io.ByteArrayInputStream;
+import java.util.Date;
+
+import javax.mail.Flags;
+import javax.mail.Flags.Flag;
+
 import org.apache.james.backends.cassandra.CassandraCluster;
 import org.apache.james.backends.cassandra.components.CassandraModule;
 import org.apache.james.backends.cassandra.init.CassandraModuleComposite;
@@ -25,6 +31,9 @@ import org.apache.james.backends.cassandra.init.CassandraTypesProvider;
 import org.apache.james.imap.encode.main.DefaultImapEncoderFactory;
 import org.apache.james.imap.main.DefaultImapDecoderFactory;
 import org.apache.james.imap.processor.main.DefaultImapProcessorFactory;
+import org.apache.james.mailbox.FlagsBuilder;
+import org.apache.james.mailbox.MailboxSession;
+import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.SubscriptionManager;
 import org.apache.james.mailbox.cassandra.CassandraMailboxManager;
 import org.apache.james.mailbox.cassandra.CassandraMailboxSessionMapperFactory;
@@ -63,6 +72,10 @@ import org.apache.james.mpt.api.ImapFeatures;
 import org.apache.james.mpt.api.ImapFeatures.Feature;
 import org.apache.james.mpt.host.JamesImapHostSystem;
 import org.apache.james.mpt.imapmailbox.MailboxCreationDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Charsets;
 
 public class CassandraHostSystem extends JamesImapHostSystem {
 
@@ -155,6 +168,18 @@ public class CassandraHostSystem extends JamesImapHostSystem {
     @Override
     public boolean supports(Feature... features) {
         return IMAP_FEATURES.supports(features);
+    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraHostSystem.class);
+
+    @Override
+    public void appendMail(String subject) throws Exception {
+        MailboxSession mailboxSession = mailboxManager.createSystemSession("imapuser", LOGGER);
+        System.out.println(mailboxManager.list(mailboxSession));
+        MessageManager mailbox = mailboxManager.getMailbox(new MailboxPath("#private", "imapuser", "INBOX"), mailboxSession);
+        String message = "Subject: " + subject + "\r\n\r\ncontent";
+        mailbox.appendMessage(new ByteArrayInputStream(message.getBytes(Charsets.UTF_8)), new Date(), mailboxSession, true, FlagsBuilder.builder().add(Flag.RECENT).build());
+        // TODO Auto-generated method stub
+        
     }
     
 }

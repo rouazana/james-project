@@ -26,5 +26,7 @@ public interface ImapHostSystem extends HostSystem {
     boolean supports(Feature... features);
     
     void createMailbox(MailboxPath mailboxPath) throws Exception;
+    
+    void appendMail(String subject) throws Exception;
 
 }

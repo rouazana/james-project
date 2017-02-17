@@ -46,9 +46,10 @@ public class QuotaChecker {
     }
 
     public boolean tryAddition(long count, long size) throws OverQuotaException {
-        messageQuota.addValueToQuota(count);
-        sizeQuota.addValueToQuota(size);
-        return check();
+        return true;
+//        messageQuota.addValueToQuota(count);
+//        sizeQuota.addValueToQuota(size);
+//        return check();
     }
 
     private boolean check() throws OverQuotaException {
