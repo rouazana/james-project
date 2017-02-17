@@ -170,12 +170,15 @@ public class CassandraHostSystem extends JamesImapHostSystem {
         return IMAP_FEATURES.supports(features);
     }
     private static final Logger LOGGER = LoggerFactory.getLogger(CassandraHostSystem.class);
+    
+    private MessageManager mailbox = null;
 
     @Override
     public void appendMail(String subject) throws Exception {
         MailboxSession mailboxSession = mailboxManager.createSystemSession("imapuser", LOGGER);
-        System.out.println(mailboxManager.list(mailboxSession));
-        MessageManager mailbox = mailboxManager.getMailbox(new MailboxPath("#private", "imapuser", "INBOX"), mailboxSession);
+        if (mailbox == null) {
+            mailbox = mailboxManager.getMailbox(new MailboxPath("#private", "imapuser", "INBOX"), mailboxSession);
+        }
         String message = "Subject: " + subject + "\r\n\r\ncontent";
         mailbox.appendMessage(new ByteArrayInputStream(message.getBytes(Charsets.UTF_8)), new Date(), mailboxSession, true, FlagsBuilder.builder().add(Flag.RECENT).build());
         // TODO Auto-generated method stub

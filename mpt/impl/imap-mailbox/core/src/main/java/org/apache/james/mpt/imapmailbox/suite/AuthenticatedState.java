@@ -63,7 +63,8 @@ public class AuthenticatedState extends BaseAuthenticatedState {
     @Test
     public void testAppendSelectInboxUS() throws Exception {
         system.createMailbox(new MailboxPath("#private", "imapuser", "INBOX"));
-        for (int i = 0; i<10000; i++) {
+        for (int i = 0; i<5000; i++) {
+            System.out.println("Appending " + i);
             system.appendMail("yop" + i);
         }
         scriptTest("AppendSelectInbox", Locale.US);

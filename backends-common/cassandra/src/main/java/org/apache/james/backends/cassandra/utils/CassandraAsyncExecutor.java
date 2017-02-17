@@ -24,6 +24,10 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
 
+import org.apache.cassandra.thrift.Cassandra.AsyncProcessor.system_add_column_family;
+
+import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.DefaultPreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
@@ -41,22 +45,38 @@ public class CassandraAsyncExecutor {
     }
 
     public CompletableFuture<ResultSet> execute(Statement statement) {
+        debug(statement);
         return FutureConverter.toCompletableFuture(session.executeAsync(statement));
+    }
+
+    private void debug(Statement statement) {
+        if (statement instanceof BoundStatement) {
+            System.out.println(((DefaultPreparedStatement)((BoundStatement)statement).preparedStatement()).getQueryString());
+            try {
+                Object object = ((BoundStatement) statement).getObject("mailboxId");
+                System.out.println(object);
+            } catch (Exception e) {}
+        } else {
+            System.out.println(statement);
+        }
     }
 
 
     public CompletableFuture<Boolean> executeReturnApplied(Statement statement) {
+        debug(statement);
         return FutureConverter.toCompletableFuture(session.executeAsync(statement))
             .thenApply(ResultSet::one)
             .thenApply(row -> row.getBool(CassandraConstants.LIGHTWEIGHT_TRANSACTION_APPLIED));
     }
 
     public CompletableFuture<Void> executeVoid(Statement statement) {
+        debug(statement);
         return FutureConverter.toCompletableFuture(session.executeAsync(statement))
             .thenAccept(result -> {});
     }
 
     public CompletableFuture<Optional<Row>> executeSingleRow(Statement statement) {
+        debug(statement);
         return execute(statement)
             .thenApply(ResultSet::one)
             .thenApply(Optional::ofNullable);

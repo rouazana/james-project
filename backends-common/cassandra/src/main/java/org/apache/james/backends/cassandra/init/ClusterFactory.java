@@ -44,7 +44,10 @@ public class ClusterFactory {
         if (refreshSchemaIntervalMillis.isPresent()) {
             clusterBuilder.withQueryOptions(new QueryOptions().setRefreshSchemaIntervalMillis(refreshSchemaIntervalMillis.get()));
         }
-        return clusterBuilder.build();
+        Cluster cluster = clusterBuilder.build();
+        cluster.getConfiguration().getSocketOptions().setReadTimeoutMillis(100000);
+        return cluster;
+
     }
 
     public static Cluster createClusterForClusterWithoutPassWord(List<CassandraNodeIpAndPort> servers) {

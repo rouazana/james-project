@@ -30,8 +30,10 @@ import org.apache.james.backends.cassandra.components.CassandraModule;
 import org.apache.james.backends.cassandra.components.CassandraTable;
 import org.apache.james.backends.cassandra.components.CassandraType;
 import org.apache.james.mailbox.cassandra.table.CassandraMailboxRecentsTable;
+import org.apache.james.mailbox.cassandra.table.CassandraSubscriptionTable;
 
 import com.datastax.driver.core.schemabuilder.SchemaBuilder;
+import com.google.common.collect.ImmutableList;
 
 public class CassandraMailboxRecentsModule implements CassandraModule {
 
@@ -46,7 +48,12 @@ public class CassandraMailboxRecentsModule implements CassandraModule {
                     .ifNotExists()
                     .addPartitionKey(CassandraMailboxRecentsTable.MAILBOX_ID, timeuuid())
                     .addClusteringColumn(CassandraMailboxRecentsTable.RECENT_MESSAGE_UID, bigint())));
-        index = Collections.emptyList();
+        index = ImmutableList.of(            new CassandraIndex(
+                SchemaBuilder.createIndex(CassandraIndex.INDEX_PREFIX + CassandraMailboxRecentsTable.RECENT_MESSAGE_UID)
+                .ifNotExists()
+                .onTable(CassandraMailboxRecentsTable.TABLE_NAME)
+                .andColumn(CassandraMailboxRecentsTable.RECENT_MESSAGE_UID)));
+//);
         types = Collections.emptyList();
     }
 
