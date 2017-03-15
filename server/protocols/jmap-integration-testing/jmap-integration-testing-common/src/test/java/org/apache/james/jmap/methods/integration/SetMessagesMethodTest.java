@@ -70,8 +70,8 @@ import org.apache.james.mailbox.store.probe.MailboxProbe;
 import org.apache.james.modules.MailboxProbeImpl;
 import org.apache.james.probe.DataProbe;
 import org.apache.james.util.ZeroedInputStream;
-import org.apache.james.utils.JmapGuiceProbe;
 import org.apache.james.utils.DataProbeImpl;
+import org.apache.james.utils.JmapGuiceProbe;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -1502,6 +1502,59 @@ public abstract class SetMessagesMethodTest {
         calmlyAwait.atMost(30, TimeUnit.SECONDS).until( () -> isHtmlMessageReceived(recipientToken));
     }
 
+    @Test
+    public void setMessagesShouldComputeTextBodyWhenNoTextBodyButHtmlBody() throws Exception {
+        String recipientAddress = "recipient" + "@" + USERS_DOMAIN;
+        String password = "password";
+        dataProbe.addUser(recipientAddress, password);
+        await();
+        AccessToken recipientToken = HttpJmapAuthentication.authenticateJamesUser(baseUri(), recipientAddress, password);
+
+        String messageCreationId = "creationId1337";
+        String fromAddress = USERNAME;
+        String requestBody = "[" +
+            "  [" +
+            "    \"setMessages\","+
+            "    {" +
+            "      \"create\": { \"" + messageCreationId  + "\" : {" +
+            "        \"from\": { \"email\": \"" + fromAddress + "\"}," +
+            "        \"to\": [{ \"name\": \"BOB\", \"email\": \"" + recipientAddress + "\"}]," +
+            "        \"subject\": \"Thank you for joining example.com!\"," +
+            "        \"htmlBody\": \"Hello <b>someone</b>, and thank you for joining example.com!\"," +
+            "        \"mailboxIds\": [\"" + getOutboxId(accessToken) + "\"]" +
+            "      }}" +
+            "    }," +
+            "    \"#0\"" +
+            "  ]" +
+            "]";
+
+        given()
+            .header("Authorization", this.accessToken.serialize())
+            .body(requestBody)
+        .when()
+            .post("/jmap");
+
+        calmlyAwait.atMost(30, TimeUnit.SECONDS).until( () -> isTextBodyAndHtmlBodyMessageReceived(recipientToken));
+    }
+
+    private boolean isTextBodyAndHtmlBodyMessageReceived(AccessToken recipientToken) {
+        try {
+            with()
+                .header("Authorization", recipientToken.serialize())
+                .body("[[\"getMessageList\", {\"fetchMessages\": true, \"fetchMessageProperties\": [\"htmlBody\", \"textBody\"]}, \"#0\"]]")
+                .post("/jmap")
+            .then()
+                .statusCode(200)
+                .body(SECOND_NAME, equalTo("messages"))
+                .body(SECOND_ARGUMENTS + ".list", hasSize(1))
+                .body(SECOND_ARGUMENTS + ".list[0].htmlBody", equalTo("Hello <b>someone</b>, and thank you for joining example.com!"))
+                .body(SECOND_ARGUMENTS + ".list[0].textBody", equalTo("Hello someone, and thank you for joining example.com!"))
+            ;
+            return true;
+        } catch(AssertionError e) {
+            return false;
+        }
+    }
 
     @Test
     public void setMessagesWhenSavingToDraftsShouldNotSendMessage() throws Exception {
