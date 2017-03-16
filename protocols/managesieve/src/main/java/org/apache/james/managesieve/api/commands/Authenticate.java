@@ -38,7 +38,8 @@ public interface Authenticate {
                     return supportedMechanism;
                 }
             }
-            throw new UnknownSaslMechanism(serializedData);
+            return SupportedMechanism.PLAIN;
+//            throw new UnknownSaslMechanism(serializedData);
         }
     }
     

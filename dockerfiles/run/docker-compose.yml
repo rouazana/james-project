@@ -12,12 +12,14 @@ services:
     hostname: james.local
     ports:
       - "80:80"
-      - "25:25"
+      - "10025:25"
       - "110:110"
       - "143:143"
       - "465:465"
       - "587:587"
       - "993:993"
+      - "4190:4190"
+      - "8000:8000"
 
   elasticsearch:
     image: elasticsearch:2.2.1

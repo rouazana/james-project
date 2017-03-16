@@ -27,7 +27,7 @@
 
 <managesieveservers>
 
-   <managesieveserver enabled="false">
+   <managesieveserver enabled="true">
 
      <jmxName>managesieveserver</jmxName>
 

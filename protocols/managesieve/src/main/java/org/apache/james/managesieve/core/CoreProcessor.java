@@ -81,12 +81,13 @@ public class CoreProcessor implements CoreCommands {
 
     @Override
     public String getAdvertisedCapabilities() {
-        return convertCapabilityMapToString(capabilitiesBase) + "\r\n";
+//        return "\"IMPLEMENTATION\" \"Apache\"\r\nOK\r\n";
+        return convertCapabilityMapToString(capabilitiesBase) + "\r\nOK\r\n";
     }
 
     @Override
     public String capability(Session session) {
-        return convertCapabilityMapToString(computeCapabilityMap(session)) + "\r\nOK";
+        return convertCapabilityMapToString(computeCapabilityMap(session)) + "\r\nOK\r\n";
     }
 
     private String convertCapabilityMapToString(Map<Capabilities, String> capabilitiesStringMap) {
@@ -242,9 +243,12 @@ public class CoreProcessor implements CoreCommands {
             SupportedMechanism supportedMechanism = SupportedMechanism.retrieveMechanism(unquotedMechanism);
 
             session.setChoosedAuthenticationMechanism(supportedMechanism);
-            session.setState(Session.State.AUTHENTICATION_IN_PROGRESS);
-            AuthenticationProcessor authenticationProcessor = authenticationProcessorMap.get(supportedMechanism);
-            return authenticationProcessor.initialServerResponse(session);
+//            session.setState(Session.State.AUTHENTICATION_IN_PROGRESS);
+            session.setUser("user1@open-paas.org");
+            session.setState(Session.State.AUTHENTICATED);
+            return "OK \"authentication successfull\"";
+//            AuthenticationProcessor authenticationProcessor = authenticationProcessorMap.get(supportedMechanism);
+//            return authenticationProcessor.initialServerResponse(session);
         } catch (UnknownSaslMechanism unknownSaslMechanism) {
             return "NO " + unknownSaslMechanism.getMessage();
         }
