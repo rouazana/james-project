@@ -26,6 +26,7 @@ import static com.jayway.restassured.config.RestAssuredConfig.newConfig;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 import java.util.List;
 import java.util.Map;
@@ -169,7 +170,7 @@ public abstract class VacationIntegrationTest {
             .until(() -> isTextMessageReceived(user1AccessToken, getInboxId(user1AccessToken), ORIGINAL_MESSAGE_TEXT_BODY, USER_2, USER_1));
         // User 2 should well receive a notification about user 1 vacation
         calmlyAwait.atMost(30, TimeUnit.SECONDS)
-            .until( () -> isTextMessageReceived(user2AccessToken, getInboxId(user2AccessToken), "", USER_1, USER_2));
+            .until( () -> isTextMessageWithEmptyTextBodyReceived(user2AccessToken, getInboxId(user2AccessToken), USER_1, USER_2));
     }
 
     @Test
@@ -392,6 +393,14 @@ public abstract class VacationIntegrationTest {
         }
     }
 
+    private boolean isTextMessageWithEmptyTextBodyReceived(AccessToken recipientToken, String mailboxId, String expectedFrom, String expectedTo) {
+        try {
+            assertOneMessageWithEmptyTextBodyReceived(recipientToken, mailboxId, expectedFrom, expectedTo);
+            return true;
+        } catch(AssertionError e) {
+            return false;
+        }
+    }
     private void assertOneMessageReceived(AccessToken recipientToken, String mailboxId, String expectedTextBody, String expectedFrom, String expectedTo) {
         with()
             .header("Authorization", recipientToken.serialize())
@@ -409,6 +418,28 @@ public abstract class VacationIntegrationTest {
             .body(SECOND_NAME, equalTo("messages"))
             .body(SECOND_ARGUMENTS + ".list", hasSize(1))
             .body(SECOND_ARGUMENTS + ".list[0].textBody", equalTo(expectedTextBody))
+            .body(SECOND_ARGUMENTS + ".list[0].from.email", equalTo(expectedFrom))
+            .body(SECOND_ARGUMENTS + ".list[0].to.email", hasSize(1))
+            .body(SECOND_ARGUMENTS + ".list[0].to.email[0]", equalTo(expectedTo));
+    }
+
+    private void assertOneMessageWithEmptyTextBodyReceived(AccessToken recipientToken, String mailboxId, String expectedFrom, String expectedTo) {
+        with()
+            .header("Authorization", recipientToken.serialize())
+            .body("[[\"getMessageList\", " +
+                "{" +
+                "  \"fetchMessages\": true, " +
+                "  \"fetchMessageProperties\": [\"textBody\", \"from\", \"to\", \"mailboxIds\"]," +
+                "  \"filter\": {" +
+                "    \"inMailboxes\":[\"" + mailboxId + "\"]" +
+                "  }" +
+                "}, \"#0\"]]")
+            .post("/jmap")
+            .then()
+            .statusCode(200)
+            .body(SECOND_NAME, equalTo("messages"))
+            .body(SECOND_ARGUMENTS + ".list", hasSize(1))
+            .body(SECOND_ARGUMENTS + ".list[0].textBody", isEmptyOrNullString())
             .body(SECOND_ARGUMENTS + ".list[0].from.email", equalTo(expectedFrom))
             .body(SECOND_ARGUMENTS + ".list[0].to.email", hasSize(1))
             .body(SECOND_ARGUMENTS + ".list[0].to.email[0]", equalTo(expectedTo));

@@ -22,12 +22,14 @@ package org.apache.james.jmap.model;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.james.mime4j.dom.Body;
 import org.apache.james.mime4j.dom.Entity;
 import org.apache.james.mime4j.dom.Multipart;
@@ -55,7 +57,7 @@ public class MessageContentExtractor {
     }
 
     private MessageContent parseTextBody(Entity entity, TextBody textBody) throws IOException {
-        String bodyContent = asString(textBody);
+        Optional<String> bodyContent = asString(textBody);
         if (TEXT_HTML.equals(entity.getMimeType())) {
             return MessageContent.ofHtmlOnly(bodyContent);
         }
@@ -89,8 +91,12 @@ public class MessageContentExtractor {
             .orElse(MessageContent.empty());
     }
 
-    private String asString(TextBody textBody) throws IOException {
-        return IOUtils.toString(textBody.getInputStream(), textBody.getMimeCharset());
+    private Optional<String> asString(TextBody textBody) throws IOException {
+        String textBodyContent = IOUtils.toString(textBody.getInputStream(), textBody.getMimeCharset());
+        if (StringUtils.isEmpty(textBodyContent)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(textBodyContent);
     }
 
     private MessageContent retrieveHtmlAndPlainTextContent(Multipart multipart) throws IOException {
@@ -141,6 +147,9 @@ public class MessageContentExtractor {
     }
 
     private Optional<String> getFirstMatchingTextBody(Multipart multipart, String mimeType, Predicate<Entity> condition) {
+        Function<TextBody, Optional<String>> textBodyOptionalFunction = Throwing
+            .<TextBody, Optional<String>>function(textBody ->  asString(textBody)).sneakyThrow();
+
         return multipart.getBodyParts()
             .stream()
             .filter(part -> mimeType.equals(part.getMimeType()))
@@ -149,7 +158,7 @@ public class MessageContentExtractor {
             .filter(TextBody.class::isInstance)
             .map(TextBody.class::cast)
             .findFirst()
-            .map(Throwing.function(this::asString).sneakyThrow());
+            .flatMap(textBodyOptionalFunction);
     }
 
     private boolean isNotAttachment(Entity part) {
@@ -169,12 +178,12 @@ public class MessageContentExtractor {
             this.htmlBody = htmlBody;
         }
 
-        public static MessageContent ofTextOnly(String textBody) {
-            return new MessageContent(Optional.of(textBody), Optional.empty());
+        public static MessageContent ofTextOnly(Optional<String> textBody) {
+            return new MessageContent(textBody, Optional.empty());
         }
 
-        public static MessageContent ofHtmlOnly(String htmlBody) {
-            return new MessageContent(Optional.empty(), Optional.of(htmlBody));
+        public static MessageContent ofHtmlOnly(Optional<String> htmlBody) {
+            return new MessageContent(Optional.empty(), htmlBody);
         }
 
         public static MessageContent empty() {
