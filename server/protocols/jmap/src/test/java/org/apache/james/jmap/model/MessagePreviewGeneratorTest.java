@@ -113,7 +113,7 @@ public class MessagePreviewGeneratorTest {
         //Then
         assertThat(actual)
             .isPresent()
-            .isEqualTo(Optional.of(expected));
+            .contains(expected);
     }
 
     @Test
@@ -133,7 +133,7 @@ public class MessagePreviewGeneratorTest {
         //Then
         assertThat(actual)
             .isPresent()
-            .isEqualTo(Optional.of(expected));
+            .contains(expected);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class MessagePreviewGeneratorTest {
         assertThat(body256.length()).isEqualTo(256);
         assertThat(actual)
             .isPresent()
-            .isEqualTo(Optional.of(body256));
+            .contains(body256);
     }
 
     @Test
@@ -167,7 +167,7 @@ public class MessagePreviewGeneratorTest {
         assertThat(expected.length()).isEqualTo(256);
         assertThat(actual)
             .isPresent()
-            .isEqualTo(Optional.of(expected));
+            .contains(expected);
     }
 
     @Test
@@ -191,7 +191,7 @@ public class MessagePreviewGeneratorTest {
         //Then
         assertThat(actual)
             .isPresent()
-            .isEqualTo(Optional.of(expected));
+            .contains(expected);
     }
 
     @Test
@@ -210,7 +210,7 @@ public class MessagePreviewGeneratorTest {
 
         assertThat(testee.fromContent(Optional.of(htmlBody), Optional.empty()))
             .isPresent()
-            .isEqualTo(Optional.of(expected));
+            .contains(expected);
     }
 
     @Test
@@ -223,7 +223,7 @@ public class MessagePreviewGeneratorTest {
 
         assertThat(testee.fromContent(Optional.of(htmlBody), Optional.of("Any text body")))
             .isPresent()
-            .isEqualTo(Optional.of(expected));
+            .contains(expected);
     }
 
     @Test
@@ -232,6 +232,6 @@ public class MessagePreviewGeneratorTest {
 
         assertThat(testee.fromContent(Optional.empty(), Optional.of(expected)))
             .isPresent()
-            .isEqualTo(Optional.of(expected));
+            .contains(expected);
     }
 }
