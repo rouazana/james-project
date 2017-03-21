@@ -117,9 +117,9 @@ public class GetMessagesMethodTest {
     public void setup() throws Exception {
         clientId = ClientId.of("#0");
         HtmlTextExtractor htmlTextExtractor = new MailboxBasedHtmlTextExtractor(new TikaTextExtractor());
-        MessagePreviewGenerator messagePreview = new MessagePreviewGenerator(htmlTextExtractor);
+        MessagePreviewGenerator messagePreview = new MessagePreviewGenerator();
         MessageContentExtractor messageContentExtractor = new MessageContentExtractor();
-        MessageFactory messageFactory = new MessageFactory(messagePreview, messageContentExtractor);
+        MessageFactory messageFactory = new MessageFactory(messagePreview, messageContentExtractor, htmlTextExtractor);
         InMemoryIntegrationResources inMemoryIntegrationResources = new InMemoryIntegrationResources();
         GroupMembershipResolver groupMembershipResolver = inMemoryIntegrationResources.createGroupMembershipResolver();
         mailboxManager = inMemoryIntegrationResources.createMailboxManager(groupMembershipResolver);
@@ -345,7 +345,7 @@ public class GetMessagesMethodTest {
             .extracting(GetMessagesResponse.class::cast)
             .flatExtracting(GetMessagesResponse::list)
             .extracting(Message::getId, Message::getTextBody, Message::getHtmlBody)
-            .containsOnly(Tuple.tuple(message.getMessageId(), Optional.empty(), Optional.of("")));
+            .containsOnly(Tuple.tuple(message.getMessageId(), Optional.of(""), Optional.of("")));
     }
 
     @Test

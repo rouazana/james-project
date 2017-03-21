@@ -62,10 +62,10 @@ public class MessageFactoryTest {
     public void setUp() {
         htmlTextExtractor = new MailboxBasedHtmlTextExtractor(new TikaTextExtractor());
 
-        messagePreview = new MessagePreviewGenerator(htmlTextExtractor);
+        messagePreview = new MessagePreviewGenerator();
         MessageContentExtractor messageContentExtractor = new MessageContentExtractor();
 
-        messageFactory = new MessageFactory(messagePreview, messageContentExtractor);
+        messageFactory = new MessageFactory(messagePreview, messageContentExtractor, htmlTextExtractor);
     }
     @Test
     public void emptyMailShouldBeLoadedIntoMessage() throws Exception {
@@ -396,6 +396,6 @@ public class MessageFactoryTest {
 
         assertThat(testee.getPreview()).isEqualTo(MessagePreviewGenerator.NO_BODY);
         assertThat(testee.getHtmlBody()).contains("");
-        assertThat(testee.getTextBody()).isEmpty();
+        assertThat(testee.getTextBody()).contains("");
     }
 }

@@ -35,10 +35,10 @@ import org.apache.james.jmap.model.MessageContentExtractor;
 import org.apache.james.jmap.model.MessageFactory;
 import org.apache.james.jmap.model.MessageFactory.MetaDataWithContent;
 import org.apache.james.jmap.model.MessagePreviewGenerator;
+import org.apache.james.jmap.utils.HtmlTextExtractor;
 import org.apache.james.mailbox.FlagsBuilder;
 import org.apache.james.mailbox.MessageUid;
 import org.apache.james.mailbox.exception.MailboxException;
-import org.apache.james.mailbox.extractor.TextExtractor;
 import org.apache.james.mailbox.inmemory.InMemoryId;
 import org.apache.james.mailbox.model.TestMessageId;
 import org.apache.mailet.Mail;
@@ -78,10 +78,10 @@ public class MailFactoryTest {
                 .messageId(TestMessageId.of(2))
                 .build();
         MessagePreviewGenerator messagePreview = mock(MessagePreviewGenerator.class);
-        when(messagePreview.forPreview(any())).thenReturn("text preview");
+        when(messagePreview.compute(any())).thenReturn("text preview");
 
         MessageContentExtractor messageContentExtractor = new MessageContentExtractor();
-        MessageFactory messageFactory = new MessageFactory(messagePreview, messageContentExtractor);
+        MessageFactory messageFactory = new MessageFactory(messagePreview, messageContentExtractor, mock(HtmlTextExtractor.class));
         jmapMessage = messageFactory.fromMetaDataWithContent(message);
     }
 

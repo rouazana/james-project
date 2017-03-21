@@ -21,10 +21,7 @@ package org.apache.james.jmap.model;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.james.jmap.utils.HtmlTextExtractor;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -33,41 +30,15 @@ public class MessagePreviewGenerator {
     public static final String NO_BODY = "(Empty)";
     public static final int MAX_PREVIEW_LENGTH = 256;
 
-    private final HtmlTextExtractor htmlTextExtractor;
 
-    @Inject
-    public MessagePreviewGenerator(HtmlTextExtractor htmlTextExtractor) {
-        this.htmlTextExtractor = htmlTextExtractor;
-    }
-
-    private Optional<String> forHTMLBody(Optional<String> body) {
-        return body.filter(text -> !text.isEmpty())
-                .map(this::asText)
-                .orElse(Optional.empty());
-    }
-
-    private Optional<String> forTextBody(Optional<String> body) {
-        return body.filter(text -> !text.isEmpty())
+    public String compute(Optional<String> textBody) {
+        return textBody.filter(text -> !text.isEmpty())
                 .map(this::abbreviate)
-                .orElse(Optional.empty());
+                .orElse(NO_BODY);
     }
 
-    public Optional<String> fromContent(Optional<String> htmlContent, Optional<String> textContent) {
-        return forTextBody(forHTMLBody(htmlContent)
-            .map(Optional::of)
-            .orElseGet(() -> textContent));
-    }
-
-    public String forPreview(Optional<String> content) {
-        return content.orElse(NO_BODY);
-    }
-
-    @VisibleForTesting Optional<String> asText(String body) throws IllegalArgumentException {
-       return Optional.ofNullable(htmlTextExtractor.toPlainText(body));
-    }
-
-    @VisibleForTesting Optional<String> abbreviate(String body) {
-        return Optional.ofNullable(StringUtils.abbreviate(body, MAX_PREVIEW_LENGTH));
+    @VisibleForTesting String abbreviate(String body) {
+        return StringUtils.abbreviate(body, MAX_PREVIEW_LENGTH);
     }
 
 }

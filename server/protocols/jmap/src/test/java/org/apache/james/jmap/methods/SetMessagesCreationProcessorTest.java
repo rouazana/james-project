@@ -53,6 +53,7 @@ import org.apache.james.jmap.model.mailbox.Role;
 import org.apache.james.jmap.send.MailFactory;
 import org.apache.james.jmap.send.MailMetadata;
 import org.apache.james.jmap.send.MailSpool;
+import org.apache.james.jmap.utils.HtmlTextExtractor;
 import org.apache.james.jmap.utils.SystemMailboxesProvider;
 import org.apache.james.mailbox.AttachmentManager;
 import org.apache.james.mailbox.MailboxSession;
@@ -60,7 +61,6 @@ import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.MessageUid;
 import org.apache.james.mailbox.exception.AttachmentNotFoundException;
 import org.apache.james.mailbox.exception.MailboxException;
-import org.apache.james.mailbox.extractor.TextExtractor;
 import org.apache.james.mailbox.inmemory.InMemoryId;
 import org.apache.james.mailbox.mock.MockMailboxSession;
 import org.apache.james.mailbox.model.AttachmentId;
@@ -119,8 +119,8 @@ public class SetMessagesCreationProcessorTest {
     public void setUp() throws MailboxException {
         MessagePreviewGenerator messagePreview = mock(MessagePreviewGenerator.class);
         MessageContentExtractor messageContentExtractor = new MessageContentExtractor();
-        when(messagePreview.forPreview(any())).thenReturn("text preview");
-        messageFactory = new MessageFactory(messagePreview, messageContentExtractor);
+        when(messagePreview.compute(any())).thenReturn("text preview");
+        messageFactory = new MessageFactory(messagePreview, messageContentExtractor, mock(HtmlTextExtractor.class));
         mockedMailSpool = mock(MailSpool.class);
         mockedMailFactory = mock(MailFactory.class);
         mockedAttachmentManager = mock(AttachmentManager.class);

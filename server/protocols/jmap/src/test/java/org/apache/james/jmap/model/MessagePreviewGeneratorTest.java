@@ -36,7 +36,6 @@ public class MessagePreviewGeneratorTest {
     
     @Before
     public void setUp() {
-        htmlTextExtractor = mock(HtmlTextExtractor.class);
         testee = new MessagePreviewGenerator(htmlTextExtractor);
     }
 

@@ -38,6 +38,7 @@ import javax.mail.Flags;
 import javax.mail.internet.SharedInputStream;
 
 import org.apache.james.jmap.model.MessageContentExtractor.MessageContent;
+import org.apache.james.jmap.utils.HtmlTextExtractor;
 import org.apache.james.mailbox.MessageUid;
 import org.apache.james.mailbox.exception.MailboxException;
 import org.apache.james.mailbox.model.Cid;
@@ -68,19 +69,24 @@ public class MessageFactory {
 
     private final MessagePreviewGenerator messagePreview;
     private final MessageContentExtractor messageContentExtractor;
+    private final HtmlTextExtractor htmlTextExtractor;
 
     @Inject
-    public MessageFactory(MessagePreviewGenerator messagePreview, MessageContentExtractor messageContentExtractor) {
+    public MessageFactory(MessagePreviewGenerator messagePreview, MessageContentExtractor messageContentExtractor, HtmlTextExtractor htmlTextExtractor) {
         this.messagePreview = messagePreview;
         this.messageContentExtractor = messageContentExtractor;
+        this.htmlTextExtractor = htmlTextExtractor;
     }
 
     public Message fromMetaDataWithContent(MetaDataWithContent message) throws MailboxException {
         org.apache.james.mime4j.dom.Message mimeMessage = parse(message);
         MessageContent messageContent = extractContent(mimeMessage);
         Optional<String> htmlBody = messageContent.getHtmlBody();
-        Optional<String> textBody = messageContent.getTextBody();
-        Optional<String> previewBody = messagePreview.fromContent(htmlBody, textBody);
+        Optional<String> mainTextContent = mainTextContent(messageContent);
+        Optional<String> textBody = messageContent.getTextBody()
+                .map(Optional::of)
+                .orElse(mainTextContent);
+        String preview = messagePreview.compute(mainTextContent);
         return Message.builder()
                 .id(message.getMessageId())
                 .blobId(BlobId.of(String.valueOf(message.getUid().asLong())))
@@ -100,16 +106,18 @@ public class MessageFactory {
                 .replyTo(fromAddressList(mimeMessage.getReplyTo()))
                 .size(message.getSize())
                 .date(message.getInternalDateAsZonedDateTime())
-                .textBody(computeTextBodyIfNeeded(textBody, previewBody))
+                .textBody(textBody)
                 .htmlBody(htmlBody)
-                .preview(messagePreview.forPreview(previewBody))
+                .preview(preview)
                 .attachments(getAttachments(message.getAttachments()))
                 .build();
     }
 
-    private Optional<String> computeTextBodyIfNeeded(Optional<String> textBody, Optional<String> previewBody) {
-        return textBody.map(Optional::of)
-            .orElseGet(() -> previewBody);
+    private Optional<String> mainTextContent(MessageContent messageContent) {
+        return messageContent.getHtmlBody()
+                .map(htmlTextExtractor::toPlainText)
+                .map(Optional::of)
+                .orElse(messageContent.getTextBody());
     }
 
     private org.apache.james.mime4j.dom.Message parse(MetaDataWithContent message) throws MailboxException {
