@@ -41,7 +41,7 @@ public class MessagePreviewGeneratorTest {
     }
 
     @Test
-    public void forHTMLBodyShouldReturnTruncatedStringWithoutHtmlTagWhenStringContainTagsAndIsLongerThan256Characters() {
+    public void forPreviewShouldReturnTruncatedStringWithoutHtmlTagWhenStringContainTagsAndIsLongerThan256Characters() {
         //Given
         String body = "This is a <b>HTML</b> mail containing <u>underlined part</u>, <i>italic part</i> and <u><i>underlined AND italic part</i></u>9999999999"
                 + "0000000000111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999"
@@ -57,26 +57,26 @@ public class MessagePreviewGeneratorTest {
         //When
         when(htmlTextExtractor.toPlainText(body))
             .thenReturn(bodyWithoutTags);
-        String actual = testee.forHTMLBody(Optional.of(body));
+        String actual = testee.forPreview(testee.fromContent(Optional.of(body), Optional.empty()));
         //Then
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void forHTMLBodyShouldReturnStringContainingEmptyWhenEmptyString() {
+    public void forPreviewShouldReturnStringContainingEmptyWhenEmptyStringContent() {
         //Given
         String body = "" ;
         String expected = "(Empty)" ;
         //When
         when(htmlTextExtractor.toPlainText(body))
             .thenReturn(expected);
-        String actual = testee.forHTMLBody(Optional.of(body));
+        String actual = testee.forPreview(testee.fromContent(Optional.of(body), Optional.empty()));
         //Then
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void forTextBodyShouldReturnTruncatedStringWhenStringContainTagsAndIsLongerThan256Characters() {
+    public void forPreviewShouldReturnTruncatedStringWhenStringContainTagsAndIsLongerThan256Characters() {
         //Given
         String body = "0000000000111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999"
                 + "This is a <b>HTML</b> mail containing <u>underlined part</u>, <i>italic part</i>88888888889999999999"
@@ -86,17 +86,17 @@ public class MessagePreviewGeneratorTest {
                 + "This is a <b>HTML</b> mail containing <u>underlined part</u>, <i>italic part</i>88888888889999999999"
                 + "00000000001111111111222222222233333333334444444444555...";
         //When
-        String actual = testee.forTextBody(Optional.of(body));
+        String actual = testee.forPreview(testee.fromContent(Optional.empty(), Optional.of(body)));
         //Then
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void forTextBodyShouldReturnStringContainingEmptyWhenEmptyString() {
+    public void forPreviewShouldReturnStringContainingEmptyWhenEmptyContent() {
         //Given
         String expected = "(Empty)" ;
         //When
-        String actual = testee.forTextBody(Optional.empty());
+        String actual = testee.forPreview(testee.fromContent(Optional.empty(), Optional.empty()));
         //Then
         assertThat(actual).isEqualTo(expected);
     }
@@ -109,14 +109,16 @@ public class MessagePreviewGeneratorTest {
         //When
         when(htmlTextExtractor.toPlainText(body))
             .thenReturn(expected);
-        String actual = testee.asText(body);
+        Optional<String> actual = testee.asText(body);
         //Then
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual)
+            .isPresent()
+            .isEqualTo(Optional.of(expected));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void asTextShouldThrowWhenNullString () {
-        testee.asText(null);
+    @Test
+    public void asTextShouldEmptyWhenNullString () {
+        assertThat(testee.asText(null)).isEmpty();
     }
 
     @Test
@@ -127,9 +129,11 @@ public class MessagePreviewGeneratorTest {
         //When
         when(htmlTextExtractor.toPlainText(body))
             .thenReturn(expected);
-        String actual = testee.asText(body);
+        Optional<String> actual = testee.asText(body);
         //Then
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual)
+            .isPresent()
+            .isEqualTo(Optional.of(expected));
     }
 
     @Test
@@ -139,10 +143,12 @@ public class MessagePreviewGeneratorTest {
                 + "0000000000111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999"
                 + "00000000001111111111222222222233333333334444444444555555";
         //When
-        String actual = testee.abbreviate(body256);
+        Optional<String> actual = testee.abbreviate(body256);
         //Then
         assertThat(body256.length()).isEqualTo(256);
-        assertThat(actual).isEqualTo(body256);
+        assertThat(actual)
+            .isPresent()
+            .isEqualTo(Optional.of(body256));
     }
 
     @Test
@@ -155,11 +161,13 @@ public class MessagePreviewGeneratorTest {
                 + "0000000000111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999"
                 + "00000000001111111111222222222233333333334444444444555...";
         //When
-        String actual = testee.abbreviate(body257);
+        Optional<String> actual = testee.abbreviate(body257);
         //Then
         assertThat(body257.length()).isEqualTo(257);
         assertThat(expected.length()).isEqualTo(256);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual)
+            .isPresent()
+            .isEqualTo(Optional.of(expected));
     }
 
     @Test
@@ -168,9 +176,9 @@ public class MessagePreviewGeneratorTest {
         String body = null;
         String expected = null;
         //When
-        String actual = testee.abbreviate(body);
+        Optional<String> actual = testee.abbreviate(body);
         //Then
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -179,9 +187,51 @@ public class MessagePreviewGeneratorTest {
         String body = "";
         String expected = "";
         //When
-        String actual = testee.abbreviate(body);
+        Optional<String> actual = testee.abbreviate(body);
         //Then
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual)
+            .isPresent()
+            .isEqualTo(Optional.of(expected));
     }
 
+    @Test
+    public void fromContentShouldReturnEmptyWhenEmptyContent() throws Exception {
+        assertThat(testee.fromContent(Optional.empty(), Optional.empty()))
+            .isEmpty();
+    }
+
+    @Test
+    public void fromContentShouldReturnHtmlContentWhenHtmlBody() throws Exception {
+        String htmlBody = "<a>HTML</a> content";
+        String expected = "HTML content";
+
+        when(htmlTextExtractor.toPlainText(htmlBody))
+            .thenReturn(expected);
+
+        assertThat(testee.fromContent(Optional.of(htmlBody), Optional.empty()))
+            .isPresent()
+            .isEqualTo(Optional.of(expected));
+    }
+
+    @Test
+    public void fromContentShouldReturnHtmlContentWhenHtmlBodyAndTextBody() throws Exception {
+        String htmlBody = "<a>HTML</a> content";
+        String expected = "HTML content";
+
+        when(htmlTextExtractor.toPlainText(htmlBody))
+            .thenReturn(expected);
+
+        assertThat(testee.fromContent(Optional.of(htmlBody), Optional.of("Any text body")))
+            .isPresent()
+            .isEqualTo(Optional.of(expected));
+    }
+
+    @Test
+    public void fromContentShouldReturnTextContentWhenEmptyHtmlBody() throws Exception {
+        String expected = "Any text body";
+
+        assertThat(testee.fromContent(Optional.empty(), Optional.of(expected)))
+            .isPresent()
+            .isEqualTo(Optional.of(expected));
+    }
 }

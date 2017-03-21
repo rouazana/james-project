@@ -118,10 +118,9 @@ public class SetMessagesCreationProcessorTest {
     @Before
     public void setUp() throws MailboxException {
         MessagePreviewGenerator messagePreview = mock(MessagePreviewGenerator.class);
-        TextExtractor textExtractor = mock(TextExtractor.class);
         MessageContentExtractor messageContentExtractor = new MessageContentExtractor();
-        when(messagePreview.forTextBody(any())).thenReturn("text preview");
-        messageFactory = new MessageFactory(messagePreview, messageContentExtractor, textExtractor);
+        when(messagePreview.forPreview(any())).thenReturn("text preview");
+        messageFactory = new MessageFactory(messagePreview, messageContentExtractor);
         mockedMailSpool = mock(MailSpool.class);
         mockedMailFactory = mock(MailFactory.class);
         mockedAttachmentManager = mock(AttachmentManager.class);

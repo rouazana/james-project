@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.james.jmap.model;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZoneId;
@@ -41,7 +40,6 @@ import javax.mail.internet.SharedInputStream;
 import org.apache.james.jmap.model.MessageContentExtractor.MessageContent;
 import org.apache.james.mailbox.MessageUid;
 import org.apache.james.mailbox.exception.MailboxException;
-import org.apache.james.mailbox.extractor.TextExtractor;
 import org.apache.james.mailbox.model.Cid;
 import org.apache.james.mailbox.model.MailboxId;
 import org.apache.james.mailbox.model.MessageAttachment;
@@ -68,26 +66,21 @@ public class MessageFactory {
 
     private static final ZoneId UTC_ZONE_ID = ZoneId.of("Z");
 
-    private static final String HTML_CONTENT = "text/html";
-
-    private static final String EMPTY_FILE_NAME = "";
-
     private final MessagePreviewGenerator messagePreview;
     private final MessageContentExtractor messageContentExtractor;
-    private final TextExtractor textExtractor;
 
     @Inject
-    public MessageFactory(MessagePreviewGenerator messagePreview, MessageContentExtractor messageContentExtractor, TextExtractor textExtractor) {
+    public MessageFactory(MessagePreviewGenerator messagePreview, MessageContentExtractor messageContentExtractor) {
         this.messagePreview = messagePreview;
         this.messageContentExtractor = messageContentExtractor;
-        this.textExtractor = textExtractor;
     }
 
     public Message fromMetaDataWithContent(MetaDataWithContent message) throws MailboxException {
         org.apache.james.mime4j.dom.Message mimeMessage = parse(message);
         MessageContent messageContent = extractContent(mimeMessage);
         Optional<String> htmlBody = messageContent.getHtmlBody();
-        Optional<String> textBody = textBodyAndComputeFromHtmlBodyIfNeeded(htmlBody, messageContent.getTextBody());
+        Optional<String> textBody = messageContent.getTextBody();
+        Optional<String> previewBody = messagePreview.fromContent(htmlBody, textBody);
         return Message.builder()
                 .id(message.getMessageId())
                 .blobId(BlobId.of(String.valueOf(message.getUid().asLong())))
@@ -107,25 +100,16 @@ public class MessageFactory {
                 .replyTo(fromAddressList(mimeMessage.getReplyTo()))
                 .size(message.getSize())
                 .date(message.getInternalDateAsZonedDateTime())
-                .textBody(textBody)
+                .textBody(computeTextBodyIfNeeded(textBody, previewBody))
                 .htmlBody(htmlBody)
-                .preview(getPreview(messageContent, textBody))
+                .preview(messagePreview.forPreview(previewBody))
                 .attachments(getAttachments(message.getAttachments()))
                 .build();
     }
 
-    private Optional<String> textBodyAndComputeFromHtmlBodyIfNeeded(Optional<String> htmlBody, Optional<String> textBody) {
-        if (textBody.isPresent()) {
-            return textBody;
-        }
-        if (!htmlBody.isPresent()) {
-            return Optional.empty();
-        }
-        try {
-            return Optional.of(textExtractor.extractContent(new ByteArrayInputStream(htmlBody.get().getBytes()), HTML_CONTENT, EMPTY_FILE_NAME).getTextualContent());
-        } catch (Exception e) {
-            return Optional.empty();
-        }
+    private Optional<String> computeTextBodyIfNeeded(Optional<String> textBody, Optional<String> previewBody) {
+        return textBody.map(Optional::of)
+            .orElseGet(() -> previewBody);
     }
 
     private org.apache.james.mime4j.dom.Message parse(MetaDataWithContent message) throws MailboxException {
@@ -147,13 +131,6 @@ public class MessageFactory {
         } catch (IOException e) {
             throw new MailboxException("Unable to extract content: " + e.getMessage(), e);
         }
-    }
-
-    private String getPreview(MessageContent messageContent, Optional<String> computedTextBody) {
-        if (messageContent.getHtmlBody().isPresent() && messageContent.getTextBody().isPresent()) {
-            return messagePreview.forHTMLBody(messageContent.getHtmlBody());
-        }
-        return messagePreview.forTextBody(computedTextBody);
     }
 
     private Emailer firstFromMailboxList(MailboxList list) {

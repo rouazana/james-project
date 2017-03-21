@@ -78,11 +78,10 @@ public class MailFactoryTest {
                 .messageId(TestMessageId.of(2))
                 .build();
         MessagePreviewGenerator messagePreview = mock(MessagePreviewGenerator.class);
-        TextExtractor textExtractor = mock(TextExtractor.class);
-        when(messagePreview.forTextBody(any())).thenReturn("text preview");
+        when(messagePreview.forPreview(any())).thenReturn("text preview");
 
         MessageContentExtractor messageContentExtractor = new MessageContentExtractor();
-        MessageFactory messageFactory = new MessageFactory(messagePreview, messageContentExtractor, textExtractor);
+        MessageFactory messageFactory = new MessageFactory(messagePreview, messageContentExtractor);
         jmapMessage = messageFactory.fromMetaDataWithContent(message);
     }
 

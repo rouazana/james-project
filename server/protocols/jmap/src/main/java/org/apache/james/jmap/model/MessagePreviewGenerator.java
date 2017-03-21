@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.james.jmap.utils.HtmlTextExtractor;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 
 public class MessagePreviewGenerator {
     
@@ -41,26 +40,34 @@ public class MessagePreviewGenerator {
         this.htmlTextExtractor = htmlTextExtractor;
     }
 
-    public String forHTMLBody(Optional<String> body) {
+    private Optional<String> forHTMLBody(Optional<String> body) {
         return body.filter(text -> !text.isEmpty())
                 .map(this::asText)
-                .map(this::abbreviate)
-                .orElse(NO_BODY);
+                .orElse(Optional.empty());
     }
 
-    public String forTextBody(Optional<String> body) {
+    private Optional<String> forTextBody(Optional<String> body) {
         return body.filter(text -> !text.isEmpty())
                 .map(this::abbreviate)
-                .orElse(NO_BODY);
+                .orElse(Optional.empty());
     }
 
-    @VisibleForTesting String asText(String body) throws IllegalArgumentException {
-       Preconditions.checkArgument(body != null);
-       return htmlTextExtractor.toPlainText(body);
+    public Optional<String> fromContent(Optional<String> htmlContent, Optional<String> textContent) {
+        return forTextBody(forHTMLBody(htmlContent)
+            .map(Optional::of)
+            .orElseGet(() -> textContent));
     }
 
-    @VisibleForTesting String abbreviate(String body) {
-        return StringUtils.abbreviate(body, MAX_PREVIEW_LENGTH);
+    public String forPreview(Optional<String> content) {
+        return content.orElse(NO_BODY);
+    }
+
+    @VisibleForTesting Optional<String> asText(String body) throws IllegalArgumentException {
+       return Optional.ofNullable(htmlTextExtractor.toPlainText(body));
+    }
+
+    @VisibleForTesting Optional<String> abbreviate(String body) {
+        return Optional.ofNullable(StringUtils.abbreviate(body, MAX_PREVIEW_LENGTH));
     }
 
 }
