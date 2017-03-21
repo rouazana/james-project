@@ -164,7 +164,7 @@ public class MessageFactoryTest {
                 .date(ZONED_DATE)
                 .size(headers.length())
                 .preview("(Empty)")
-                .textBody(Optional.empty())
+                .textBody(Optional.of(""))
                 .htmlBody(Optional.empty())
                 .build();
         assertThat(testee).isEqualToComparingFieldByField(expected);
@@ -395,7 +395,7 @@ public class MessageFactoryTest {
         Message testee = messageFactory.fromMetaDataWithContent(testMail);
 
         assertThat(testee.getPreview()).isEqualTo(MessagePreviewGenerator.NO_BODY);
-        assertThat(testee.getHtmlBody()).isEmpty();
+        assertThat(testee.getHtmlBody()).contains("");
         assertThat(testee.getTextBody()).isEmpty();
     }
 }

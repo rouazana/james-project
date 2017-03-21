@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.james.mime4j.dom.Body;
 import org.apache.james.mime4j.dom.Entity;
 import org.apache.james.mime4j.dom.Multipart;
@@ -92,11 +91,7 @@ public class MessageContentExtractor {
     }
 
     private Optional<String> asString(TextBody textBody) throws IOException {
-        String textBodyContent = IOUtils.toString(textBody.getInputStream(), textBody.getMimeCharset());
-        if (StringUtils.isEmpty(textBodyContent)) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(textBodyContent);
+        return Optional.ofNullable(IOUtils.toString(textBody.getInputStream(), textBody.getMimeCharset()));
     }
 
     private MessageContent retrieveHtmlAndPlainTextContent(Multipart multipart) throws IOException {
