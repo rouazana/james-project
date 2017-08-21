@@ -94,13 +94,11 @@
         <dependency>
             <groupId>net.javacrumbs.json-unit</groupId>
             <artifactId>json-unit</artifactId>
-            <version>1.5.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.javacrumbs.json-unit</groupId>
             <artifactId>json-unit-fluent</artifactId>
-            <version>1.5.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -126,7 +124,6 @@
         <dependency>
             <groupId>org.msgpack</groupId>
             <artifactId>jackson-dataformat-msgpack</artifactId>
-            <version>0.7.0-p9</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

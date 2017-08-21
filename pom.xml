@@ -1375,16 +1375,29 @@
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
-                <version>1.1.7</version>
+                <version>${logback.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.beetstra.jutf7</groupId>
                 <artifactId>jutf7</artifactId>
                 <version>${jutf7.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>3.2.0</version>
+                <classifier>shaded</classifier>
+                <!-- Because the shaded JAR uses the original POM, you still need to
+                    exclude this dependency explicitly: -->
+                <exclusions>
+                    <exclusion>
+                        <artifactId>*</artifactId>
+                        <groupId>io.netty</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -1432,9 +1445,19 @@
                 <version>4.0</version>
             </dependency>
             <dependency>
+                <groupId>com.googlecode.thread-weaver</groupId>
+                <artifactId>threadweaver</artifactId>
+                <version>0.2</version>
+            </dependency>
+            <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.internetitem</groupId>
+                <artifactId>logback-elasticsearch-appender</artifactId>
+                <version>1.5</version>
             </dependency>
             <dependency>
                 <groupId>com.jason-goodwin</groupId>
@@ -1622,6 +1645,11 @@
                 <version>${concurrent.version}</version>
             </dependency>
             <dependency>
+                <groupId>de.bechte.junit</groupId>
+                <artifactId>junit-hierarchicalcontextrunner</artifactId>
+                <version>4.11.3</version>
+            </dependency>
+            <dependency>
                 <groupId>dnsjava</groupId>
                 <artifactId>dnsjava</artifactId>
                 <version>${dnsjava.version}</version>
@@ -1667,6 +1695,11 @@
                 <version>${netty.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-jaxrs</artifactId>
+                <version>1.5.8</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
                 <version>${javax-activation.version}</version>
@@ -1692,6 +1725,11 @@
                 <version>${servlet-api.version}</version>
             </dependency>
             <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>2.0.1</version>
+            </dependency>
+            <dependency>
                 <groupId>jmock</groupId>
                 <artifactId>jmock</artifactId>
                 <version>1.1.0</version>
@@ -1711,6 +1749,21 @@
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.javacrumbs.future-converter</groupId>
+                <artifactId>future-converter-java8-guava</artifactId>
+                <version>0.3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.javacrumbs.json-unit</groupId>
+                <artifactId>json-unit</artifactId>
+                <version>1.5.5</version>
+            </dependency>
+            <dependency>
+                <groupId>net.javacrumbs.json-unit</groupId>
+                <artifactId>json-unit-fluent</artifactId>
+                <version>1.5.5</version>
             </dependency>
             <dependency>
                 <groupId>nl.jqno.equalsverifier</groupId>
@@ -1737,6 +1790,11 @@
                         <groupId>org.osgi</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-kahadb-store</artifactId>
+                <version>${activemq.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.activemq</groupId>
@@ -1818,6 +1876,11 @@
                 <version>${geronimo-jms-spec.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jpa_2.0_spec</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-core</artifactId>
                 <version>${hadoop.version}</version>
@@ -1837,6 +1900,11 @@
                 <artifactId>hbase</artifactId>
                 <version>${hbase.version}</version>
                 <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>fluent-hc</artifactId>
+                <version>4.5.3</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -1981,10 +2049,30 @@
                 <type>test-jar</type>
             </dependency>
             <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka_2.10</artifactId>
+                <version>0.8.2.2</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.karaf.tooling.exam</groupId>
                 <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
                 <version>${karaf.tooling.exam.container.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-analyzers</artifactId>
+                <version>${lucene.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-core</artifactId>
+                <version>${lucene.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-smartcn</artifactId>
+                <version>${lucene.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
@@ -2010,6 +2098,11 @@
                 <groupId>org.apache.maven.reporting</groupId>
                 <artifactId>maven-reporting-impl</artifactId>
                 <version>${maven-reporting-impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.openjpa</groupId>
+                <artifactId>openjpa</artifactId>
+                <version>2.4.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xbean</groupId>
@@ -2054,6 +2147,12 @@
                 <version>2.1.9.2</version>
             </dependency>
             <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>3.3.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-http</artifactId>
                 <version>${jetty.version}</version>
@@ -2070,6 +2169,17 @@
             </dependency>
             <dependency>
                 <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>2.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>2.2.1</version>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
                 <artifactId>metrics-elasticsearch-reporter</artifactId>
                 <version>2.2.0</version>
             </dependency>
@@ -2079,9 +2189,24 @@
                 <version>2.0.0.0</version>
             </dependency>
             <dependency>
+                <groupId>org.hdrhistogram</groupId>
+                <artifactId>HdrHistogram</artifactId>
+                <version>2.1.4</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jasypt</groupId>
                 <artifactId>jasypt</artifactId>
                 <version>${jasypt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.javatuples</groupId>
+                <artifactId>javatuples</artifactId>
+                <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jgrapht</groupId>
+                <artifactId>jgrapht-core</artifactId>
+                <version>0.9.1</version>
             </dependency>
             <dependency>
                 <groupId>org.jmock</groupId>
@@ -2094,6 +2219,11 @@
                 <version>${jmock.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.9.2</version>
+            </dependency>
+            <dependency>
                 <groupId>org.mnode.ical4j</groupId>
                 <artifactId>ical4j</artifactId>
                 <version>${ical4j.version}</version>
@@ -2102,6 +2232,11 @@
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.msgpack</groupId>
+                <artifactId>jackson-dataformat-msgpack</artifactId>
+                <version>0.7.0-p9</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
@@ -2140,6 +2275,11 @@
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${org.osgi.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.skyscreamer</groupId>
+                <artifactId>jsonassert</artifactId>
+                <version>1.2.3</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -2258,6 +2398,16 @@
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers</artifactId>
                 <version>${testcontainers-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-core</artifactId>
+                <version>1.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-servlet</artifactId>
+                <version>1.2.1</version>
             </dependency>
             <dependency>
                 <groupId>pl.pragmatists</groupId>

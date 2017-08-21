@@ -80,7 +80,6 @@
         <dependency>
             <groupId>de.bechte.junit</groupId>
             <artifactId>junit-hierarchicalcontextrunner</artifactId>
-            <version>4.11.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
