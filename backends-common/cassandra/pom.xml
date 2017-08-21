@@ -42,6 +42,7 @@
         <dependency>
             <groupId>com.datastax.cassandra</groupId>
             <artifactId>cassandra-driver-core</artifactId>
+            <version>3.2.0</version>
             <classifier>shaded</classifier>
             <!-- Because the shaded JAR uses the original POM, you still need to
                 exclude this dependency explicitly: -->
@@ -59,6 +60,7 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -67,10 +69,12 @@
         <dependency>
             <groupId>net.javacrumbs.future-converter</groupId>
             <artifactId>future-converter-java8-guava</artifactId>
+            <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
+            <version>1.7.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -81,11 +85,13 @@
         <dependency>
             <groupId>org.cassandraunit</groupId>
             <artifactId>cassandra-unit</artifactId>
+            <version>2.1.9.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+            <version>1.9.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

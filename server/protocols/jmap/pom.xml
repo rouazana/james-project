@@ -74,6 +74,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>apache-mime4j-core</artifactId>
+            <version>${apache-mime4j.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -168,6 +169,7 @@
         <dependency>
             <groupId>com.googlecode.thread-weaver</groupId>
             <artifactId>threadweaver</artifactId>
+            <version>0.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -200,6 +202,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -210,16 +213,19 @@
         <dependency>
             <groupId>net.javacrumbs.json-unit</groupId>
             <artifactId>json-unit-fluent</artifactId>
+            <version>1.5.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
+            <version>1.7.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <version>3.3.2</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
@@ -247,14 +253,17 @@
         <dependency>
             <groupId>org.javatuples</groupId>
             <artifactId>javatuples</artifactId>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
+            <version>0.9.1</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
+            <version>1.9.2</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -273,10 +282,12 @@
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-core</artifactId>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-servlet</artifactId>
+            <version>1.2.1</version>
         </dependency>
     </dependencies>
 

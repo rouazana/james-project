@@ -101,6 +101,7 @@
         <dependency>
             <groupId>org.cassandraunit</groupId>
             <artifactId>cassandra-unit</artifactId>
+            <version>${cassandra-unit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

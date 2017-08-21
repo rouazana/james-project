@@ -102,12 +102,11 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
-            <scope>test</scope>
+            <version>1.7.6</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
@@ -117,6 +116,7 @@
         <dependency>
             <groupId>org.cassandraunit</groupId>
             <artifactId>cassandra-unit</artifactId>
+            <version>${cassandra-unit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
