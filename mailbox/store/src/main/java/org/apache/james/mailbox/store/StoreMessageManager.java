@@ -640,7 +640,7 @@ public class StoreMessageManager implements org.apache.james.mailbox.MessageMana
             for (MessageAttachment attachment : messageAttachments) {
                 attachments.add(attachment.getAttachment());
             }
-            attachmentMapper.storeAttachments(attachments.build());
+            attachmentMapper.storeAttachmentsForMessage(attachments.build(), message.getMessageId());
             return messageMapper.add(getMailboxEntity(), message);
         });
     }

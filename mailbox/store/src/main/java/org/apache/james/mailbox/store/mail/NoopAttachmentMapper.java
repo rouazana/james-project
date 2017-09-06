@@ -26,6 +26,7 @@ import org.apache.james.mailbox.exception.AttachmentNotFoundException;
 import org.apache.james.mailbox.exception.MailboxException;
 import org.apache.james.mailbox.model.Attachment;
 import org.apache.james.mailbox.model.AttachmentId;
+import org.apache.james.mailbox.model.MessageId;
 
 public class NoopAttachmentMapper implements AttachmentMapper {
 
@@ -54,6 +55,11 @@ public class NoopAttachmentMapper implements AttachmentMapper {
     }
 
     @Override
-    public void storeAttachments(Collection<Attachment> attachments) throws MailboxException {
+    public void storeAttachmentsForMessage(Collection<Attachment> attachments, MessageId ownerMessageId) throws MailboxException {
+    }
+
+    @Override
+    public Collection<MessageId> getOwnerMessageIds(AttachmentId attachmentId) throws MailboxException {
+        return null;
     }
 }
