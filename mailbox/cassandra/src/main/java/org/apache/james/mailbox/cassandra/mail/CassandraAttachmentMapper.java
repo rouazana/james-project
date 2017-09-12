@@ -144,12 +144,12 @@ public class CassandraAttachmentMapper implements AttachmentMapper {
     public CompletableFuture<Void> storeAttachmentAsync(Attachment attachment, MessageId ownerMessageId) {
         return blobsDAO.save(attachment.getBytes())
             .thenApply(blobId -> CassandraAttachmentDAOV2.from(attachment, blobId))
-            .thenCompose(daoAttachment -> storeAttachmentWithIndex(daoAttachment, attachment, ownerMessageId));
+            .thenCompose(daoAttachment -> storeAttachmentWithIndex(daoAttachment, ownerMessageId));
     }
 
-    private CompletableFuture<Void> storeAttachmentWithIndex(DAOAttachment daoAttachment, Attachment attachment, MessageId ownerMessageId) {
+    private CompletableFuture<Void> storeAttachmentWithIndex(DAOAttachment daoAttachment, MessageId ownerMessageId) {
         return attachmentDAOV2.storeAttachment(daoAttachment)
-                .thenCompose(any -> attachmentMessageIdDAO.storeAttachmentForMessageId(attachment, ownerMessageId));
+                .thenCompose(any -> attachmentMessageIdDAO.storeAttachmentForMessageId(daoAttachment.getAttachmentId(), ownerMessageId));
     }
 
     private Optional<Attachment> logNotFound(AttachmentId attachmentId, Optional<Attachment> optionalAttachment) {

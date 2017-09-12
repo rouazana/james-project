@@ -36,7 +36,6 @@ import javax.inject.Inject;
 
 import org.apache.james.backends.cassandra.utils.CassandraAsyncExecutor;
 import org.apache.james.backends.cassandra.utils.CassandraUtils;
-import org.apache.james.mailbox.model.Attachment;
 import org.apache.james.mailbox.model.AttachmentId;
 import org.apache.james.mailbox.model.MessageId;
 
@@ -92,11 +91,11 @@ public class CassandraAttachmentMessageIdDAO {
         return messageIdFactory.fromString(row.getString(MESSAGE_ID));
     }
 
-    public CompletableFuture<Void> storeAttachmentForMessageId(Attachment attachment, MessageId ownerMessageId) {
+    public CompletableFuture<Void> storeAttachmentForMessageId(AttachmentId attachmentId, MessageId ownerMessageId) {
         return cassandraAsyncExecutor.executeVoid(
             insertStatement.bind()
-                .setUUID(ATTACHMENT_ID_AS_UUID, attachment.getAttachmentId().asUUID())
-                .setString(ATTACHMENT_ID, attachment.getAttachmentId().getId())
+                .setUUID(ATTACHMENT_ID_AS_UUID, attachmentId.asUUID())
+                .setString(ATTACHMENT_ID, attachmentId.getId())
                 .setString(MESSAGE_ID, ownerMessageId.serialize()));
     }
 }
