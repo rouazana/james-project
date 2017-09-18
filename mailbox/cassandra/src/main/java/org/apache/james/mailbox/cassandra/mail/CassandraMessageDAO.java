@@ -72,7 +72,7 @@ import org.apache.james.mailbox.model.ComposedMessageId;
 import org.apache.james.mailbox.model.ComposedMessageIdWithMetaData;
 import org.apache.james.mailbox.model.MessageAttachment;
 import org.apache.james.mailbox.model.MessageId;
-import org.apache.james.mailbox.model.MessageId.Factory;
+import org.apache.james.mailbox.cassandra.ids.CassandraMessageId.Factory;
 import org.apache.james.mailbox.store.mail.MessageMapper.FetchType;
 import org.apache.james.mailbox.store.mail.model.MailboxMessage;
 import org.apache.james.mailbox.store.mail.model.impl.PropertyBuilder;
@@ -115,7 +115,7 @@ public class CassandraMessageDAO {
 
     @Inject
     public CassandraMessageDAO(Session session, CassandraTypesProvider typesProvider, CassandraBlobsDAO blobsDAO, CassandraConfiguration cassandraConfiguration,
-            CassandraUtils cassandraUtils, MessageId.Factory messageIdFactory) {
+            CassandraUtils cassandraUtils, Factory messageIdFactory) {
         this.cassandraAsyncExecutor = new CassandraAsyncExecutor(session);
         this.typesProvider = typesProvider;
         this.blobsDAO = blobsDAO;
@@ -135,7 +135,7 @@ public class CassandraMessageDAO {
 
     @VisibleForTesting
     public CassandraMessageDAO(Session session, CassandraTypesProvider typesProvider, CassandraBlobsDAO blobsDAO,
-            CassandraUtils cassandraUtils, MessageId.Factory messageIdFactory) {
+            CassandraUtils cassandraUtils, Factory messageIdFactory) {
         this(session, typesProvider, blobsDAO, CassandraConfiguration.DEFAULT_CONFIGURATION, cassandraUtils, messageIdFactory);
     }
 
@@ -412,7 +412,7 @@ public class CassandraMessageDAO {
     }
 
     private MessageIdAttachmentIds fromRow(Row row) {
-        MessageId messageId = ((CassandraMessageId.Factory) messageIdFactory).of(row.getUUID(MESSAGE_ID));
+        MessageId messageId = messageIdFactory.of(row.getUUID(MESSAGE_ID));
         Set<AttachmentId> attachmentIds = attachmentByIds(row.getList(ATTACHMENTS, UDTValue.class))
                 .map(MessageAttachmentRepresentation::getAttachmentId)
                 .collect(Guavate.toImmutableSet());
