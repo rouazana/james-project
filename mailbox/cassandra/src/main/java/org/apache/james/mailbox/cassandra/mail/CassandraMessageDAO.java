@@ -90,7 +90,9 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.github.steveash.guavate.Guavate;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.primitives.Bytes;
 
 public class CassandraMessageDAO {
@@ -423,8 +425,10 @@ public class CassandraMessageDAO {
         private final Set<AttachmentId> attachmentIds;
         
         public MessageIdAttachmentIds(MessageId messageId, Set<AttachmentId> attachmentIds) {
+            Preconditions.checkNotNull(messageId);
+            Preconditions.checkNotNull(attachmentIds);
             this.messageId = messageId;
-            this.attachmentIds = attachmentIds;
+            this.attachmentIds = ImmutableSet.copyOf(attachmentIds);
         }
         
         public MessageId getMessageId() {

@@ -19,6 +19,7 @@
 package org.apache.james.mailbox.cassandra.mail;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -326,9 +327,21 @@ public class CassandraMessageDAOTest {
     }
 
     @Test
-    public void MessageIdAttachmentIdsShouldMatchBeanContract() {
+    public void messageIdAttachmentIdsShouldMatchBeanContract() {
         EqualsVerifier.forClass(MessageIdAttachmentIds.class)
             .allFieldsShouldBeUsed()
             .verify();
+    }
+
+    @Test
+    public void messageIdAttachmentIdsShouldThrowOnNullMessageId() {
+        assertThatThrownBy(() -> new MessageIdAttachmentIds(null, ImmutableSet.of()))
+            .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void messageIdAttachmentIdsShouldThrowOnNullAttachmentIds() {
+        assertThatThrownBy(() -> new MessageIdAttachmentIds(messageIdFactory.generate(), null))
+            .isInstanceOf(NullPointerException.class);
     }
 }
