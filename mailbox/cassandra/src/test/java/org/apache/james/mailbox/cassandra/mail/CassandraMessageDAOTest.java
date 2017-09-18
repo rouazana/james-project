@@ -62,6 +62,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.primitives.Bytes;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 public class CassandraMessageDAOTest {
     private static final int BODY_START = 16;
     private static final CassandraId MAILBOX_ID = CassandraId.timeBased();
@@ -325,5 +327,12 @@ public class CassandraMessageDAOTest {
         //Then
         assertThat(actual).extracting(MessageIdAttachmentIds::getMessageId)
             .containsOnly(messageId1, messageId3);
+    }
+
+    @Test
+    public void MessageIdAttachmentIdsShouldMatchBeanContract() {
+        EqualsVerifier.forClass(MessageIdAttachmentIds.class)
+            .allFieldsShouldBeUsed()
+            .verify();
     }
 }
