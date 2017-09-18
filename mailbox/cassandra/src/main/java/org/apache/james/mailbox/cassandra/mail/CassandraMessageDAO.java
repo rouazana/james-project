@@ -414,8 +414,8 @@ public class CassandraMessageDAO {
     private MessageIdAttachmentIds fromRow(Row row) {
         MessageId messageId = messageIdFactory.of(row.getUUID(MESSAGE_ID));
         Set<AttachmentId> attachmentIds = attachmentByIds(row.getList(ATTACHMENTS, UDTValue.class))
-                .map(MessageAttachmentRepresentation::getAttachmentId)
-                .collect(Guavate.toImmutableSet());
+            .map(MessageAttachmentRepresentation::getAttachmentId)
+            .collect(Guavate.toImmutableSet());
         return new MessageIdAttachmentIds(messageId, attachmentIds);
     }
 
