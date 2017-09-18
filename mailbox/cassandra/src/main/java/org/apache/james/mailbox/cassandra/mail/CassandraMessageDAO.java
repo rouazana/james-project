@@ -72,7 +72,6 @@ import org.apache.james.mailbox.model.ComposedMessageId;
 import org.apache.james.mailbox.model.ComposedMessageIdWithMetaData;
 import org.apache.james.mailbox.model.MessageAttachment;
 import org.apache.james.mailbox.model.MessageId;
-import org.apache.james.mailbox.cassandra.ids.CassandraMessageId.Factory;
 import org.apache.james.mailbox.store.mail.MessageMapper.FetchType;
 import org.apache.james.mailbox.store.mail.model.MailboxMessage;
 import org.apache.james.mailbox.store.mail.model.impl.PropertyBuilder;
@@ -103,7 +102,7 @@ public class CassandraMessageDAO {
     private final CassandraBlobsDAO blobsDAO;
     private final CassandraConfiguration configuration;
     private final CassandraUtils cassandraUtils;
-    private final Factory messageIdFactory;
+    private final CassandraMessageId.Factory messageIdFactory;
     private final PreparedStatement insert;
     private final PreparedStatement delete;
     private final PreparedStatement selectMetadata;
@@ -115,7 +114,7 @@ public class CassandraMessageDAO {
 
     @Inject
     public CassandraMessageDAO(Session session, CassandraTypesProvider typesProvider, CassandraBlobsDAO blobsDAO, CassandraConfiguration cassandraConfiguration,
-            CassandraUtils cassandraUtils, Factory messageIdFactory) {
+            CassandraUtils cassandraUtils, CassandraMessageId.Factory messageIdFactory) {
         this.cassandraAsyncExecutor = new CassandraAsyncExecutor(session);
         this.typesProvider = typesProvider;
         this.blobsDAO = blobsDAO;
@@ -135,7 +134,7 @@ public class CassandraMessageDAO {
 
     @VisibleForTesting
     public CassandraMessageDAO(Session session, CassandraTypesProvider typesProvider, CassandraBlobsDAO blobsDAO,
-            CassandraUtils cassandraUtils, Factory messageIdFactory) {
+            CassandraUtils cassandraUtils, CassandraMessageId.Factory messageIdFactory) {
         this(session, typesProvider, blobsDAO, CassandraConfiguration.DEFAULT_CONFIGURATION, cassandraUtils, messageIdFactory);
     }
 
