@@ -76,12 +76,10 @@ public class CassandraMessageDAOTest {
     private CassandraCluster cassandra;
 
     private CassandraMessageDAO testee;
-    private CassandraBlobsDAO blobsDAO;
     private CassandraMessageId.Factory messageIdFactory;
 
     private SimpleMailboxMessage message;
     private CassandraMessageId messageId;
-    private ComposedMessageId composedMessageId;
     private List<ComposedMessageIdWithMetaData> messageIds;
 
     @Before
@@ -89,13 +87,11 @@ public class CassandraMessageDAOTest {
         cassandra = CassandraCluster.create(new CassandraModuleComposite(new CassandraMessageModule(), new CassandraBlobModule()), cassandraServer.getIp(), cassandraServer.getBindingPort());
         messageIdFactory = new CassandraMessageId.Factory();
         messageId = messageIdFactory.generate();
-        blobsDAO = new CassandraBlobsDAO(cassandra.getConf());
+        CassandraBlobsDAO blobsDAO = new CassandraBlobsDAO(cassandra.getConf());
         testee = new CassandraMessageDAO(cassandra.getConf(), cassandra.getTypesProvider(), blobsDAO, CassandraUtils.WITH_DEFAULT_CONFIGURATION, new CassandraMessageId.Factory());
 
-        composedMessageId = new ComposedMessageId(MAILBOX_ID, messageId, messageUid);
-
         messageIds = ImmutableList.of(ComposedMessageIdWithMetaData.builder()
-                .composedMessageId(composedMessageId)
+                .composedMessageId(new ComposedMessageId(MAILBOX_ID, messageId, messageUid))
                 .flags(new Flags())
                 .modSeq(1)
                 .build());
@@ -210,11 +206,11 @@ public class CassandraMessageDAOTest {
     public void retrieveAllMessageIdAttachmentIdsShouldReturnOneWhenStored() throws Exception {
         //Given
         MessageAttachment attachment = MessageAttachment.builder()
-                .attachment(Attachment.builder()
-                        .bytes("content".getBytes(StandardCharsets.UTF_8))
-                        .type("type")
-                        .build())
-                .build();
+            .attachment(Attachment.builder()
+                .bytes("content".getBytes(StandardCharsets.UTF_8))
+                .type("type")
+                .build())
+            .build();
         SimpleMailboxMessage message1 = createMessage(messageId, CONTENT, BODY_START, new PropertyBuilder(), ImmutableList.of(attachment));
         testee.save(message1).join();
         MessageIdAttachmentIds expected = new MessageIdAttachmentIds(messageId, ImmutableSet.of(attachment.getAttachmentId()));
@@ -230,17 +226,17 @@ public class CassandraMessageDAOTest {
     public void retrieveAllMessageIdAttachmentIdsShouldReturnOneWhenStoredWithTwoAttachments() throws Exception {
         //Given
         MessageAttachment attachment1 = MessageAttachment.builder()
-                .attachment(Attachment.builder()
-                        .bytes("content".getBytes(StandardCharsets.UTF_8))
-                        .type("type")
-                        .build())
-                .build();
+            .attachment(Attachment.builder()
+                .bytes("content".getBytes(StandardCharsets.UTF_8))
+                .type("type")
+                .build())
+            .build();
         MessageAttachment attachment2 = MessageAttachment.builder()
-                .attachment(Attachment.builder()
-                        .bytes("other content".getBytes(StandardCharsets.UTF_8))
-                        .type("type")
-                        .build())
-                .build();
+            .attachment(Attachment.builder()
+                .bytes("other content".getBytes(StandardCharsets.UTF_8))
+                .type("type")
+                .build())
+            .build();
         SimpleMailboxMessage message1 = createMessage(messageId, CONTENT, BODY_START, new PropertyBuilder(), ImmutableList.of(attachment1, attachment2));
         testee.save(message1).join();
         MessageIdAttachmentIds expected = new MessageIdAttachmentIds(messageId, ImmutableSet.of(attachment1.getAttachmentId(), attachment2.getAttachmentId()));
@@ -258,17 +254,17 @@ public class CassandraMessageDAOTest {
         MessageId messageId1 = messageIdFactory.generate();
         MessageId messageId2 = messageIdFactory.generate();
         MessageAttachment attachment1 = MessageAttachment.builder()
-                .attachment(Attachment.builder()
-                        .bytes("content".getBytes(StandardCharsets.UTF_8))
-                        .type("type")
-                        .build())
-                .build();
+            .attachment(Attachment.builder()
+                .bytes("content".getBytes(StandardCharsets.UTF_8))
+                .type("type")
+                .build())
+            .build();
         MessageAttachment attachment2 = MessageAttachment.builder()
-                .attachment(Attachment.builder()
-                        .bytes("other content".getBytes(StandardCharsets.UTF_8))
-                        .type("type")
-                        .build())
-                .build();
+            .attachment(Attachment.builder()
+                .bytes("other content".getBytes(StandardCharsets.UTF_8))
+                .type("type")
+                .build())
+            .build();
         SimpleMailboxMessage message1 = createMessage(messageId1, CONTENT, BODY_START, new PropertyBuilder(), ImmutableList.of(attachment1));
         SimpleMailboxMessage message2 = createMessage(messageId2, CONTENT, BODY_START, new PropertyBuilder(), ImmutableList.of(attachment2));
         testee.save(message1).join();
@@ -303,17 +299,17 @@ public class CassandraMessageDAOTest {
         MessageId messageId2 = messageIdFactory.generate();
         MessageId messageId3 = messageIdFactory.generate();
         MessageAttachment attachmentFor1 = MessageAttachment.builder()
-                .attachment(Attachment.builder()
-                        .bytes("content".getBytes(StandardCharsets.UTF_8))
-                        .type("type")
-                        .build())
-                .build();
+            .attachment(Attachment.builder()
+                .bytes("content".getBytes(StandardCharsets.UTF_8))
+                .type("type")
+                .build())
+            .build();
         MessageAttachment attachmentFor3 = MessageAttachment.builder()
-                .attachment(Attachment.builder()
-                        .bytes("other content".getBytes(StandardCharsets.UTF_8))
-                        .type("type")
-                        .build())
-                .build();
+            .attachment(Attachment.builder()
+                .bytes("other content".getBytes(StandardCharsets.UTF_8))
+                .type("type")
+                .build())
+            .build();
         SimpleMailboxMessage message1 = createMessage(messageId1, CONTENT, BODY_START, new PropertyBuilder(), ImmutableList.of(attachmentFor1));
         SimpleMailboxMessage message2 = createMessage(messageId2, CONTENT, BODY_START, new PropertyBuilder(), NO_ATTACHMENT);
         SimpleMailboxMessage message3 = createMessage(messageId3, CONTENT, BODY_START, new PropertyBuilder(), ImmutableList.of(attachmentFor3));
