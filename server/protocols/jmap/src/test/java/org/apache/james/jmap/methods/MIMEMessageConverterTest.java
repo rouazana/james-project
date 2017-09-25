@@ -47,6 +47,7 @@ import org.apache.james.mime4j.stream.Field;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 public class MIMEMessageConverterTest {
     @Test
@@ -69,6 +70,76 @@ public class MIMEMessageConverterTest {
         // Then
         assertThat(result.getHeader().getFields("In-Reply-To")).extracting(Field::getBody)
                 .containsOnly(matchingMessageId);
+    }
+
+    @Test
+    public void convertToMimeShouldAddHeaderWhenProvided() {
+        // Given
+        MIMEMessageConverter sut = new MIMEMessageConverter();
+
+        CreationMessage messageHavingInReplyTo = CreationMessage.builder()
+                .from(DraftEmailer.builder().name("sender").build())
+                .headers(ImmutableMap.of("FIRST", "first value"))
+                .mailboxIds(ImmutableList.of("dead-beef-1337"))
+                .subject("subject")
+                .build();
+
+        // When
+        Message result = sut.convertToMime(new ValueWithId.CreationMessageEntry(
+                CreationMessageId.of("user|mailbox|1"), messageHavingInReplyTo), ImmutableList.of());
+
+        // Then
+        assertThat(result.getHeader().getFields("FIRST")).extracting(Field::getBody)
+                .containsOnly("first value");
+    }
+
+    @Test
+    public void convertToMimeShouldAddHeadersWhenProvided() {
+        // Given
+        MIMEMessageConverter sut = new MIMEMessageConverter();
+
+        CreationMessage messageHavingInReplyTo = CreationMessage.builder()
+                .from(DraftEmailer.builder().name("sender").build())
+                .headers(ImmutableMap.of("FIRST", "first value", "SECOND", "second value"))
+                .mailboxIds(ImmutableList.of("dead-beef-1337"))
+                .subject("subject")
+                .build();
+
+        // When
+        Message result = sut.convertToMime(new ValueWithId.CreationMessageEntry(
+                CreationMessageId.of("user|mailbox|1"), messageHavingInReplyTo), ImmutableList.of());
+
+        // Then
+        assertThat(result.getHeader().getFields("FIRST")).extracting(Field::getBody)
+                .containsOnly("first value");
+        assertThat(result.getHeader().getFields("SECOND")).extracting(Field::getBody)
+            .containsOnly("second value");
+    }
+
+    @Test
+    public void convertToMimeShouldFilterGeneratedHeadersWhenProvided() {
+        // Given
+        MIMEMessageConverter sut = new MIMEMessageConverter();
+
+        String joesEmail = "joe@example.com";
+        CreationMessage messageHavingInReplyTo = CreationMessage.builder()
+                .from(DraftEmailer.builder().email(joesEmail).name("joe").build())
+                .headers(ImmutableMap.of("From", "hacker@example.com", "VALID", "valid header value"))
+                .mailboxIds(ImmutableList.of("dead-beef-1337"))
+                .subject("subject")
+                .build();
+
+        // When
+        Message result = sut.convertToMime(new ValueWithId.CreationMessageEntry(
+                CreationMessageId.of("user|mailbox|1"), messageHavingInReplyTo), ImmutableList.of());
+
+        // Then
+        assertThat(result.getFrom()).extracting(Mailbox::getAddress)
+            .allMatch(f -> f.equals(joesEmail));
+        assertThat(result.getHeader().getFields("VALID")).extracting(Field::getBody)
+            .containsOnly("valid header value");
+        assertThat(result.getHeader().getFields("From")).extracting(Field::getBody)
+            .containsOnly("joe <joe@example.com>");
     }
 
     @Test(expected = IllegalArgumentException.class)
