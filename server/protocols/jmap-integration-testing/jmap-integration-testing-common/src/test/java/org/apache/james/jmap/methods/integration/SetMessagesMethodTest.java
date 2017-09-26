@@ -3394,7 +3394,7 @@ public abstract class SetMessagesMethodTest {
             "  ]" +
             "]";
 
-        String messageId = with()
+        String messageId = given()
             .header("Authorization", accessToken.serialize())
             .body(requestBody)
         // When
@@ -3408,7 +3408,7 @@ public abstract class SetMessagesMethodTest {
 
         String message = ARGUMENTS + ".list[0]";
 
-        given()
+        with()
             .header("Authorization", accessToken.serialize())
             .body("[[\"getMessages\", {\"ids\": [\"" + messageId + "\"]}, \"#0\"]]")
         .when()
@@ -3449,18 +3449,29 @@ public abstract class SetMessagesMethodTest {
             "  ]" +
             "]";
 
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body(requestBody)
         .post("/jmap");
 
         String sentMailboxId = getMailboxId(accessToken, Role.SENT);
 
-        calmlyAwait.atMost(60, TimeUnit.SECONDS).until( () -> messageInMailboxHasHeaders(sentMailboxId,
-            ImmutableList.<String>builder().addAll(buildExpectedHeaders())
-                .add("X-MY-SPECIAL-HEADER")
-                .add("OTHER-HEADER")
-                .build()));
+        calmlyAwait.atMost(30, TimeUnit.SECONDS).until( () -> messageHasBeenMovedToSentBox(sentMailboxId));
+
+        String message = SECOND_ARGUMENTS + ".list[0]";
+        with()
+            .header("Authorization", this.accessToken.serialize())
+            .body("[[\"getMessageList\", {\"fetchMessages\":true, \"fetchMessageProperties\": [\"headers\"], \"filter\":{\"inMailboxes\":[\"" + sentMailboxId + "\"]}}, \"#0\"]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .log().ifValidationFails()
+            .statusCode(200)
+            .body(SECOND_NAME, equalTo("messages"))
+            .body(SECOND_ARGUMENTS + ".list", hasSize(1))
+            .body(message + ".headers", Matchers.allOf(
+                hasEntry("X-MY-SPECIAL-HEADER", "first header value"),
+                hasEntry("OTHER-HEADER", "other value")));
     }
 
     @Test

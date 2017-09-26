@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.function.Consumer;
@@ -57,6 +58,7 @@ import org.apache.james.mime4j.stream.RawField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.steveash.guavate.Guavate;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
@@ -79,9 +81,23 @@ public class MIMEMessageConverter {
     private static final String QUOTED_PRINTABLE = "quoted-printable";
     private static final String BASE64 = "base64";
     private static final String IN_REPLY_TO_HEADER = "In-Reply-To";
-    private static final List<String> COMPUTED_HEADERS = ImmutableList.of(FieldName.FROM, FieldName.SENDER, FieldName.REPLY_TO, FieldName.TO,
-            FieldName.CC, FieldName.BCC, FieldName.SUBJECT, FieldName.MESSAGE_ID, FieldName.DATE, IN_REPLY_TO_HEADER, FieldName.CONTENT_TYPE,
-            FieldName.MIME_VERSION, FieldName.CONTENT_TRANSFER_ENCODING);
+    private static final List<String> COMPUTED_HEADERS = ImmutableList.of(
+            FieldName.FROM,
+            FieldName.SENDER,
+            FieldName.REPLY_TO,
+            FieldName.TO,
+            FieldName.CC,
+            FieldName.BCC,
+            FieldName.SUBJECT,
+            FieldName.MESSAGE_ID,
+            FieldName.DATE,
+            IN_REPLY_TO_HEADER,
+            FieldName.CONTENT_TYPE,
+            FieldName.MIME_VERSION,
+            FieldName.CONTENT_TRANSFER_ENCODING);
+    private static final List<String> LOWERCASED_COMPUTED_HEADERS = COMPUTED_HEADERS.stream()
+            .map(s -> s.toLowerCase(Locale.ENGLISH))
+            .collect(Guavate.toImmutableList());
 
     private final BasicBodyFactory bodyFactory;
 
@@ -148,7 +164,8 @@ public class MIMEMessageConverter {
             newMessage.getHtmlBody().ifPresent(x -> messageBuilder.setContentType(HTML_MEDIA_TYPE, UTF_8_CHARSET));
         }
         newMessage.getHeaders().entrySet().stream()
-            .filter(header -> ! COMPUTED_HEADERS.contains(header.getKey()))
+            .filter(header -> ! header.getKey().trim().isEmpty())
+            .filter(header -> ! LOWERCASED_COMPUTED_HEADERS.contains(header.getKey().toLowerCase(Locale.ENGLISH)))
             .forEach(header -> addHeader(messageBuilder, header.getKey(), header.getValue()));
     }
 
