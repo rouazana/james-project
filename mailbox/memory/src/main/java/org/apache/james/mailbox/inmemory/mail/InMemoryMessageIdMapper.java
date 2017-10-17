@@ -19,6 +19,8 @@
 
 package org.apache.james.mailbox.inmemory.mail;
 
+import static org.apache.james.mailbox.store.mail.AbstractMessageMapper.UNLIMITED;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +64,7 @@ public class InMemoryMessageIdMapper implements MessageIdMapper {
                 .stream()
                 .flatMap(Throwing.function(mailbox ->
                     ImmutableList.copyOf(
-                        messageMapper.findInMailbox(mailbox, MessageRange.all(), fetchType, -1))
+                        messageMapper.findInMailbox(mailbox, MessageRange.all(), fetchType, UNLIMITED))
                         .stream()))
                 .filter(message -> messageIds.contains(message.getMessageId()))
                 .collect(Guavate.toImmutableList());
@@ -124,18 +126,17 @@ public class InMemoryMessageIdMapper implements MessageIdMapper {
             .collect(Guavate.entriesToMap());
     }
 
-    private Function<MailboxMessage, Pair<MailboxId, UpdatedFlags>> updateMessage(Flags newState,
-                                                                                          FlagsUpdateMode updateMode) {
+    private Function<MailboxMessage, Pair<MailboxId, UpdatedFlags>> updateMessage(Flags newState, FlagsUpdateMode updateMode) {
         return Throwing.function((MailboxMessage message) -> {
             FlagsUpdateCalculator flagsUpdateCalculator = new FlagsUpdateCalculator(newState, updateMode);
             if (flagsUpdateCalculator.buildNewFlags(message.createFlags()).equals(message.createFlags())) {
-                return Pair.of(message.getMailboxId(),
-                    UpdatedFlags.builder()
-                        .modSeq(message.getModSeq())
-                        .uid(message.getUid())
-                        .oldFlags(message.createFlags())
-                        .newFlags(newState)
-                        .build());
+                UpdatedFlags updatedFlags = UpdatedFlags.builder()
+                    .modSeq(message.getModSeq())
+                    .uid(message.getUid())
+                    .oldFlags(message.createFlags())
+                    .newFlags(newState)
+                    .build();
+                return Pair.of(message.getMailboxId(), updatedFlags);
             }
             return Pair.of(message.getMailboxId(),
                 messageMapper.updateFlags(
