@@ -139,7 +139,7 @@ public class ElasticSearchIntegrationTest extends AbstractMessageSearchIndexTest
             new MessageParser(),
             messageIdFactory);
         DefaultDelegatingMailboxListener delegatingListener = new DefaultDelegatingMailboxListener();
-        MailboxEventDispatcher mailboxEventDispatcher = new MailboxEventDispatcher(new DefaultDelegatingMailboxListener());
+        MailboxEventDispatcher mailboxEventDispatcher = new MailboxEventDispatcher(delegatingListener);
         storeMailboxManager.setDelegatingMailboxListener(delegatingListener);
 
         messageIdManager = new StoreMessageIdManager(
