@@ -67,6 +67,7 @@ public class InMemoryModSeqProvider implements ModSeqProvider {
     }
 
     private long nextModSeq(InMemoryId mailboxId) {
+        new Exception().printStackTrace();
         return getHighest(mailboxId).incrementAndGet();
     }
 }
