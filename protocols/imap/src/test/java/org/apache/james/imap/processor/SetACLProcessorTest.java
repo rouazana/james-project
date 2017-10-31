@@ -181,7 +181,6 @@ public class SetACLProcessorTest {
     }
     
     private void testOp(String prefix, EditMode editMode) throws MailboxException {
-        MailboxACL acl = MailboxACL.OWNER_FULL_ACL;
         when(mailboxManager.hasRight(path, MailboxACL.Right.Lookup, mailboxSession))
             .thenReturn(true);
         when(mailboxManager.hasRight(path, MailboxACL.Right.Administer, mailboxSession))
