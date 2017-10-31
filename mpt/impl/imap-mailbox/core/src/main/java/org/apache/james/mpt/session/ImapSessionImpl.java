@@ -119,7 +119,7 @@ public class ImapSessionImpl implements ImapSession {
     }
 
     public boolean supportMultipleNamespaces() {
-        return false;
+        return true;
     }
 
     public boolean isCompressionActive() {
