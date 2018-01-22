@@ -33,8 +33,10 @@ import javax.ws.rs.Produces;
 import org.apache.james.mailrepository.api.MailRepositoryStore;
 import org.apache.james.util.streams.Limit;
 import org.apache.james.webadmin.Routes;
+import org.apache.james.webadmin.dto.ExtendedMailRepositoryResponse;
 import org.apache.james.webadmin.service.MailRepositoryStoreService;
 import org.apache.james.webadmin.utils.ErrorResponder;
+import org.apache.james.webadmin.utils.ErrorResponder.ErrorType;
 import org.apache.james.webadmin.utils.JsonTransformer;
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -74,6 +76,8 @@ public class MailRepositoriesRoutes implements Routes {
         defineGetMailRepositories();
 
         defineListMails();
+
+        defineGetMailRepository();
     }
 
     @GET
@@ -130,6 +134,37 @@ public class MailRepositoriesRoutes implements Routes {
         service.get(MAIL_REPOSITORIES, (request, response) -> {
             response.status(HttpStatus.OK_200);
             return repositoryStoreService.listMailRepositories();
+        }, jsonTransformer);
+    }
+
+    @GET
+    @Path("/{encodedUrl}")
+    @ApiOperation(value = "Reading the information of a repository, such as size (can take some time to compute)")
+    @ApiResponses(value = {
+        @ApiResponse(code = HttpStatus.OK_200, message = "The repository information", response = List.class),
+        @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "The repository does not exist", response = ErrorResponder.class),
+        @ApiResponse(code = HttpStatus.INTERNAL_SERVER_ERROR_500, message = "Internal server error - Something went bad on the server side."),
+    })
+    public void defineGetMailRepository() {
+        service.get(MAIL_REPOSITORIES + "/:encodedUrl", (request, response) -> {
+            String encodedUrl = request.params("encodedUrl");
+            String url = URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8.displayName());
+            try {
+                long size = repositoryStoreService.size(url)
+                    .orElseThrow(() -> ErrorResponder.builder()
+                            .statusCode(HttpStatus.NOT_FOUND_404)
+                            .type(ErrorType.NOT_FOUND)
+                            .message("The repository " + encodedUrl + "(decoded value: '" + url + "') does not exist")
+                            .haltError());
+                return new ExtendedMailRepositoryResponse(url, size);
+            } catch (MailRepositoryStore.MailRepositoryStoreException | MessagingException e) {
+                throw ErrorResponder.builder()
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500)
+                    .type(ErrorResponder.ErrorType.SERVER_ERROR)
+                    .cause(e)
+                    .message("Error while retrieving mail repository information")
+                    .haltError();
+            }
         }, jsonTransformer);
     }
 

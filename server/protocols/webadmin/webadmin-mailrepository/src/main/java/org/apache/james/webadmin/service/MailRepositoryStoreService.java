@@ -20,6 +20,7 @@
 package org.apache.james.webadmin.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -31,6 +32,7 @@ import org.apache.james.util.streams.Limit;
 import org.apache.james.webadmin.dto.MailKey;
 import org.apache.james.webadmin.dto.MailRepositoryResponse;
 
+import com.github.fge.lambdas.Throwing;
 import com.github.steveash.guavate.Guavate;
 
 public class MailRepositoryStoreService {
@@ -57,4 +59,8 @@ public class MailRepositoryStoreService {
             .collect(Guavate.toImmutableList());
     }
 
+    public Optional<Long> size(String url) throws MailRepositoryStore.MailRepositoryStoreException, MessagingException {
+        Optional<MailRepository> mailRepository = Optional.ofNullable(mailRepositoryStore.select(url));
+        return mailRepository.map(Throwing.function(MailRepository::size).sneakyThrow());
+    }
 }
