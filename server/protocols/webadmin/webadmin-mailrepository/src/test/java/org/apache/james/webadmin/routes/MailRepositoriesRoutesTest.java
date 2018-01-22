@@ -140,6 +140,14 @@ public class MailRepositoriesRoutesTest {
     }
 
     @Test
+    public void listingKeysShouldReturnNotFoundWhenNoRepository() throws Exception {
+        when()
+            .get(MY_REPO_MAILS)
+        .then()
+            .statusCode(HttpStatus.NOT_FOUND_404);
+    }
+
+    @Test
     public void listingKeysShouldReturnEmptyWhenNoMail() throws Exception {
         when(mailRepositoryStore.select(URL_MY_REPO)).thenReturn(mailRepository);
 

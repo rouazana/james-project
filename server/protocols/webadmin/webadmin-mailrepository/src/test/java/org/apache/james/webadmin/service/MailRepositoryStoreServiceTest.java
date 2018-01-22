@@ -88,7 +88,7 @@ public class MailRepositoryStoreServiceTest {
     public void listMailsShouldReturnEmptyWhenMailRepositoryIsEmpty() throws Exception {
         when(mailRepositoryStore.select(FIRST_REPOSITORY)).thenReturn(repository);
 
-        assertThat(testee.listMails(FIRST_REPOSITORY, MailRepositoriesRoutes.NO_OFFSET, Limit.unlimited()))
+        assertThat(testee.listMails(FIRST_REPOSITORY, MailRepositoriesRoutes.NO_OFFSET, Limit.unlimited()).get())
             .isEmpty();
     }
 
@@ -103,7 +103,7 @@ public class MailRepositoryStoreServiceTest {
             .name(NAME_2)
             .build());
 
-        assertThat(testee.listMails(FIRST_REPOSITORY, MailRepositoriesRoutes.NO_OFFSET, Limit.unlimited()))
+        assertThat(testee.listMails(FIRST_REPOSITORY, MailRepositoriesRoutes.NO_OFFSET, Limit.unlimited()).get())
             .containsOnly(new MailKey(NAME_1), new MailKey(NAME_2));
     }
 
@@ -122,7 +122,7 @@ public class MailRepositoryStoreServiceTest {
             .build());
 
         int offset = 1;
-        assertThat(testee.listMails(FIRST_REPOSITORY, offset, Limit.from(1)))
+        assertThat(testee.listMails(FIRST_REPOSITORY, offset, Limit.from(1)).get())
             .containsOnly(new MailKey(NAME_2));
     }
 }

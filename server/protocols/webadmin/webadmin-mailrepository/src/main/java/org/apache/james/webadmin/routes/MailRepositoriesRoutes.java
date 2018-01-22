@@ -101,8 +101,9 @@ public class MailRepositoriesRoutes implements Routes {
     })
     @ApiResponses(value = {
         @ApiResponse(code = HttpStatus.OK_200, message = "The list of all mails in a repository", response = List.class),
-        @ApiResponse(code = HttpStatus.INTERNAL_SERVER_ERROR_500, message = "Internal server error - Something went bad on the server side."),
-        @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Bad request - invalid parameter")
+        @ApiResponse(code = HttpStatus.BAD_REQUEST_400, message = "Bad request - invalid parameter"),
+        @ApiResponse(code = HttpStatus.NOT_FOUND_404, message = "The repository does not exist", response = ErrorResponder.class),
+        @ApiResponse(code = HttpStatus.INTERNAL_SERVER_ERROR_500, message = "Internal server error - Something went bad on the server side.")
     })
     public void defineListMails() {
         service.get(MAIL_REPOSITORIES + "/:encodedUrl/mails", (request, response) -> {
@@ -112,7 +113,13 @@ public class MailRepositoriesRoutes implements Routes {
             String encodedUrl = request.params("encodedUrl");
             String url = URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8.displayName());
             try {
-                return repositoryStoreService.listMails(url, offset, limit);
+                return repositoryStoreService.listMails(url, offset, limit)
+                    .orElseThrow(() -> ErrorResponder.builder()
+                            .statusCode(HttpStatus.NOT_FOUND_404)
+                            .type(ErrorType.NOT_FOUND)
+                            .message("The repository " + encodedUrl + "(decoded value: '" + url + "') does not exist")
+                            .haltError());
+
             } catch (MailRepositoryStore.MailRepositoryStoreException| MessagingException e) {
                 throw ErrorResponder.builder()
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500)
