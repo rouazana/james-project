@@ -122,7 +122,7 @@ public class MailRepositoriesRoutes implements Routes {
                             .message("The repository " + encodedUrl + "(decoded value: '" + url + "') does not exist")
                             .haltError());
 
-            } catch (MailRepositoryStore.MailRepositoryStoreException| MessagingException e) {
+            } catch (MailRepositoryStore.MailRepositoryStoreException | MessagingException e) {
                 throw ErrorResponder.builder()
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500)
                     .type(ErrorResponder.ErrorType.SERVER_ERROR)
