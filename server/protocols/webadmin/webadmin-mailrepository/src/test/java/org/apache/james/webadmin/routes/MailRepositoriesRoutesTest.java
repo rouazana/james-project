@@ -25,6 +25,7 @@ import static com.jayway.restassured.config.EncoderConfig.encoderConfig;
 import static com.jayway.restassured.config.RestAssuredConfig.newConfig;
 import static org.apache.james.webadmin.WebAdminServer.NO_CONFIGURATION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -196,7 +197,7 @@ public class MailRepositoriesRoutesTest {
         .then()
             .statusCode(HttpStatus.OK_200)
             .body("", hasSize(1))
-            .body("mailKey", containsInAnyOrder("name2"));
+            .body("mailKey", contains("name2"));
     }
 
     @Test
