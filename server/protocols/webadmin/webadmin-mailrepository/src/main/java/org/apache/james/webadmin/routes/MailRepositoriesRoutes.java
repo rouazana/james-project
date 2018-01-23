@@ -109,9 +109,9 @@ public class MailRepositoriesRoutes implements Routes {
     })
     public void defineListMails() {
         service.get(MAIL_REPOSITORIES + "/:encodedUrl/mails", (request, response) -> {
-            Offset offset = Offset.from(asPositiveInteger(request, "offset"));
-            Limit limit = Limit.from(asPositiveInteger(request, "limit")
-                .map(value -> keepNotZero(value, "limit")));
+            Offset offset = Offset.from(assertPositiveInteger(request, "offset"));
+            Limit limit = Limit.from(assertPositiveInteger(request, "limit")
+                .map(value -> assertNotZero(value, "limit")));
             String encodedUrl = request.params("encodedUrl");
             String url = URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8.displayName());
             try {
@@ -176,12 +176,12 @@ public class MailRepositoriesRoutes implements Routes {
         }, jsonTransformer);
     }
 
-    private Optional<Integer> asPositiveInteger(Request request, String parameterName) {
+    private Optional<Integer> assertPositiveInteger(Request request, String parameterName) {
         try {
             return Optional.ofNullable(request.queryParams(parameterName))
                 .filter(s -> !Strings.isNullOrEmpty(s))
                 .map(Integer::valueOf)
-                .map(value -> keepPositive(value, parameterName));
+                .map(value -> assertPositive(value, parameterName));
         } catch (NumberFormatException e) {
             throw ErrorResponder.builder()
                 .statusCode(HttpStatus.BAD_REQUEST_400)
@@ -192,7 +192,7 @@ public class MailRepositoriesRoutes implements Routes {
         }
     }
 
-    private int keepPositive(int value, String parameterName) {
+    private int assertPositive(int value, String parameterName) {
         if (value < 0) {
             throw ErrorResponder.builder()
                 .statusCode(HttpStatus.BAD_REQUEST_400)
@@ -203,7 +203,7 @@ public class MailRepositoriesRoutes implements Routes {
         return value;
     }
 
-    private int keepNotZero(int value, String parameterName) {
+    private int assertNotZero(int value, String parameterName) {
         if (value == 0) {
             throw ErrorResponder.builder()
                 .statusCode(HttpStatus.BAD_REQUEST_400)
