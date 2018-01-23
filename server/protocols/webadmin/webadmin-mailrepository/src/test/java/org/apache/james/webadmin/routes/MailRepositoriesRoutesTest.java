@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.apache.james.mailrepository.api.MailRepositoryStore;
 import org.apache.james.mailrepository.memory.MemoryMailRepository;
+import org.apache.james.metrics.api.NoopMetricFactory;
 import org.apache.james.metrics.logger.DefaultMetricFactory;
 import org.apache.james.webadmin.WebAdminServer;
 import org.apache.james.webadmin.WebAdminUtils;
@@ -70,7 +71,7 @@ public class MailRepositoriesRoutesTest {
         mailRepository = new MemoryMailRepository();
 
         webAdminServer = WebAdminUtils.createWebAdminServer(
-                new DefaultMetricFactory(),
+                new NoopMetricFactory(),
                 new MailRepositoriesRoutes(new MailRepositoryStoreService(mailRepositoryStore), new JsonTransformer()));
         webAdminServer.configure(NO_CONFIGURATION);
         webAdminServer.await();
