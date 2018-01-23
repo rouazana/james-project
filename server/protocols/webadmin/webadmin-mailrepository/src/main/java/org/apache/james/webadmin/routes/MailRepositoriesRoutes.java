@@ -86,6 +86,7 @@ public class MailRepositoriesRoutes implements Routes {
     @ApiImplicitParams({
         @ApiImplicitParam(
             required = false,
+            name = "offset",
             paramType = "query parameter",
             dataType = "Integer",
             defaultValue = "0",
@@ -94,6 +95,7 @@ public class MailRepositoriesRoutes implements Routes {
         @ApiImplicitParam(
             required = false,
             paramType = "query parameter",
+            name = "limit",
             dataType = "Integer",
             defaultValue = "absent",
             example = "?limit=100",
