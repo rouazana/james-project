@@ -109,8 +109,8 @@ public class MailRepositoriesRoutes implements Routes {
     })
     public void defineListMails() {
         service.get(MAIL_REPOSITORIES + "/:encodedUrl/mails", (request, response) -> {
-            Offset offset = Offset.from(asInteger(request, "offset"));
-            Limit limit = Limit.from(asInteger(request, "limit")
+            Offset offset = Offset.from(asPositiveInteger(request, "offset"));
+            Limit limit = Limit.from(asPositiveInteger(request, "limit")
                 .map(value -> keepNotZero(value, "limit")));
             String encodedUrl = request.params("encodedUrl");
             String url = URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8.displayName());
@@ -176,7 +176,7 @@ public class MailRepositoriesRoutes implements Routes {
         }, jsonTransformer);
     }
 
-    private Optional<Integer> asInteger(Request request, String parameterName) {
+    private Optional<Integer> asPositiveInteger(Request request, String parameterName) {
         try {
             return Optional.ofNullable(request.queryParams(parameterName))
                 .filter(s -> !Strings.isNullOrEmpty(s))
