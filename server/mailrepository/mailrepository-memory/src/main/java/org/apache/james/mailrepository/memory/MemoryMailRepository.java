@@ -77,7 +77,7 @@ public class MemoryMailRepository implements MailRepository {
     }
 
     @Override
-    public long size() throws MessagingException {
+    public long size() {
         return mails.size();
     }
 }
