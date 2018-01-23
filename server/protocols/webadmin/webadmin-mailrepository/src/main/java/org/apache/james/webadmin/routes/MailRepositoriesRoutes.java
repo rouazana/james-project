@@ -138,10 +138,9 @@ public class MailRepositoriesRoutes implements Routes {
         @ApiResponse(code = HttpStatus.INTERNAL_SERVER_ERROR_500, message = "Internal server error - Something went bad on the server side.")
     })
     public void defineGetMailRepositories() {
-        service.get(MAIL_REPOSITORIES, (request, response) -> {
-            response.status(HttpStatus.OK_200);
-            return repositoryStoreService.listMailRepositories();
-        }, jsonTransformer);
+        service.get(MAIL_REPOSITORIES,
+            (request, response) -> repositoryStoreService.listMailRepositories(),
+            jsonTransformer);
     }
 
     @GET
