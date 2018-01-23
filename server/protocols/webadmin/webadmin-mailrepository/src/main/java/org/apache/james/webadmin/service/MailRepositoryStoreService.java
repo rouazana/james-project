@@ -29,6 +29,7 @@ import org.apache.james.mailrepository.api.MailRepository;
 import org.apache.james.mailrepository.api.MailRepositoryStore;
 import org.apache.james.util.streams.Iterators;
 import org.apache.james.util.streams.Limit;
+import org.apache.james.util.streams.Offset;
 import org.apache.james.webadmin.dto.MailKey;
 import org.apache.james.webadmin.dto.MailRepositoryResponse;
 
@@ -51,16 +52,16 @@ public class MailRepositoryStoreService {
             .collect(Guavate.toImmutableList());
     }
 
-    public Optional<List<MailKey>> listMails(String url, long offset, Limit limit) throws MailRepositoryStore.MailRepositoryStoreException, MessagingException {
+    public Optional<List<MailKey>> listMails(String url, Offset offset, Limit limit) throws MailRepositoryStore.MailRepositoryStoreException, MessagingException {
         Optional<MailRepository> mailRepository = Optional.ofNullable(mailRepositoryStore.select(url));
         ThrowingFunction<MailRepository, List<MailKey>> list = repository -> list(repository, offset, limit);
         return mailRepository.map(Throwing.function(list).sneakyThrow());
     }
 
-    private List<MailKey> list(MailRepository mailRepository, long offset, Limit limit) throws MessagingException {
+    private List<MailKey> list(MailRepository mailRepository, Offset offset, Limit limit) throws MessagingException {
         return limit.applyOnStream(
                 Iterators.toStream(mailRepository.list())
-                    .skip(offset))
+                    .skip(offset.getOffset()))
                 .map(MailKey::new)
                 .collect(Guavate.toImmutableList());
     }

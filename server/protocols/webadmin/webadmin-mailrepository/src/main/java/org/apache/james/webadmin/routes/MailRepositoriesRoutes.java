@@ -32,6 +32,7 @@ import javax.ws.rs.Produces;
 
 import org.apache.james.mailrepository.api.MailRepositoryStore;
 import org.apache.james.util.streams.Limit;
+import org.apache.james.util.streams.Offset;
 import org.apache.james.webadmin.Routes;
 import org.apache.james.webadmin.dto.ExtendedMailRepositoryResponse;
 import org.apache.james.webadmin.service.MailRepositoryStoreService;
@@ -57,7 +58,6 @@ import spark.Service;
 public class MailRepositoriesRoutes implements Routes {
 
     public static final String MAIL_REPOSITORIES = "mailRepositories";
-    public static final int NO_OFFSET = 0;
 
     private final JsonTransformer jsonTransformer;
     private final MailRepositoryStoreService repositoryStoreService;
@@ -109,7 +109,7 @@ public class MailRepositoriesRoutes implements Routes {
     })
     public void defineListMails() {
         service.get(MAIL_REPOSITORIES + "/:encodedUrl/mails", (request, response) -> {
-            int offset = asInteger(request, "offset").orElse(NO_OFFSET);
+            Offset offset = Offset.from(asInteger(request, "offset"));
             Limit limit = Limit.from(asInteger(request, "limit")
                 .map(value -> keepNotZero(value, "limit")));
             String encodedUrl = request.params("encodedUrl");
