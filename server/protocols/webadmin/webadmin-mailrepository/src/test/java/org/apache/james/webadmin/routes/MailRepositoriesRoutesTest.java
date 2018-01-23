@@ -237,6 +237,27 @@ public class MailRepositoriesRoutesTest {
     }
 
     @Test
+    public void listingKeysShouldReturnEmptyWhenOffsetExceedsSize() throws Exception {
+        when(mailRepositoryStore.select(URL_MY_REPO)).thenReturn(mailRepository);
+
+        mailRepository.store(FakeMail.builder()
+            .name("name1")
+            .build());
+        mailRepository.store(FakeMail.builder()
+            .name("name2")
+            .build());
+        mailRepository.store(FakeMail.builder()
+            .name("name3")
+            .build());
+
+        when()
+            .get(MY_REPO_MAILS + "?offset=5")
+            .then()
+            .statusCode(HttpStatus.OK_200)
+            .body("", hasSize(0));
+    }
+
+    @Test
     public void listingKeysShouldReturnErrorOnInvalidLimit() throws Exception {
         when()
             .get(MY_REPO_MAILS + "?limit=invalid")
