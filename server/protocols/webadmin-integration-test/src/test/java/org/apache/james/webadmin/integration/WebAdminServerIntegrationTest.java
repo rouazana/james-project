@@ -85,7 +85,7 @@ public class WebAdminServerIntegrationTest {
         dataProbe = guiceJamesServer.getProbe(DataProbeImpl.class);
         webAdminGuiceProbe = guiceJamesServer.getProbe(WebAdminGuiceProbe.class);
 
-        RestAssured.requestSpecification = WebAdminUtils.defineRequestSpecification(webAdminGuiceProbe.getWebAdminPort())
+        RestAssured.requestSpecification = WebAdminUtils.buildRequestSpecification(webAdminGuiceProbe.getWebAdminPort())
             .build();
     }
 

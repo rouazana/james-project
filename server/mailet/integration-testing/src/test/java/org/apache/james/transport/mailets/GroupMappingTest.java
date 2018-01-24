@@ -121,7 +121,7 @@ public class GroupMappingTest {
         WebAdminGuiceProbe webAdminGuiceProbe = jamesServer.getProbe(WebAdminGuiceProbe.class);
         webAdminGuiceProbe.await();
         webAdminApi = given()
-            .spec(WebAdminUtils.defineRequestSpecification(webAdminGuiceProbe.getWebAdminPort()).build());
+            .spec(WebAdminUtils.buildRequestSpecification(webAdminGuiceProbe.getWebAdminPort()).build());
 
         message = MimeMessageBuilder.mimeMessageBuilder()
             .setSubject("test")

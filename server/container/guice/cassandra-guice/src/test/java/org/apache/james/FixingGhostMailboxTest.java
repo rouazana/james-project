@@ -143,7 +143,7 @@ public class FixingGhostMailboxTest {
             .setPort(jmapServer.getProbe(JmapGuiceProbe.class).getJmapPort())
             .build();
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        webadminSpecification = WebAdminUtils.defineRequestSpecification(webAdminProbe.getWebAdminPort())
+        webadminSpecification = WebAdminUtils.buildRequestSpecification(webAdminProbe.getWebAdminPort())
             .build();
 
         domain = "domain.tld";

@@ -48,11 +48,11 @@ public class WebAdminUtils {
             metricFactory);
     }
 
-    public static RequestSpecBuilder defineRequestSpecification(WebAdminServer webAdminServer) {
-        return defineRequestSpecification(webAdminServer.getPort());
+    public static RequestSpecBuilder buildRequestSpecification(WebAdminServer webAdminServer) {
+        return buildRequestSpecification(webAdminServer.getPort());
     }
 
-    public static RequestSpecBuilder defineRequestSpecification(PortSupplier portSupplier) {
+    public static RequestSpecBuilder buildRequestSpecification(PortSupplier portSupplier) {
         return new RequestSpecBuilder()
             .setContentType(ContentType.JSON)
             .setAccept(ContentType.JSON)
