@@ -178,7 +178,7 @@ public class MailRepositoriesRoutes implements Routes {
                         .type(ErrorResponder.ErrorType.NOT_FOUND)
                         .message("Could not retrieve " + mailKey)
                         .haltError());
-            } catch (MailRepositoryStore.MailRepositoryStoreException| MessagingException e) {
+            } catch (MailRepositoryStore.MailRepositoryStoreException | MessagingException e) {
                 throw ErrorResponder.builder()
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500)
                     .type(ErrorResponder.ErrorType.SERVER_ERROR)
@@ -270,7 +270,7 @@ public class MailRepositoriesRoutes implements Routes {
                 Task task = repositoryStoreService.createClearMailRepositoryTask(url);
                 TaskId taskId = taskManager.submit(task);
                 return TaskIdDto.respond(response, taskId);
-            } catch (MailRepositoryStore.MailRepositoryStoreException| MessagingException e) {
+            } catch (MailRepositoryStore.MailRepositoryStoreException | MessagingException e) {
                 throw ErrorResponder.builder()
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500)
                     .type(ErrorResponder.ErrorType.SERVER_ERROR)
