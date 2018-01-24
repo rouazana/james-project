@@ -243,7 +243,7 @@ public class MailRepositoriesRoutesTest {
 
     @Test
     public void listingKeysShouldReturnEmptyWhenOffsetExceedsSize() throws Exception {
-        when(mailRepositoryStore.select(URL_MY_REPO)).thenReturn(mailRepository);
+        when(mailRepositoryStore.get(URL_MY_REPO)).thenReturn(Optional.of(mailRepository));
 
         mailRepository.store(FakeMail.builder()
             .name("name1")
