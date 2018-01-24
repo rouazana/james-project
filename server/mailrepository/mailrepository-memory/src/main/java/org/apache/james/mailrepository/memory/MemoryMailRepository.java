@@ -80,7 +80,7 @@ public class MemoryMailRepository implements MailRepository {
     }
 
     @Override
-    public void removeAll() throws MessagingException {
+    public void removeAll() {
         mails.clear();
     }
 }
