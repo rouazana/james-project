@@ -20,8 +20,10 @@
 package org.apache.james.webadmin.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -31,12 +33,13 @@ public class JsonTransformer implements ResponseTransformer {
 
     private final ObjectMapper objectMapper;
 
-    public JsonTransformer() {
+    public JsonTransformer(Module... modules) {
         objectMapper = new ObjectMapper()
             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .registerModule(new Jdk8Module())
-            .registerModule(new JavaTimeModule());
+            .registerModule(new JavaTimeModule())
+            .registerModules(modules);
     }
 
     @Override

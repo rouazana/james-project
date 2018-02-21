@@ -105,9 +105,9 @@ public interface SelectedMailbox {
     boolean isDeletedByOtherSession();
 
     /**
-     * Is the size of the mailbox changed ?
+     * Is the count of the mailbox changed ?
      * 
-     * @return true if the mailbox size was changed
+     * @return true if the mailbox count was changed
      */
     boolean isSizeChanged();
 

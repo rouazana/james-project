@@ -73,7 +73,7 @@ public class PartialFetchBodyElementTest {
                 }
             }
         );
-        assertEquals("Size is less than number of octets so should be size",
+        assertEquals("Size is less than number of octets so should be count",
                 lessThanNumberOfOctets, element.size());
     }
 
@@ -88,7 +88,7 @@ public class PartialFetchBodyElementTest {
                 }
             }
         );
-        assertEquals("Size is less than number of octets so should be size",
+        assertEquals("Size is less than number of octets so should be count",
                 50, element.size());
     }
 
@@ -103,7 +103,7 @@ public class PartialFetchBodyElementTest {
                 }
             }
         );
-        assertEquals("Size is less than number of octets so should be size",
+        assertEquals("Size is less than number of octets so should be count",
                 90, element.size());
     }
 
@@ -117,7 +117,7 @@ public class PartialFetchBodyElementTest {
                 }
             }
         );
-        assertEquals("Size is less than number of octets so should be size", 0,
+        assertEquals("Size is less than number of octets so should be count", 0,
                 element.size());
     }
 
@@ -132,7 +132,7 @@ public class PartialFetchBodyElementTest {
                 }
             }
         );
-        assertEquals("Content size is less than start. Size should be zero.",
+        assertEquals("Content count is less than start. Size should be zero.",
                 NUMBER_OF_OCTETS, element.size());
     }
 }

@@ -132,7 +132,7 @@ public class SortConverterTest {
 
     @Test
     public void convertToSortsShouldSupportSize() {
-        assertThat(SortConverter.convertToSorts(ImmutableList.of("size desc")))
+        assertThat(SortConverter.convertToSorts(ImmutableList.of("count desc")))
                 .containsExactly(new Sort(SortClause.Size, Order.REVERSE));
     }
 }
