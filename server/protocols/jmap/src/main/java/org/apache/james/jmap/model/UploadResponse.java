@@ -73,7 +73,7 @@ public class UploadResponse {
         public UploadResponse build() {
             Preconditions.checkState(!Strings.isNullOrEmpty(blobId), "'blobId' is mandatory");
             Preconditions.checkState(!Strings.isNullOrEmpty(type), "'type' is mandatory");
-            Preconditions.checkState(size != null, "'count' is mandatory");
+            Preconditions.checkState(size != null, "'size' is mandatory");
             return new UploadResponse(Optional.ofNullable(accountId), blobId, type, size, Optional.ofNullable(expires));
         }
     }

@@ -22,7 +22,6 @@ package org.apache.james.webadmin.routes;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.apache.james.webadmin.WebAdminServer.NO_CONFIGURATION;
-import static org.apache.james.webadmin.routes.UserQuotaRoutes.UNLIMITED_QUOTA;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
@@ -100,17 +99,11 @@ public class UserQuotaRoutesTest {
     }
 
     @Test
-    public void getCountShouldReturnUnlimitedByDefault() throws UsersRepositoryException {
-        long quota =
-            given()
-                .get(QUOTA_USERS + "/" + BOB + "/" + COUNT)
-            .then()
-                .statusCode(HttpStatus.OK_200)
-                .contentType(ContentType.JSON)
-                .extract()
-                .as(Long.class);
-
-        assertThat(quota).isEqualTo(UNLIMITED_QUOTA);
+    public void getCountShouldReturnNoContentByDefault() throws UsersRepositoryException {
+        given()
+            .get(QUOTA_USERS + "/" + BOB + "/" + COUNT)
+        .then()
+            .statusCode(HttpStatus.NO_CONTENT_204);
     }
 
     @Test
@@ -162,9 +155,21 @@ public class UserQuotaRoutesTest {
     }
 
     @Test
-    public void putCountShouldRejectNegative() throws Exception {
-        Map<String, Object> errors = given()
+    public void putCountShouldSetToInfiniteWhenMinusOne() throws Exception {
+        given()
             .body("-1")
+        .when()
+            .put(QUOTA_USERS + "/" + BOB + "/" + COUNT)
+        .then()
+            .statusCode(HttpStatus.NO_CONTENT_204);
+
+        assertThat(maxQuotaManager.getMaxMessage(QuotaRoot.forUser(BOB))).contains(QuotaCount.unlimited());
+    }
+
+    @Test
+    public void putCountShouldRejectNegativeOtherThanMinusOne() throws Exception {
+        Map<String, Object> errors = given()
+            .body("-2")
             .put(QUOTA_USERS + "/" + BOB + "/" + COUNT)
         .then()
             .statusCode(HttpStatus.BAD_REQUEST_400)
@@ -289,9 +294,21 @@ public class UserQuotaRoutesTest {
     }
 
     @Test
-    public void putSizeShouldRejectNegative() throws Exception {
-        Map<String, Object> errors = given()
+    public void putSizeShouldSetToInfiniteWhenMinusOne() throws Exception {
+        given()
             .body("-1")
+        .when()
+            .put(QUOTA_USERS + "/" + BOB + "/" + SIZE)
+        .then()
+            .statusCode(HttpStatus.NO_CONTENT_204);
+
+        assertThat(maxQuotaManager.getMaxStorage(QuotaRoot.forUser(BOB))).contains(QuotaSize.unlimited());
+    }
+
+    @Test
+    public void putSizeShouldRejectNegativeOtherThanMinusOne() throws Exception {
+        Map<String, Object> errors = given()
+            .body("-2")
             .put(QUOTA_USERS + "/" + BOB + "/" + SIZE)
         .then()
             .statusCode(HttpStatus.BAD_REQUEST_400)
@@ -368,7 +385,7 @@ public class UserQuotaRoutesTest {
     }
 
     @Test
-    public void getQuotaShouldReturnBothDefaultValues() throws Exception {
+    public void getQuotaShouldReturnBothEmptyWhenDefaultValues() throws Exception {
         JsonPath jsonPath =
             given()
                 .get(QUOTA_USERS + "/" + BOB)
@@ -378,8 +395,8 @@ public class UserQuotaRoutesTest {
                 .extract()
                 .jsonPath();
 
-        assertThat(jsonPath.getLong(SIZE)).isEqualTo(UNLIMITED_QUOTA);
-        assertThat(jsonPath.getLong(COUNT)).isEqualTo(UNLIMITED_QUOTA);
+        assertThat(jsonPath.getObject(SIZE, Long.class)).isNull();
+        assertThat(jsonPath.getObject(COUNT, Long.class)).isNull();
     }
 
     @Test
@@ -415,7 +432,7 @@ public class UserQuotaRoutesTest {
                 .extract()
                 .jsonPath();
 
-        assertThat(jsonPath.getLong(SIZE)).isEqualTo(UNLIMITED_QUOTA);
+        assertThat(jsonPath.getObject(SIZE, Long.class)).isNull();
         assertThat(jsonPath.getLong(COUNT)).isEqualTo(maxMessage);
     }
 
@@ -442,13 +459,13 @@ public class UserQuotaRoutesTest {
     @Test
     public void putQuotaShouldBeAbleToRemoveBothQuota() throws Exception {
         given()
-            .body("{\"count\":-1,\"count\":-1}")
+            .body("{\"count\":null,\"count\":null}")
             .put(QUOTA_USERS + "/" + BOB)
         .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
-        assertThat(maxQuotaManager.getMaxMessage(QuotaRoot.forUser(BOB))).isEqualTo(UNLIMITED_QUOTA);
-        assertThat(maxQuotaManager.getMaxStorage(QuotaRoot.forUser(BOB))).isEqualTo(UNLIMITED_QUOTA);
+        assertThat(maxQuotaManager.getMaxMessage(QuotaRoot.forUser(BOB))).isEmpty();
+        assertThat(maxQuotaManager.getMaxStorage(QuotaRoot.forUser(BOB))).isEmpty();
     }
 
 }

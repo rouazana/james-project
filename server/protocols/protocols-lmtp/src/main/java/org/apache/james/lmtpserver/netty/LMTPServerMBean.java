@@ -24,14 +24,14 @@ import org.apache.james.protocols.smtp.SMTPServerMBean;
 public interface LMTPServerMBean extends ServerMBean, SMTPServerMBean {
 
     /**
-     * Return the maximum allowed count of the message
+     * Return the maximum allowed size of the message
      * 
      * @return maxMessageSize
      */
     long getMaximalMessageSize();
 
     /**
-     * Set the maximum allowed count of messages. Set this to 0 to accept every
+     * Set the maximum allowed size of messages. Set this to 0 to accept every
      * message
      * 
      * @param maxSize

@@ -86,7 +86,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, MailboxMessage>
         }
         if (usedFetchType == MessageMapper.FetchType.Full) {
             if (!Objects.equal(actual.getFullContentOctets(), expected.getFullContentOctets())) {
-                failWithMessage("Expected MailboxMessage count to be <%s> but was <%s>", expected.getFullContentOctets(), actual.getFullContentOctets());
+                failWithMessage("Expected MailboxMessage size to be <%s> but was <%s>", expected.getFullContentOctets(), actual.getFullContentOctets());
             }
             if (!Objects.equal(IOUtils.toString(actual.getFullContent(), StandardCharsets.UTF_8), IOUtils.toString(expected.getFullContent(), StandardCharsets.UTF_8))) {
                 failWithMessage("Expected Full content to be <%s> but was <%s>", IOUtils.toString(expected.getFullContent(), StandardCharsets.UTF_8), IOUtils.toString(actual.getFullContent(), StandardCharsets.UTF_8));

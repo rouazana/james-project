@@ -198,7 +198,7 @@ public class Message {
             Preconditions.checkState(!Strings.isNullOrEmpty(threadId), "'threadId' is mandatory");
             Preconditions.checkState(mailboxIds != null, "'mailboxIds' is mandatory");
             Preconditions.checkState(headers != null, "'headers' is mandatory");
-            Preconditions.checkState(size != null, "'count' is mandatory");
+            Preconditions.checkState(size != null, "'size' is mandatory");
             Preconditions.checkState(date != null, "'date' is mandatory");
             Preconditions.checkState(!Strings.isNullOrEmpty(preview), "'preview' is mandatory");
             ImmutableList<Attachment> attachments = this.attachments.build();

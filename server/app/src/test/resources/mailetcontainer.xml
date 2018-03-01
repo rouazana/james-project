@@ -91,7 +91,7 @@
        <!--<pingIntervalMilli>: the interval (in milliseconds) -->
        <!--     between each connection retry during startup. -->
        <!--     The default is "30000" (30 seconds). -->
-       <!--<streamBufferSize>: the BufferedOutputStream buffer count to use  -->
+       <!--<streamBufferSize>: the BufferedOutputStream buffer size to use  -->
        <!--     writing to the stream connection. The default is "8192". -->
        <!--
        <mailet match="All" class="ClamAVScan" onMailetException="ignore">
@@ -394,7 +394,7 @@ Regards, Postmaster XXX.YYY
          -->
 
        <!-- Experimental quota Matcher -->
-       <!-- This matcher need to calculate the mailbox count everytime it is called. This can slow down things if there are many mails in -->
+       <!-- This matcher need to calculate the mailbox size everytime it is called. This can slow down things if there are many mails in -->
        <!-- the mailbox. Some users also report big problems with the matcher if a JDBC based mailrepository is used. -->
        <!-- Check if over quota -->
        <!-- 

@@ -76,12 +76,12 @@ public class NoMaxQuotaManager implements MaxQuotaManager {
 
     @Override
     public Optional<QuotaSize> getMaxStorage(QuotaRoot quotaRoot) {
-        return Optional.of(QuotaSize.unlimited());
+        return Optional.empty();
     }
 
     @Override
     public Optional<QuotaCount> getMaxMessage(QuotaRoot quotaRoot) {
-        return Optional.of(QuotaCount.unlimited());
+        return Optional.empty();
     }
 
     @Override

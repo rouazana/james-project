@@ -37,7 +37,7 @@ public class MetadataMapAssert extends AbstractAssert<MetadataMapAssert, Map<Mes
 
     public MetadataMapAssert hasSize(int expectedSize) {
         if (actual.size() != expectedSize) {
-            failWithMessage("Expecting count to be <%s> but is <%s>", expectedSize, actual.size());
+            failWithMessage("Expecting size to be <%s> but is <%s>", expectedSize, actual.size());
         }
         return this;
     }

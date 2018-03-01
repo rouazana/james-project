@@ -96,7 +96,7 @@ public class UserQuotaRoutes implements Routes {
     }
 
     @PUT
-    @ApiOperation(value = "Updating count and count at the same time")
+    @ApiOperation(value = "Updating count and size at the same time")
     @ApiImplicitParams({
             @ApiImplicitParam(required = true, dataType = "org.apache.james.webadmin.dto.QuotaDTO", paramType = "body")
     })
@@ -238,7 +238,12 @@ public class UserQuotaRoutes implements Routes {
     public void defineGetQuotaCount() {
         service.get(COUNT_ENDPOINT, (request, response) -> {
             String user = checkUserExist(request);
-            return userQuotaService.getMaxCountQuota(user);
+            Optional<QuotaCount> maxCountQuota = userQuotaService.getMaxCountQuota(user);
+            if (maxCountQuota.isPresent()) {
+                return maxCountQuota;
+            }
+            response.status(HttpStatus.NO_CONTENT_204);
+            return null;
         }, jsonTransformer);
     }
 

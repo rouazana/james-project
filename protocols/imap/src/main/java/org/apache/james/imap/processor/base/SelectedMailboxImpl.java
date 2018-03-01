@@ -249,7 +249,7 @@ public class SelectedMailboxImpl implements SelectedMailbox, MailboxListener {
     }
 
     /**
-     * Has the count of the mailbox changed?
+     * Has the size of the mailbox changed?
      * 
      * @return true if new messages have been added, false otherwise
      */

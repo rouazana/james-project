@@ -117,7 +117,7 @@ public class LimitingFileInputStream extends FileInputStream {
     }
 
     /**
-     * Return a READ-ONLY {@link FileChannel} which is limited also in the count
+     * Return a READ-ONLY {@link FileChannel} which is limited also in the size
      * 
      * @return channel
      */

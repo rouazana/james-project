@@ -90,7 +90,7 @@ public class ImapRequestFrameDecoder extends FrameDecoder implements NettyConsta
             if (size != NettyImapRequestLineReader.NotEnoughDataException.UNKNOWN_SIZE && size > buffer.readableBytes()) {
 
                 // check if we have a inMemorySize limit and if so if the
-                // expected count will fit into it
+                // expected size will fit into it
                 if (inMemorySizeLimit > 0 && inMemorySizeLimit < size) {
 
                     // ok seems like it will not fit in the memory limit so we
@@ -166,7 +166,7 @@ public class ImapRequestFrameDecoder extends FrameDecoder implements NettyConsta
 
                 ImapMessage message = decoder.decode(reader, session);
 
-                // if count is != -1 the case was a literal. if thats the case we
+                // if size is != -1 the case was a literal. if thats the case we
                 // should not consume the line
                 // See JAMES-1199
                 if (size == -1) {
@@ -188,7 +188,7 @@ public class ImapRequestFrameDecoder extends FrameDecoder implements NettyConsta
                 // this exception was thrown because we don't have enough data
                 // yet
                 int neededData = e.getNeededSize();
-                // store the needed data count for later usage
+                // store the needed data size for later usage
                 attachment.put(NEEDED_DATA, neededData);
                 
                 final ChannelPipeline pipeline = channel.getPipeline();

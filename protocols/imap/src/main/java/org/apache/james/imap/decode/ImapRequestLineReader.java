@@ -972,7 +972,7 @@ public abstract class ImapRequestLineReader {
         }
 
         /**
-         * Increases the count of the character buffer.
+         * Increases the size of the character buffer.
          */
         private void upsizeCharBuffer() {
             final int oldCapacity = charBuffer.capacity();

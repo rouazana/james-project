@@ -189,7 +189,7 @@ public class SimpleMailboxMembership implements MailboxMessage {
         + "mailboxId = " + this.mailboxId + TOSTRING_SEPARATOR
         + "uid = " + this.uid + TOSTRING_SEPARATOR
         + "internalDate = " + this.internalDate + TOSTRING_SEPARATOR
-        + "count = " + this.size + TOSTRING_SEPARATOR
+        + "size = " + this.size + TOSTRING_SEPARATOR
         + "answered = " + this.answered + TOSTRING_SEPARATOR
         + "deleted = " + this.deleted + TOSTRING_SEPARATOR
         + "draft = " + this.draft + TOSTRING_SEPARATOR

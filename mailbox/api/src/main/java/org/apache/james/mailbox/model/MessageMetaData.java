@@ -38,7 +38,7 @@ public interface MessageMetaData {
     Flags getFlags();
     
     /**
-     * Return the count in bytes
+     * Return the size in bytes
      */
     long getSize();
 

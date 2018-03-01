@@ -374,7 +374,7 @@ public class HBaseMailboxMapper extends HBaseNonTransactionalMapper implements M
             if (deletes.size() > 0) {
                 //TODO: what shoul we do if not all messages are deleted?
                 System.out.println("Just " + deletes.size() + " out of " + totalDeletes + " messages have been deleted");
-                //throw new RuntimeException("Just " + deletes.count() + " out of " + totalDeletes + " messages have been deleted");
+                //throw new RuntimeException("Just " + deletes.size() + " out of " + totalDeletes + " messages have been deleted");
             }
             List<Put> puts = new ArrayList<>();
             scan = new Scan();

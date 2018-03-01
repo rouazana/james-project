@@ -107,7 +107,7 @@ public class NotifyMailetsMessage {
             return Optional.of(mail.getMessageSize())
                 .filter(size -> size > 0);
         } catch (MessagingException e) {
-            LOGGER.debug("Could not estimate mail count", e);
+            LOGGER.debug("Could not estimate mail size", e);
 
             return Optional.empty();
         }

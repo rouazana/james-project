@@ -124,9 +124,9 @@ public final class FetchResponse implements ImapResponseMessage {
     }
 
     /**
-     * Gets the count for the fetched message.
+     * Gets the size for the fetched message.
      * 
-     * @return the count, or null if the <code>FETCH</code> did not include
+     * @return the size, or null if the <code>FETCH</code> did not include
      *         <code>SIZE</code>
      */
     public Long getSize() {
@@ -210,7 +210,7 @@ public final class FetchResponse implements ImapResponseMessage {
         String getEncoding();
 
         /**
-         * Gets the count of message body the in octets.
+         * Gets the size of message body the in octets.
          * 
          * @return number of octets in the message.
          */

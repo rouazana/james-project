@@ -25,8 +25,8 @@ import java.io.InputStream;
 import org.apache.james.mailbox.exception.MailboxException;
 
 /**
- * IMAP needs to know the count of the content before it starts to write it out.
- * This interface allows direct writing whilst exposing total count.
+ * IMAP needs to know the size of the content before it starts to write it out.
+ * This interface allows direct writing whilst exposing total size.
  */
 public interface Content {
 

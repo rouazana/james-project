@@ -107,7 +107,7 @@ public class MaildirFolder {
 
     /**
      * Returns whether the names of message files in this folder are parsed in
-     * a strict manner ({@code true}), which means a count field and flags are
+     * a strict manner ({@code true}), which means a size field and flags are
      * expected.
      *
      * @return
@@ -118,7 +118,7 @@ public class MaildirFolder {
 
     /**
      * Specifies whether the names of message files in this folder are parsed in
-     * a strict manner ({@code true}), which means a count field and flags are
+     * a strict manner ({@code true}), which means a size field and flags are
      * expected.
      *
      * @param messageNameStrictParse
@@ -742,7 +742,7 @@ public class MaildirFolder {
      * @return the file name without meta data, the unmodified name if it doesn't have meta data
      */
     public static String stripMetaFromName(String fileName) {
-        int end = fileName.indexOf(",S="); // the count
+        int end = fileName.indexOf(",S="); // the size
         if (end == -1) {
             end = fileName.indexOf(":2,"); // the flags
         }
@@ -887,7 +887,7 @@ public class MaildirFolder {
                 reader = new BufferedReader(fileReader);
                 readUidListHeader(reader.readLine());
 
-                // It may be possible that message count is 0 so we should better not try to calculate the count of the ArrayList
+                // It may be possible that message count is 0 so we should better not try to calculate the size of the ArrayList
                 ArrayList<String> lines = new ArrayList<>();
                 String line;
                 int lineNumber = 0;

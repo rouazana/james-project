@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import org.apache.james.mailbox.quota.QuotaCount;
 import org.apache.james.mailbox.quota.QuotaSize;
-import org.apache.james.mailbox.quota.QuotaValue;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -61,14 +60,6 @@ public class QuotaDTO {
         public QuotaDTO build() {
             return new QuotaDTO(count, size);
         }
-
-        private long serializeQuotaValueToLong(QuotaValue<?> value) {
-            if (value.isUnlimited()) {
-                return -1;
-            }
-            return value.asLong();
-        }
-
     }
 
     private final Optional<QuotaCount> count;

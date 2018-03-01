@@ -22,8 +22,6 @@ package org.apache.james.mailbox.cassandra.table;
 public interface CassandraMaxQuota {
     String TABLE_NAME = "maxQuota";
 
-    String TYPE = "type";
-
     String QUOTA_ROOT = "quotaRoot";
     String MESSAGE_COUNT = "maxMessageCount";
     String STORAGE = "maxStorage";

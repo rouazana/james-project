@@ -43,24 +43,24 @@ public class MailderMailboxMessageNameTest {
     @Parameterized.Parameters
     public static List<Object[]> testData() {
         List<Object[]> args = new ArrayList<>();
-        // no count, two flags
+        // no size, two flags
         Parts parts = Parts.fullName("1328026049.19146_0.km1111:2,RS").timeSeconds(1328026049)
                 .baseName("1328026049.19146_0.km1111").flagAnswered().flagSeen();
         args.add(toObjectArray(parts));
 
-        // count and flag
+        // size and flag
         parts = Parts.fullName("1328613172.M569643P1862V0000000000000902I00EE42CE_0.km1111,S=13103:2,S")
                 .timeSeconds(1328613172).size(13103L)
                 .baseName("1328613172.M569643P1862V0000000000000902I00EE42CE_0.km1111").flagSeen();
         args.add(toObjectArray(parts));
 
-        // count, no flags
+        // size, no flags
         parts = Parts.fullName("1340124194.M723289P3184V0000000000000902I006780E9_6.km1111,S=1344:2,")
                 .baseName("1340124194.M723289P3184V0000000000000902I006780E9_6.km1111").timeSeconds(1340124194)
                 .size(1344L);
         args.add(toObjectArray(parts));
 
-        // three flags, no count
+        // three flags, no size
         parts = Parts.fullName("1106685752.12132_0.km1111:2,FRS").baseName("1106685752.12132_0.km1111")
                 .timeSeconds(1106685752).flagFlagged().flagAnswered().flagSeen();
         args.add(toObjectArray(parts));

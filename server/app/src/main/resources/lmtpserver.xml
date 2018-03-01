@@ -56,7 +56,7 @@
        <!-- Set the maximum simultaneous incoming connections per IP for this service -->
        <connectionLimitPerIP>0</connectionLimitPerIP>
          
-       <!--  This sets the maximum allowed message count (in kilobytes) for this -->
+       <!--  This sets the maximum allowed message size (in kilobytes) for this -->
        <!--  LMTP service. If unspecified, the value defaults to 0, which means no limit. -->
        <maxmessagesize>0</maxmessagesize>
          

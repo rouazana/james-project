@@ -98,7 +98,7 @@ import com.google.common.base.Joiner;
  *   --&gt;
  *   &lt;ignoreLocalSender&gt;true&lt;/ignoreLocalSender&gt;
  *   &lt;!--
- *     Set this to the maximum message count (in bytes) that a message may have
+ *     Set this to the maximum message size (in bytes) that a message may have
  *     to be considered spam (default is 100000).
  *   --&gt;
  *   &lt;maxSize&gt;100000&lt;/maxSize&gt;

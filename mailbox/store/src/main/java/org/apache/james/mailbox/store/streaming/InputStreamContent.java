@@ -60,7 +60,7 @@ public final class InputStreamContent implements Content {
      * @see org.apache.james.mailbox.model.InputStreamContent#getInputStream()
      */
     public InputStream getInputStream() throws IOException {
-        // wrap the streams in a BoundedInputStream to make sure it really match with the stored count.
+        // wrap the streams in a BoundedInputStream to make sure it really match with the stored size.
         switch (type) {
         case Full:
             return m.getFullContent();

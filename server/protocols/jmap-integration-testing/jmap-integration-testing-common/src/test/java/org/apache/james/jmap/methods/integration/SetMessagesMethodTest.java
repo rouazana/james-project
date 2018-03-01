@@ -1842,7 +1842,7 @@ public abstract class SetMessagesMethodTest {
             "        \"subject\": \"subject\"," +
             "        \"keywords\": {\"$Draft\": true}," +
             "        \"attachments\": [" +
-            "                {\"blobId\" : \"wrong\", \"type\" : \"image/jpeg\", \"count\" : 1337}" +
+            "                {\"blobId\" : \"wrong\", \"type\" : \"image/jpeg\", \"size\" : 1337}" +
             "             ]," +
             "        \"mailboxIds\": [\"" + getDraftId(accessToken) + "\"]" +
             "      }}" +
@@ -1889,7 +1889,7 @@ public abstract class SetMessagesMethodTest {
             "        \"attachments\": [" +
             "                {\"blobId\" : \"" + attachment.getAttachmentId().getId() + "\", " +
             "                 \"type\" : \"" + attachment.getType() + "\"," +
-            "                 \"count\" : " + attachment.getSize() + "}" +
+            "                 \"size\" : " + attachment.getSize() + "}" +
             "             ]," +
             "        \"mailboxIds\": [\"" + getDraftId(accessToken) + "\"]" +
             "      }}" +
@@ -3548,8 +3548,8 @@ public abstract class SetMessagesMethodTest {
             "        \"textBody\": \"Test body\"," +
             "        \"mailboxIds\": [\"" + outboxId + "\"], " +
             "        \"attachments\": [" +
-            "                {\"blobId\" : \"brokenId1\", \"type\" : \"image/gif\", \"count\" : 1337}," +
-            "                {\"blobId\" : \"brokenId2\", \"type\" : \"image/jpeg\", \"count\" : 1337}" +
+            "                {\"blobId\" : \"brokenId1\", \"type\" : \"image/gif\", \"size\" : 1337}," +
+            "                {\"blobId\" : \"brokenId2\", \"type\" : \"image/jpeg\", \"size\" : 1337}" +
             "             ]" +
             "      }}" +
             "    }," +
@@ -3603,10 +3603,10 @@ public abstract class SetMessagesMethodTest {
             "        \"attachments\": [" +
             "               {\"blobId\" : \"" + attachment.getAttachmentId().getId() + "\", " +
             "               \"type\" : \"" + attachment.getType() + "\", " +
-            "               \"count\" : " + attachment.getSize() + "}," +
+            "               \"size\" : " + attachment.getSize() + "}," +
             "               {\"blobId\" : \"" + attachment2.getAttachmentId().getId() + "\", " +
             "               \"type\" : \"" + attachment2.getType() + "\", " +
-            "               \"count\" : " + attachment2.getSize() + ", " +
+            "               \"size\" : " + attachment2.getSize() + ", " +
             "               \"cid\" : \"123456789\", " +
             "               \"isInline\" : true }" +
             "           ]" +
@@ -3633,12 +3633,12 @@ public abstract class SetMessagesMethodTest {
             .body(createdPath + ".attachments", hasSize(2))
             .body(firstAttachment + ".blobId", equalTo(attachment.getAttachmentId().getId()))
             .body(firstAttachment + ".type", equalTo("application/octet-stream; charset=UTF-8"))
-            .body(firstAttachment + ".count", equalTo((int) attachment.getSize()))
+            .body(firstAttachment + ".size", equalTo((int) attachment.getSize()))
             .body(firstAttachment + ".cid", nullValue())
             .body(firstAttachment + ".isInline", equalTo(false))
             .body(secondAttachment + ".blobId", equalTo(attachment2.getAttachmentId().getId()))
             .body(secondAttachment + ".type", equalTo("application/octet-stream; charset=UTF-8"))
-            .body(secondAttachment + ".count", equalTo((int) attachment2.getSize()))
+            .body(secondAttachment + ".size", equalTo((int) attachment2.getSize()))
             .body(secondAttachment + ".cid", equalTo("123456789"))
             .body(secondAttachment + ".isInline", equalTo(true));
     }
@@ -3682,21 +3682,21 @@ public abstract class SetMessagesMethodTest {
             "            {" +
             "              \"blobId\" : \"" + attachment.getAttachmentId().getId() + "\", " +
             "              \"type\" : \"" + attachment.getType() + "\", " +
-            "              \"count\" : " + attachment.getSize() + "," +
+            "              \"size\" : " + attachment.getSize() + "," +
             "              \"name\" : \"ديناصور.png\", " +
             "              \"isInline\" : false" +
             "            }," +
             "            {" +
             "              \"blobId\" : \"" + attachment2.getAttachmentId().getId() + "\", " +
             "              \"type\" : \"" + attachment2.getType() + "\", " +
-            "              \"count\" : " + attachment2.getSize() + "," +
+            "              \"size\" : " + attachment2.getSize() + "," +
             "              \"name\" : \"эволюционировать.png\", " +
             "              \"isInline\" : false" +
             "            }," +
             "            {" +
             "              \"blobId\" : \"" + attachment3.getAttachmentId().getId() + "\", " +
             "              \"type\" : \"" + attachment3.getType() + "\", " +
-            "              \"count\" : " + attachment3.getSize() + "," +
+            "              \"size\" : " + attachment3.getSize() + "," +
             "              \"name\" : \"进化还是不.png\"," +
             "              \"isInline\" : false" +
             "            }" +
@@ -3770,21 +3770,21 @@ public abstract class SetMessagesMethodTest {
             "            {" +
             "              \"blobId\" : \"" + attachment.getAttachmentId().getId() + "\", " +
             "              \"type\" : \"" + attachment.getType() + "\", " +
-            "              \"count\" : " + attachment.getSize() + "," +
+            "              \"size\" : " + attachment.getSize() + "," +
             "              \"name\" : \"ديناصور.png\", " +
             "              \"isInline\" : false" +
             "            }," +
             "            {" +
             "              \"blobId\" : \"" + attachment2.getAttachmentId().getId() + "\", " +
             "              \"type\" : \"" + attachment2.getType() + "\", " +
-            "              \"count\" : " + attachment2.getSize() + "," +
+            "              \"size\" : " + attachment2.getSize() + "," +
             "              \"name\" : \"эволюционировать.png\", " +
             "              \"isInline\" : false" +
             "            }," +
             "            {" +
             "              \"blobId\" : \"" + attachment3.getAttachmentId().getId() + "\", " +
             "              \"type\" : \"" + attachment3.getType() + "\", " +
-            "              \"count\" : " + attachment3.getSize() + "," +
+            "              \"size\" : " + attachment3.getSize() + "," +
             "              \"name\" : \"进化还是不.png\"," +
             "              \"isInline\" : false" +
             "            }" +
@@ -3883,7 +3883,7 @@ public abstract class SetMessagesMethodTest {
             "        \"attachments\": [" +
             "               {\"blobId\" : \"" + attachment.getAttachmentId().getId() + "\", " +
             "               \"type\" : \"" + attachment.getType() + "\", " +
-            "               \"count\" : " + attachment.getSize() + ", " +
+            "               \"size\" : " + attachment.getSize() + ", " +
             "               \"cid\" : \"123456789\", " +
             "               \"isInline\" : true }" +
             "           ]" +
@@ -3924,7 +3924,7 @@ public abstract class SetMessagesMethodTest {
             .body(firstMessage + ".attachments", hasSize(1))
             .body(firstAttachment + ".blobId", equalTo(expectedBlobId))
             .body(firstAttachment + ".type", equalTo("application/octet-stream"))
-            .body(firstAttachment + ".count", equalTo((int) attachment.getSize()))
+            .body(firstAttachment + ".size", equalTo((int) attachment.getSize()))
             .body(firstAttachment + ".cid", equalTo("123456789"))
             .body(firstAttachment + ".isInline", equalTo(true));
     }
@@ -3954,7 +3954,7 @@ public abstract class SetMessagesMethodTest {
             "        \"attachments\": [" +
             "               {\"blobId\" : \"" + attachment.getAttachmentId().getId() + "\", " +
             "               \"type\" : \"" + attachment.getType() + "\", " +
-            "               \"count\" : " + attachment.getSize() + ", " +
+            "               \"size\" : " + attachment.getSize() + ", " +
             "               \"cid\" : \"123456789\", " +
             "               \"isInline\" : true }" +
             "           ]" +
@@ -3996,7 +3996,7 @@ public abstract class SetMessagesMethodTest {
             .body(firstMessage + ".attachments", hasSize(1))
             .body(firstAttachment + ".blobId", equalTo(expectedBlobId))
             .body(firstAttachment + ".type", equalTo("application/octet-stream"))
-            .body(firstAttachment + ".count", equalTo((int) attachment.getSize()))
+            .body(firstAttachment + ".size", equalTo((int) attachment.getSize()))
             .body(firstAttachment + ".cid", equalTo("123456789"))
             .body(firstAttachment + ".isInline", equalTo(true));
     }
@@ -4047,7 +4047,7 @@ public abstract class SetMessagesMethodTest {
             "        \"attachments\": [" +
             "               {\"blobId\" : \"" + attachment.getAttachmentId().getId() + "\", " +
             "               \"type\" : \"" + attachment.getType() + "\", " +
-            "               \"count\" : " + attachment.getSize() + ", " +
+            "               \"size\" : " + attachment.getSize() + ", " +
             "               \"isInline\" : false }" +
             "           ]" +
             "      }}" +
@@ -4091,7 +4091,7 @@ public abstract class SetMessagesMethodTest {
             .body(firstMessage + ".attachments", hasSize(1))
             .body(firstAttachment + ".blobId", equalTo(attachment.getAttachmentId().getId()))
             .body(firstAttachment + ".type", equalTo("text/html"))
-            .body(firstAttachment + ".count", equalTo((int) attachment.getSize()));
+            .body(firstAttachment + ".size", equalTo((int) attachment.getSize()));
     }
 
     @Test
@@ -4120,7 +4120,7 @@ public abstract class SetMessagesMethodTest {
             "        \"attachments\": [" +
             "               {\"blobId\" : \"" + attachment.getAttachmentId().getId() + "\", " +
             "               \"type\" : \"" + attachment.getType() + "\", " +
-            "               \"count\" : " + attachment.getSize() + ", " +
+            "               \"size\" : " + attachment.getSize() + ", " +
             "               \"isInline\" : false }" +
             "           ]" +
             "      }}" +
@@ -4164,7 +4164,7 @@ public abstract class SetMessagesMethodTest {
             .body(firstMessage + ".attachments", hasSize(1))
             .body(firstAttachment + ".blobId", equalTo(attachment.getAttachmentId().getId()))
             .body(firstAttachment + ".type", equalTo("text/html"))
-            .body(firstAttachment + ".count", equalTo((int) attachment.getSize()));
+            .body(firstAttachment + ".size", equalTo((int) attachment.getSize()));
     }
     
     @Test
@@ -4190,7 +4190,7 @@ public abstract class SetMessagesMethodTest {
             "        \"attachments\": [" +
             "               {\"blobId\" : \"" + attachment.getAttachmentId().getId() + "\", " +
             "               \"type\" : \"" + attachment.getType() + "\", " +
-            "               \"count\" : " + attachment.getSize() + ", " +
+            "               \"size\" : " + attachment.getSize() + ", " +
             "               \"isInline\" : false }" +
             "           ]" +
             "      }}" +
@@ -4234,7 +4234,7 @@ public abstract class SetMessagesMethodTest {
             .body(firstMessage + ".attachments", hasSize(1))
             .body(firstAttachment + ".blobId", equalTo(attachment.getAttachmentId().getId()))
             .body(firstAttachment + ".type", equalTo("text/plain"))
-            .body(firstAttachment + ".count", equalTo((int) attachment.getSize()));
+            .body(firstAttachment + ".size", equalTo((int) attachment.getSize()));
     }
     
     @Test
@@ -4615,7 +4615,7 @@ public abstract class SetMessagesMethodTest {
                 "               {\"blobId\" : \"" + nonIndexableAttachment.getAttachmentId().getId() + "\", " +
                 "               \"type\" : \"" + nonIndexableAttachment.getType() + "\", " +
                 "               \"name\" : \"nonIndexableAttachment.html\", " +
-                "               \"count\" : " + nonIndexableAttachment.getSize() + "}" +
+                "               \"size\" : " + nonIndexableAttachment.getSize() + "}" +
                 "           ]" +
                 "      }}" +
                 "    }," +
@@ -4639,7 +4639,7 @@ public abstract class SetMessagesMethodTest {
             .body(createdPath + ".attachments", hasSize(1))
             .body(singleAttachment + ".blobId", equalTo(nonIndexableAttachment.getAttachmentId().getId()))
             .body(singleAttachment + ".type", equalTo("text/html; charset=UTF-8"))
-            .body(singleAttachment + ".count", equalTo((int) nonIndexableAttachment.getSize()));
+            .body(singleAttachment + ".size", equalTo((int) nonIndexableAttachment.getSize()));
     }
 
     @Test
@@ -4667,7 +4667,7 @@ public abstract class SetMessagesMethodTest {
                 "               {\"blobId\" : \"" + nonIndexableAttachment.getAttachmentId().getId() + "\", " +
                 "               \"type\" : \"" + nonIndexableAttachment.getType() + "\", " +
                 "               \"name\" : \"nonIndexableAttachment.html\", " +
-                "               \"count\" : " + nonIndexableAttachment.getSize() + "}" +
+                "               \"size\" : " + nonIndexableAttachment.getSize() + "}" +
                 "           ]" +
                 "      }}" +
                 "    }," +
@@ -4728,7 +4728,7 @@ public abstract class SetMessagesMethodTest {
                 "               {\"blobId\" : \"" + nonIndexableAttachment.getAttachmentId().getId() + "\", " +
                 "               \"type\" : \"" + nonIndexableAttachment.getType() + "\", " +
                 "               \"name\" : \"nonIndexableAttachment.html\", " +
-                "               \"count\" : " + nonIndexableAttachment.getSize() + "}" +
+                "               \"size\" : " + nonIndexableAttachment.getSize() + "}" +
                 "           ]" +
                 "      }}" +
                 "    }," +
@@ -4787,10 +4787,10 @@ public abstract class SetMessagesMethodTest {
             "        \"attachments\": [" +
             "               {\"blobId\" : \"" + attachment.getAttachmentId().getId() + "\", " +
             "               \"type\" : \"" + attachment.getType() + "\", " +
-            "               \"count\" : " + attachment.getSize() + "}," +
+            "               \"size\" : " + attachment.getSize() + "}," +
             "               {\"blobId\" : \"" + attachment2.getAttachmentId().getId() + "\", " +
             "               \"type\" : \"" + attachment2.getType() + "\", " +
-            "               \"count\" : " + attachment2.getSize() + ", " +
+            "               \"size\" : " + attachment2.getSize() + ", " +
             "               \"isInline\" : true }" +
             "           ]" +
             "      }}" +
@@ -4816,12 +4816,12 @@ public abstract class SetMessagesMethodTest {
             .body(createdPath + ".attachments", hasSize(2))
             .body(firstAttachment + ".blobId", equalTo(attachment.getAttachmentId().getId()))
             .body(firstAttachment + ".type", equalTo("application/octet-stream; charset=UTF-8"))
-            .body(firstAttachment + ".count", equalTo((int) attachment.getSize()))
+            .body(firstAttachment + ".size", equalTo((int) attachment.getSize()))
             .body(firstAttachment + ".cid", nullValue())
             .body(firstAttachment + ".isInline", equalTo(false))
             .body(secondAttachment + ".blobId", equalTo(attachment2.getAttachmentId().getId()))
             .body(secondAttachment + ".type", equalTo("application/octet-stream; charset=UTF-8"))
-            .body(secondAttachment + ".count", equalTo((int) attachment2.getSize()))
+            .body(secondAttachment + ".size", equalTo((int) attachment2.getSize()))
             .body(secondAttachment + ".cid", nullValue())
             .body(secondAttachment + ".isInline", equalTo(true));
     }

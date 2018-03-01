@@ -170,7 +170,7 @@ public class LuceneMessageSearchIndex extends ListeningMessageSearchIndex {
     private static final String FLAGS_FIELD = "flags";
   
     /**
-     * {@link Field} which will contain the count of the {@link MailboxMessage}
+     * {@link Field} which will contain the size of the {@link MailboxMessage}
      */
     private static final String SIZE_FIELD = "size";
 

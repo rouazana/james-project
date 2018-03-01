@@ -126,7 +126,7 @@ public class ManageSieveMailetTestCase {
         MimeMessage message = prepareMessageWithAttachment(SCRIPT_CONTENT, "PUTSCRIPT \"" + SCRIPT_NAME + "\"");
         Mail mail = createUnauthenticatedMail(message);
         mailet.service(mail);
-        ensureResponse("Re: PUTSCRIPT \"" + SCRIPT_NAME + "\"", "NO \"Missing argument: script count\"");
+        ensureResponse("Re: PUTSCRIPT \"" + SCRIPT_NAME + "\"", "NO \"Missing argument: script size\"");
     }
 
     @Test
@@ -143,7 +143,7 @@ public class ManageSieveMailetTestCase {
         MimeMessage message = prepareMessageWithAttachment(SCRIPT_CONTENT, "PUTSCRIPT \"" + SCRIPT_NAME + "\" extra");
         Mail mail = createUnauthenticatedMail(message);
         mailet.service(mail);
-        ensureResponse("Re: PUTSCRIPT \"" + SCRIPT_NAME + "\" extra", "NO \"extra is an invalid count literal : it should be at least 4 char looking like {_+}\"");
+        ensureResponse("Re: PUTSCRIPT \"" + SCRIPT_NAME + "\" extra", "NO \"extra is an invalid size literal : it should be at least 4 char looking like {_+}\"");
     }
 
     @Test
@@ -168,7 +168,7 @@ public class ManageSieveMailetTestCase {
         MimeMessage message = prepareMimeMessage("PUTSCRIPT \"" + SCRIPT_NAME + "\"");
         Mail mail = createUnauthenticatedMail(message);
         mailet.service(mail);
-        ensureResponse("Re: PUTSCRIPT \"" + SCRIPT_NAME + "\"", "NO \"Missing argument: script count\"");
+        ensureResponse("Re: PUTSCRIPT \"" + SCRIPT_NAME + "\"", "NO \"Missing argument: script size\"");
     }
 
     @Test
@@ -266,7 +266,7 @@ public class ManageSieveMailetTestCase {
         MimeMessage message = prepareMimeMessage("CHECKSCRIPT");
         Mail mail = createAuthentificatedMail(message);
         mailet.service(mail);
-        ensureResponse("Re: CHECKSCRIPT", "NO \" is an invalid count literal : it should be at least 4 char looking like {_+}\"");
+        ensureResponse("Re: CHECKSCRIPT", "NO \" is an invalid size literal : it should be at least 4 char looking like {_+}\"");
     }
 
     @Test
@@ -346,7 +346,7 @@ public class ManageSieveMailetTestCase {
         MimeMessage message = prepareMimeMessage("HAVESPACE \"" + SCRIPT_NAME + "\"");
         Mail mail = createUnauthenticatedMail(message);
         mailet.service(mail);
-        ensureResponse("Re: HAVESPACE \"" + SCRIPT_NAME + "\"", "NO \"Missing argument: script count\"");
+        ensureResponse("Re: HAVESPACE \"" + SCRIPT_NAME + "\"", "NO \"Missing argument: script size\"");
     }
 
     @Test
@@ -354,7 +354,7 @@ public class ManageSieveMailetTestCase {
         MimeMessage message = prepareMimeMessage("HAVESPACE \"" + SCRIPT_NAME + "\" X");
         Mail mail = createUnauthenticatedMail(message);
         mailet.service(mail);
-        ensureResponse("Re: HAVESPACE \"" + SCRIPT_NAME + "\" X", "NO \"Invalid argument: script count\"");
+        ensureResponse("Re: HAVESPACE \"" + SCRIPT_NAME + "\" X", "NO \"Invalid argument: script size\"");
     }
 
     @Test

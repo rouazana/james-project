@@ -308,7 +308,7 @@ public final class FetchResponseBuilder {
 
     private HeaderBodyElement headerBodyElement(MessageResult messageResult, String name, List<MessageResult.Header> lines, int[] path, boolean isBase) throws MailboxException {
         final HeaderBodyElement result = new HeaderBodyElement(name, lines);
-        // if the count is 2 we had found not header and just want to write the empty line with CLRF terminated
+        // if the size is 2 we had found not header and just want to write the empty line with CLRF terminated
         // so check if there is a content for it. If not we MUST NOT write the empty line in any case
         // as stated in rfc3501
         if (result.size() == 2) {
@@ -328,7 +328,7 @@ public final class FetchResponseBuilder {
                         result.noBody();
                     }
                 } catch (IOException e) {
-                    throw new MailboxException("Unable to get count of header body element", e);
+                    throw new MailboxException("Unable to get size of header body element", e);
                 }
             }
         }
@@ -347,7 +347,7 @@ public final class FetchResponseBuilder {
 
                 }
             } catch (IOException e) {
-                throw new MailboxException("Unable to get count of header body element", e);
+                throw new MailboxException("Unable to get size of header body element", e);
 
             }
             return element;

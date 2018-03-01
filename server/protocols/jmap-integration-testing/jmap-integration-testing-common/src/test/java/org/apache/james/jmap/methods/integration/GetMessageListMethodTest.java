@@ -1285,7 +1285,7 @@ public abstract class GetMessageListMethodTest {
 
         given()
             .header("Authorization", aliceAccessToken.serialize())
-            .body("[[\"getMessageList\", {\"sort\":[\"count asc\"]}, \"#0\"]]")
+            .body("[[\"getMessageList\", {\"sort\":[\"size asc\"]}, \"#0\"]]")
         .when()
             .post("/jmap")
         .then()
@@ -1307,7 +1307,7 @@ public abstract class GetMessageListMethodTest {
 
         given()
             .header("Authorization", aliceAccessToken.serialize())
-            .body("[[\"getMessageList\", {\"sort\":[\"count desc\"]}, \"#0\"]]")
+            .body("[[\"getMessageList\", {\"sort\":[\"size desc\"]}, \"#0\"]]")
         .when()
             .post("/jmap")
         .then()
@@ -1332,7 +1332,7 @@ public abstract class GetMessageListMethodTest {
 
         given()
             .header("Authorization", aliceAccessToken.serialize())
-            .body("[[\"getMessageList\", {\"sort\":[\"count asc\", \"date desc\"]}, \"#0\"]]")
+            .body("[[\"getMessageList\", {\"sort\":[\"size asc\", \"date desc\"]}, \"#0\"]]")
         .when()
             .post("/jmap")
         .then()
@@ -1357,7 +1357,7 @@ public abstract class GetMessageListMethodTest {
 
         given()
             .header("Authorization", aliceAccessToken.serialize())
-            .body("[[\"getMessageList\", {\"sort\":[\"date desc\", \"count asc\"]}, \"#0\"]]")
+            .body("[[\"getMessageList\", {\"sort\":[\"date desc\", \"size asc\"]}, \"#0\"]]")
         .when()
             .post("/jmap")
         .then()

@@ -48,7 +48,7 @@ public class FastByteArrayOutputStream extends OutputStream {
     protected int count;
 
     /**
-     * Constructs a new ByteArrayOutputStream with a default count of 32 bytes.
+     * Constructs a new ByteArrayOutputStream with a default size of 32 bytes.
      * If more than 32 bytes are written to this instance, the underlying byte
      * array will expand.
      */
@@ -57,15 +57,15 @@ public class FastByteArrayOutputStream extends OutputStream {
     }
 
     /**
-     * Constructs a new {@code ByteArrayOutputStream} with a default count of
-     * {@code count} bytes. If more than {@code count} bytes are written to this
+     * Constructs a new {@code ByteArrayOutputStream} with a default size of
+     * {@code size} bytes. If more than {@code size} bytes are written to this
      * instance, the underlying byte array will expand.
      * 
      * @param size
-     *            initial count for the underlying byte array, must be
+     *            initial size for the underlying byte array, must be
      *            non-negative.
      * @throws IllegalArgumentException
-     *             if {@code count} < 0.
+     *             if {@code size} < 0.
      */
     public FastByteArrayOutputStream(int size) {
         if (size >= 0) {

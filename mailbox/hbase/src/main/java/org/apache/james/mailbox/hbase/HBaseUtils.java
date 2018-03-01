@@ -143,7 +143,7 @@ public class HBaseUtils {
 
     /**
      * Transforms only the metadata into a Put object. The rest of the message will
-     * be transfered using multiple Puts if count requires it.
+     * be transfered using multiple Puts if size requires it. 
      * @param message
      * @return a put that contains all metadata information.
      */

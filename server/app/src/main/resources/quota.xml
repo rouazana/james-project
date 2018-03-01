@@ -40,7 +40,7 @@
           - QuotaRootResolver: In regard of quota management, mailboxes forms abstract groups called QUOTA ROOT. This
           component finds to which QUOTA ROOT a mailbox belongs
           - Current quota manager: Counters for current values: how many messages belongs to this quota root ? Which
-          count ?
+          size ?
           - Max Quota manager: Sets a maximum value QUOTA ROOT resources can not exceed.
           - QuotaManager: assemble Current quota manager and Max quota manager.
           - Listening quota updater: Event system based quota update. On each APPED / COPY /EXPUNGE command, current

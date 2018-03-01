@@ -90,7 +90,7 @@ public class JCRMailboxMessage implements MailboxMessage, JCRImapConstants, Pers
 
     public static final String MAILBOX_UUID_PROPERTY = "jamesMailbox:mailboxUUID";
     public static final String UID_PROPERTY = "jamesMailbox:uid";
-    public static final String SIZE_PROPERTY = "jamesMailbox:count";
+    public static final String SIZE_PROPERTY = "jamesMailbox:size";
     public static final String ANSWERED_PROPERTY = "jamesMailbox:answered";
     public static final String DELETED_PROPERTY = "jamesMailbox:deleted";
     public static final String DRAFT_PROPERTY =  "jamesMailbox:draft";
@@ -618,7 +618,7 @@ public class JCRMailboxMessage implements MailboxMessage, JCRImapConstants, Pers
         + "mailboxUUID = " + this.getMailboxId() + TOSTRING_SEPARATOR
         + "uuid = " + this.getId() + TOSTRING_SEPARATOR
         + "internalDate = " + this.getInternalDate() + TOSTRING_SEPARATOR
-        + "count = " + this.getFullContentOctets() + TOSTRING_SEPARATOR
+        + "size = " + this.getFullContentOctets() + TOSTRING_SEPARATOR
         + "answered = " + this.isAnswered() + TOSTRING_SEPARATOR
         + "deleted = " + this.isDeleted() + TOSTRING_SEPARATOR
         + "draft = " + this.isDraft() + TOSTRING_SEPARATOR

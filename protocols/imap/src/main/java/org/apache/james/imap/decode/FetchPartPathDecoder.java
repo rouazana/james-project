@@ -45,7 +45,7 @@ public class FetchPartPathDecoder {
      */
     private static final int ARRAY_INCREMENT = 20;
 
-    /** Embedded RFC882 messages are rare so start count one array */
+    /** Embedded RFC882 messages are rare so start size one array */
     private static final int ARRAY_INITIAL_SIZE = 1;
 
     private int sectionType;

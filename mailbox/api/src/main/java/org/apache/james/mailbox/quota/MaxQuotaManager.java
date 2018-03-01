@@ -60,7 +60,6 @@ public interface MaxQuotaManager {
      */
     void removeMaxStorage(QuotaRoot quotaRoot) throws MailboxException;
 
-
     /**
      * Method allowing you to set the default maximum storage in bytes.
      *
@@ -85,8 +84,18 @@ public interface MaxQuotaManager {
      */
     void removeDefaultMaxMessage() throws MailboxException;
 
+    /**
+     * Method allowing you to get the default maximum storage in bytes.
+     *
+     * @return default maximum storage, if defined
+     */
     Optional<QuotaSize> getDefaultMaxStorage() throws MailboxException;
 
+    /**
+     * Method allowing you to get the default maximum message count allowed
+     *
+     * @return default maximum message count, if defined
+     */
     Optional<QuotaCount> getDefaultMaxMessage() throws MailboxException;
 
     /**
@@ -98,7 +107,6 @@ public interface MaxQuotaManager {
      * @return The maximum storage in bytes if any
      */
     Optional<QuotaSize> getMaxStorage(QuotaRoot quotaRoot) throws MailboxException;
-
 
     /**
      * Return the maximum message count which is allowed for the given {@link QuotaRoot} (in fact the user which the session is bound to)

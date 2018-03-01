@@ -38,7 +38,7 @@ public class LMTPServer extends AbstractProtocolAsyncServer implements LMTPServe
     private static final Logger LOGGER = LoggerFactory.getLogger(LMTPServer.class);
 
     /**
-     * The maximum message count allowed by this SMTP server. The default value,
+     * The maximum message size allowed by this SMTP server. The default value,
      * 0, means no limit.
      */
     private long maxMessageSize = 0;
@@ -69,13 +69,13 @@ public class LMTPServer extends AbstractProtocolAsyncServer implements LMTPServe
         super.doConfigure(configuration);
         if (isEnabled()) {
 
-            // get the message count limit from the conf file and multiply
+            // get the message size limit from the conf file and multiply
             // by 1024, to put it in bytes
             maxMessageSize = configuration.getLong("maxmessagesize", maxMessageSize) * 1024;
             if (maxMessageSize > 0) {
-                LOGGER.info("The maximum allowed message count is {} bytes.", maxMessageSize);
+                LOGGER.info("The maximum allowed message size is {} bytes.", maxMessageSize);
             } else {
-                LOGGER.info("No maximum message count is enforced for this server.");
+                LOGGER.info("No maximum message size is enforced for this server.");
             }
 
             // get the lmtpGreeting

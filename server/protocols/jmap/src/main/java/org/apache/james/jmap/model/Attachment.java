@@ -105,7 +105,7 @@ public class Attachment {
         public Attachment build() {
             Preconditions.checkState(blobId != null, "'blobId' is mandatory");
             Preconditions.checkState(!Strings.isNullOrEmpty(type), "'type' is mandatory");
-            Preconditions.checkState(size != null, "'count' is mandatory");
+            Preconditions.checkState(size != null, "'size' is mandatory");
             return new Attachment(blobId, type, Optional.ofNullable(name), size, Optional.ofNullable(cid), isInline, Optional.ofNullable(width), Optional.ofNullable(height));
         }
     }

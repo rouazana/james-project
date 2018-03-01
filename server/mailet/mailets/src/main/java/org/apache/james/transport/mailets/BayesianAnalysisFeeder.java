@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  *     &lt;repositoryPath&gt; db://maildb &lt;/repositoryPath&gt;
  *     &lt;feedType&gt;ham&lt;/feedType&gt;
  *     &lt;!--
- *       Set this to the maximum message count (in bytes) that a message may have
+ *       Set this to the maximum message size (in bytes) that a message may have
  *       to be analyzed (default is 100000).
  *     --&gt;
  *     &lt;maxSize&gt;100000&lt;/maxSize&gt;
@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
  *     &lt;repositoryPath&gt; db://maildb &lt;/repositoryPath&gt;
  *     &lt;feedType&gt;spam&lt;/feedType&gt;
  *     &lt;!--
- *       Set this to the maximum message count (in bytes) that a message may have
+ *       Set this to the maximum message size (in bytes) that a message may have
  *       to be analyzed (default is 100000).
  *     --&gt;
  *     &lt;maxSize&gt;100000&lt;/maxSize&gt;
@@ -258,7 +258,7 @@ public class BayesianAnalysisFeeder extends GenericMailet {
             String messageId = message.getMessageID();
 
             if (message.getSize() > getMaxSize()) {
-                LOGGER.debug("{} Feeding HAM/SPAM ignored because message count > {}: {}", messageId, getMaxSize(), message.getSize());
+                LOGGER.debug("{} Feeding HAM/SPAM ignored because message size > {}: {}", messageId, getMaxSize(), message.getSize());
                 return;
             }
 

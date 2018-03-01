@@ -83,7 +83,7 @@ public class InstrumentationMailet implements Mailet {
                 String attributeName = it.next();
                 LOGGER.info("Attribute " + attributeName);
             }
-            LOGGER.info("Message count: " + mail.getMessageSize());
+            LOGGER.info("Message size: " + mail.getMessageSize());
             LOGGER.info("Last updated: " + mail.getLastUpdated());
             LOGGER.info("Remote Address: " + mail.getRemoteAddr());
             LOGGER.info("Remote Host: " + mail.getRemoteHost());

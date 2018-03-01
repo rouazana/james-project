@@ -73,7 +73,7 @@
         <verifyIdentity>true</verifyIdentity>
          -->
 
-        <!--  This sets the maximum allowed message count (in kilobytes) for this -->
+        <!--  This sets the maximum allowed message size (in kilobytes) for this -->
         <!--  ManageSieve service. If unspecified, the value defaults to 0, which means no limit. -->
         <maxmessagesize>0</maxmessagesize>
          

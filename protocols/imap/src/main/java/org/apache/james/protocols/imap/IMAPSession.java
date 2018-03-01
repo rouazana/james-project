@@ -31,8 +31,8 @@ public interface IMAPSession extends ProtocolSession {
     void popLineHandler();
     
     /**
-     * Return the count of the pushed {@link LineHandler}
-     * @return count of the pushed line handler
+     * Return the size of the pushed {@link LineHandler}
+     * @return size of the pushed line handler
      */
     int getPushedLineHandlerCount();
 

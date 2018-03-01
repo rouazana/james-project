@@ -89,7 +89,7 @@ public class SimpleMailboxMessage extends DelegatingMailboxMessage {
         }
 
         public Builder size(long size) {
-            Preconditions.checkArgument(size >= 0, "count can not be negative");
+            Preconditions.checkArgument(size >= 0, "size can not be negative");
             this.size = size;
             return this;
         }
@@ -128,7 +128,7 @@ public class SimpleMailboxMessage extends DelegatingMailboxMessage {
         public SimpleMailboxMessage build() {
             Preconditions.checkNotNull(messageId, "messageId is required");
             Preconditions.checkNotNull(internalDate, "internalDate is required");
-            Preconditions.checkNotNull(size, "count is required");
+            Preconditions.checkNotNull(size, "size is required");
             Preconditions.checkNotNull(bodyStartOctet, "bodyStartOctet is required");
             Preconditions.checkNotNull(content, "content is required");
             Preconditions.checkNotNull(flags, "flags is required");

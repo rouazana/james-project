@@ -411,9 +411,9 @@ public final class SearchKey {
     }
 
     /**
-     * Gets the count searched for.
+     * Gets the size searched for.
      * 
-     * @return the count when {@link #TYPE_LARGER} or {@link #TYPE_SMALLER},
+     * @return the size when {@link #TYPE_LARGER} or {@link #TYPE_SMALLER},
      *         otherwise 0
      */
     public long getSize() {
@@ -450,9 +450,9 @@ public final class SearchKey {
     }
 
     /**
-     * Gets the count searched for.
+     * Gets the size searched for.
      * 
-     * @return the count when {@link #TYPE_MODSEQ}
+     * @return the size when {@link #TYPE_MODSEQ}
      *         otherwise -1
      */
     public long getModSeq() {

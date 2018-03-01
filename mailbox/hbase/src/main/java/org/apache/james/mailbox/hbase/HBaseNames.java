@@ -79,6 +79,6 @@ public interface HBaseNames {
     byte[] MESSAGE_SUB_TYPE = Bytes.toBytes(PREFIX_META + "stype");
     byte[] MARKER_PRESENT = Bytes.toBytes("X");
     byte[] MARKER_MISSING = Bytes.toBytes(" ");
-    // the maximum recomended HBase column count is 10 MB
+    // the maximum recomended HBase column size is 10 MB
     int MAX_COLUMN_SIZE = 1024; //2 * 1024 * 1024;
 }

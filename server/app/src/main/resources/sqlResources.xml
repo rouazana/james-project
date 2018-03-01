@@ -269,7 +269,7 @@
     <!-- Statements used to retrieve the attributes of a message stored in this repository. -->
     <sql name="retrieveMessageAttributesSQL">SELECT message_attributes FROM ${table} WHERE message_name = ? AND repository_name = ?</sql>
 
-    <!-- Statements used to retrieve the count of the body of a message stored in this repository. -->
+    <!-- Statements used to retrieve the size of the body of a message stored in this repository. -->
     <!-- NOTE: This statement is optional and need not be implemented for a particular database to be supported. -->
     <sql name="retrieveMessageBodySizeSQL" db="mssql">SELECT datalength(message_body) FROM ${table} WHERE message_name = ? AND repository_name = ?</sql>
     <sql name="retrieveMessageBodySizeSQL" db="mysql">SELECT length(message_body) FROM ${table} WHERE message_name = ? AND repository_name = ?</sql>

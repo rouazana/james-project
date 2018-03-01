@@ -23,7 +23,7 @@ import javax.persistence.EntityManager;
 import org.apache.james.mailbox.jpa.migrator.exception.JpaMigrateException;
 
 /**
- * JIRA IMAP-184 is "Remove count of MailboxMembership".
+ * JIRA IMAP-184 is "Remove size of MailboxMembership".
  * 
  * Simply drop the MAILBOXMEMBERSHIP.SIZE column.
  * 

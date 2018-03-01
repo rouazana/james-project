@@ -280,7 +280,7 @@ public class MaildirStore implements UidProvider, ModSeqProvider {
 
     /**
      * Returns whether the names of message files in this store are parsed in
-     * a strict manner ({@code true}), which means a count field and flags are
+     * a strict manner ({@code true}), which means a size field and flags are
      * expected.
      * @return
      */
@@ -290,7 +290,7 @@ public class MaildirStore implements UidProvider, ModSeqProvider {
 
     /**
      * Specifies whether the names of message files in this store are parsed in
-     * a strict manner ({@code true}), which means a count field and flags are
+     * a strict manner ({@code true}), which means a size field and flags are
      * expected.
      *
      * Default is {@code false}.

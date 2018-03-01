@@ -176,7 +176,7 @@ public class MaildirMessageName {
     }
     
     /**
-     * Returns the full name of this message including count and flags if available.
+     * Returns the full name of this message including size and flags if available.
      * @return the full name of this message
      */
     public String getFullName() {
@@ -254,7 +254,7 @@ public class MaildirMessageName {
     
     /**
      * Splits up the third part of the file name (e.g. tim-erwin.de,S=1000:2,RS)
-     * into its components hostname, count and flags and fills the respective variables.
+     * into its components hostname, size and flags and fills the respective variables.
      */
     private void splitHostNameAndMeta() {
         String[] hostnamemetaFlags = hostnameAndMeta.split(":", 2);
@@ -262,7 +262,7 @@ public class MaildirMessageName {
           this.hostnameAndMeta = hostnamemetaFlags[0];
           int firstEnd = hostnameAndMeta.indexOf(',');
 
-          // read count field if existent
+          // read size field if existent
           if (firstEnd > 0) {
             hostname = hostnameAndMeta.substring(0, firstEnd);
             String attrStr = hostnameAndMeta.substring(firstEnd);
@@ -283,7 +283,7 @@ public class MaildirMessageName {
         }
         if (isMessageNameStrictParse()) {
             if (sizeString == null) {
-                throw new IllegalArgumentException("No message count found in message name: " + fullName);
+                throw new IllegalArgumentException("No message size found in message name: " + fullName);
             }
             if (flagsString == null) {
                 throw new IllegalArgumentException("No flags found in message name: " + fullName);
@@ -322,8 +322,8 @@ public class MaildirMessageName {
     }
     
     /**
-     * Decodes the count part of the file name if necessary and returns the appropriate Long.
-     * @return The count of this message as a {@link Long}
+     * Decodes the size part of the file name if necessary and returns the appropriate Long.
+     * @return The size of this message as a {@link Long}
      */
     public Long getSize() {
         if (size == null) {
@@ -356,7 +356,7 @@ public class MaildirMessageName {
     
     /**
      * Composes the base name consisting of timestamp, unique string and host name
-     * witout the count and flags.
+     * witout the size and flags.
      * @return The base name
      */
     public String getBaseName() {

@@ -33,7 +33,6 @@ import org.apache.james.mailbox.quota.QuotaCount;
 import org.apache.james.mailbox.quota.QuotaSize;
 import org.apache.james.webadmin.Routes;
 import org.apache.james.webadmin.dto.QuotaDTO;
-import org.apache.james.webadmin.dto.QuotaValueDeserializer;
 import org.apache.james.webadmin.jackson.QuotaModule;
 import org.apache.james.webadmin.service.GlobalQuotaService;
 import org.apache.james.webadmin.utils.ErrorResponder;
@@ -44,7 +43,6 @@ import org.apache.james.webadmin.utils.JsonTransformer;
 import org.apache.james.webadmin.validation.Quotas;
 import org.eclipse.jetty.http.HttpStatus;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -98,7 +96,7 @@ public class GlobalQuotaRoutes implements Routes {
     }
 
     @PUT
-    @ApiOperation(value = "Updating count and count at the same time")
+    @ApiOperation(value = "Updating count and size at the same time")
     @ApiImplicitParams({
             @ApiImplicitParam(required = true, dataType = "org.apache.james.webadmin.dto.QuotaDTO", paramType = "body")
     })
@@ -147,7 +145,7 @@ public class GlobalQuotaRoutes implements Routes {
 
     @DELETE
     @Path("/size")
-    @ApiOperation(value = "Removing per quotaroot mail count limitation by updating to unlimited value")
+    @ApiOperation(value = "Removing per quotaroot mail size limitation by updating to unlimited value")
     @ApiResponses(value = {
             @ApiResponse(code = HttpStatus.NO_CONTENT_204, message = "The value is updated to unlimited value."),
             @ApiResponse(code = HttpStatus.INTERNAL_SERVER_ERROR_500, message = "Internal server error - Something went bad on the server side.")
@@ -162,7 +160,7 @@ public class GlobalQuotaRoutes implements Routes {
 
     @PUT
     @Path("/size")
-    @ApiOperation(value = "Updating per quotaroot mail count limitation")
+    @ApiOperation(value = "Updating per quotaroot mail size limitation")
     @ApiImplicitParams({
             @ApiImplicitParam(required = true, dataType = "integer", paramType = "body")
     })
@@ -182,7 +180,7 @@ public class GlobalQuotaRoutes implements Routes {
 
     @GET
     @Path("/size")
-    @ApiOperation(value = "Reading per quotaroot mail count limitation")
+    @ApiOperation(value = "Reading per quotaroot mail size limitation")
     @ApiResponses(value = {
             @ApiResponse(code = HttpStatus.OK_200, message = "OK", response = Long.class),
             @ApiResponse(code = HttpStatus.INTERNAL_SERVER_ERROR_500, message = "Internal server error - Something went bad on the server side.")

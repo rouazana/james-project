@@ -56,7 +56,7 @@ import org.apache.mailet.MailetContext;
  * user or common to all of them).
  * </p>
  * <p>
- * This matcher need to calculate the mailbox count every time it is called. This
+ * This matcher need to calculate the mailbox size every time it is called. This
  * can slow down things if there are many mails in the mailbox. Some users also
  * report big problems with the matcher if a JDBC based mailrepository is used.
  * </p>
@@ -121,7 +121,7 @@ public abstract class AbstractStorageQuota extends AbstractQuotaMatcher {
             session = manager.createSystemSession(username);
             manager.startProcessingRequest(session);
 
-            // get all mailboxes for the user to calculate the count
+            // get all mailboxes for the user to calculate the size
             // TODO: See JAMES-1198
             List<MailboxMetaData> mList = manager.search(
                     MailboxQuery.privateMailboxesBuilder(session)

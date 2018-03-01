@@ -60,7 +60,7 @@ public class CassandraQuotaModule implements CassandraModule {
                     .addColumn(CassandraMaxQuota.MESSAGE_COUNT, bigint())
                     .addColumn(CassandraMaxQuota.STORAGE, bigint())
                     .withOptions()
-                    .comment("Holds per quota-root limitations. Limitations can concern the number of messages in a quota-root or the total count of a quota-root.")
+                    .comment("Holds per quota-root limitations. Limitations can concern the number of messages in a quota-root or the total size of a quota-root.")
                     .caching(SchemaBuilder.KeyCaching.ALL,
                         SchemaBuilder.rows(CassandraConstants.DEFAULT_CACHED_ROW_PER_PARTITION))),
             new CassandraTable(CassandraDefaultMaxQuota.TABLE_NAME,

@@ -47,7 +47,7 @@
            </protocols>
            <config>
                <sqlFile>file://conf/sqlResources.xml</sqlFile>
-               <!-- Set the count threshold for in memory handling of storing operations -->
+               <!-- Set the size threshold for in memory handling of storing operations -->
                <!-- Default is currently 409600000 due to a bug with mysql and binary stream -->
                <!-- currently under investigation. Please change this only if you know what -->
                <!-- you do. -->

@@ -85,7 +85,7 @@ public class NettyImapRequestLineReader extends AbstractNettyImapRequestLineRead
         }
         
         if (maxLiteralSize > 0 && maxLiteralSize > size) {
-            throw new DecodingException(HumanReadableText.FAILED, "Specified literal is greater then the allowed count");
+            throw new DecodingException(HumanReadableText.FAILED, "Specified literal is greater then the allowed size");
         }
         // Check if we have enough data
         if (size + crlf > buffer.readableBytes()) {
@@ -98,7 +98,7 @@ public class NettyImapRequestLineReader extends AbstractNettyImapRequestLineRead
         nextSeen = false;
         nextChar = 0;
 
-        // limit the count via commons-io as ChannelBufferInputStream count limiting is buggy
+        // limit the size via commons-io as ChannelBufferInputStream size limiting is buggy
         InputStream in = new BoundedInputStream(new ChannelBufferInputStream(buffer), size); 
         if (extraCRLF) {
             return new EolInputStream(this, in);
@@ -127,9 +127,9 @@ public class NettyImapRequestLineReader extends AbstractNettyImapRequestLineRead
         }
 
         /**
-         * Return the count of the data which is needed
+         * Return the size of the data which is needed
          * 
-         * @return count
+         * @return size
          */
         public int getNeededSize() {
             return size;

@@ -214,10 +214,10 @@ public class SearchQuery implements Serializable {
     }
 
     /**
-     * Creates a filter for message count less than the given value
+     * Creates a filter for message size less than the given value
      * 
      * @param value
-     *            messages with count less than this value will be selected by
+     *            messages with size less than this value will be selected by
      *            the returned criterion
      * @return <code>Criterion</code>, not null
      */
@@ -226,10 +226,10 @@ public class SearchQuery implements Serializable {
     }
 
     /**
-     * Creates a filter for message count greater than the given value
+     * Creates a filter for message size greater than the given value
      * 
      * @param value
-     *            messages with count greater than this value will be selected by
+     *            messages with size greater than this value will be selected by
      *            the returned criterion
      * @return <code>Criterion</code>, not null
      */
@@ -238,10 +238,10 @@ public class SearchQuery implements Serializable {
     }
 
     /**
-     * Creates a filter for message count equal to the given value
+     * Creates a filter for message size equal to the given value
      * 
      * @param value
-     *            messages with count equal to this value will be selected by the
+     *            messages with size equal to this value will be selected by the
      *            returned criterion
      * @return <code>Criterion</code>, not null
      */

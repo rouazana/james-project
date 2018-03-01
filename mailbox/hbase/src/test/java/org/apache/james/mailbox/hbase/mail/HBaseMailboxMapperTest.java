@@ -285,8 +285,8 @@ public class HBaseMailboxMapperTest {
     private void testChunkStream() throws IOException {
         LOG.info("Checking ChunkOutpuStream and ChunkInputStream");
         final String original = "This is a proper test for the HBase ChunkInputStream and"
-                + "ChunkOutputStream. This text must be larger than the chunk count so we write"
-                + "and read more then one chunk count. I think that a few more lore ipsum lines"
+                + "ChunkOutputStream. This text must be larger than the chunk size so we write"
+                + "and read more then one chunk size. I think that a few more lore ipsum lines"
                 + "will be enough."
                 + "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor "
                 + "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis "
@@ -295,7 +295,7 @@ public class HBaseMailboxMapperTest {
                 + "fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa"
                 + " qui officia deserunt mollit anim id est laborum";
         byte[] data = Bytes.toBytes(original);
-        // we make the column count = 10 bytes
+        // we make the column size = 10 bytes
         ChunkOutputStream out = new ChunkOutputStream(conf,
                 MESSAGES_TABLE, MESSAGE_DATA_BODY_CF, Bytes.toBytes("10"), 10);
         ChunkInputStream in = new ChunkInputStream(conf,

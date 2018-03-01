@@ -52,7 +52,7 @@ public class ChunkOutputStream extends OutputStream {
      * @param tableName name of the table that writes will be made
      * @param cf name of the column family where data is going to be written
      * @param key the row key 
-     * @param chunkSize the count of each column, in bytes. For HBase, max is 10MB
+     * @param chunkSize the size of each column, in bytes. For HBase, max is 10MB
      */
     public ChunkOutputStream(Configuration conf, byte[] tableName, byte[] cf, byte[] key, int chunkSize) {
         this.conf = conf;
@@ -82,7 +82,7 @@ public class ChunkOutputStream extends OutputStream {
 
     /**
      * Trigger a flush. This will only write the content to the column if the
-     * chunk count is reached
+     * chunk size is reached
      */
     @Override
     public void flush() throws IOException {
@@ -90,7 +90,7 @@ public class ChunkOutputStream extends OutputStream {
     }
 
     /**
-     * Write the data to column if the configured chunk count is reached or if the
+     * Write the data to column if the configured chunk size is reached or if the
      * stream should be closed
      *
      * @param close
