@@ -72,7 +72,7 @@ public class QuotaSize implements QuotaValue<QuotaSize> {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("value", value)
+            .add("value", value.map(String::valueOf).orElse("unlimited"))
             .toString();
     }
 
