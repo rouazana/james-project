@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -47,6 +48,7 @@ import org.apache.james.cli.type.CmdType;
 import org.apache.james.cli.utils.ValueWithUnit;
 import org.apache.james.mailbox.quota.QuotaCount;
 import org.apache.james.mailbox.quota.QuotaSize;
+import org.apache.james.mailbox.quota.QuotaValue;
 import org.apache.james.mailbox.store.mail.model.SerializableQuota;
 import org.apache.james.mailbox.store.probe.MailboxProbe;
 import org.apache.james.mailbox.store.probe.QuotaProbe;
@@ -285,16 +287,16 @@ public class ServerCmd {
             printStream.println("MailboxMessage count allowed for Quota Root " + arguments[1] + ": " + formatMessageValue(quotaProbe.getMaxMessageCount(arguments[1])));
             break;
         case SETMAXSTORAGEQUOTA:
-            quotaProbe.setMaxStorage(arguments[1], QuotaSize.size(ValueWithUnit.parse(arguments[2]).getConvertedValue()));
+            quotaProbe.setMaxStorage(arguments[1], parseQuotaSize(arguments[2]));
             break;
         case SETMAXMESSAGECOUNTQUOTA:
-            quotaProbe.setMaxMessageCount(arguments[1], QuotaCount.count(Long.parseLong(arguments[2])));
+            quotaProbe.setMaxMessageCount(arguments[1], parseQuotaCount(arguments[2]));
             break;
         case SETDEFAULTMAXSTORAGEQUOTA:
-            quotaProbe.setDefaultMaxStorage(QuotaSize.size(ValueWithUnit.parse(arguments[1]).getConvertedValue()));
+            quotaProbe.setDefaultMaxStorage(Optional.of(parseQuotaSize(arguments[1])));
             break;
         case SETDEFAULTMAXMESSAGECOUNTQUOTA:
-            quotaProbe.setDefaultMaxMessageCount(QuotaCount.count(Long.parseLong(arguments[1])));
+            quotaProbe.setDefaultMaxMessageCount(Optional.of(parseQuotaCount(arguments[1])));
             break;
         case GETDEFAULTMAXSTORAGEQUOTA:
             printStream.println("Default Maximum Storage Quota: " + formatStorageValue(quotaProbe.getDefaultMaxStorage()));
@@ -333,6 +335,26 @@ public class ServerCmd {
         default:
             throw new UnrecognizedCommandException(cmdType.getCommand());
         }
+    }
+
+    private QuotaSize parseQuotaSize(String argument) throws Exception {
+        long convertedValue = ValueWithUnit.parse(argument).getConvertedValue();
+        return longToQuotaValue(convertedValue, QuotaSize.unlimited(), QuotaSize::size);
+    }
+
+    private QuotaCount parseQuotaCount(String argument) {
+        long value = Long.parseLong(argument);
+        return longToQuotaValue(value, QuotaCount.unlimited(), QuotaCount::count);
+    }
+
+    private <T extends QuotaValue<T>> T longToQuotaValue(long value, T unlimited, Function<Long, T> factory) {
+        if (value == -1) {
+            return unlimited;
+        }
+        if (value >= 0) {
+            return factory.apply(value);
+        }
+        throw new IllegalArgumentException("Quota should be -1 for unlimited or a positive value");
     }
 
     private static void print(String[] data, PrintStream out) {

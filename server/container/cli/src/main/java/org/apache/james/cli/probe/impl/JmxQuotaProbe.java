@@ -91,12 +91,12 @@ public class JmxQuotaProbe implements QuotaProbe, JmxProbe {
     }
 
     @Override
-    public void setDefaultMaxMessageCount(QuotaCount maxDefaultMessageCount) throws MailboxException {
+    public void setDefaultMaxMessageCount(Optional<QuotaCount> maxDefaultMessageCount) throws MailboxException {
         quotaManagement.setDefaultMaxMessageCount(maxDefaultMessageCount);
     }
 
     @Override
-    public void setDefaultMaxStorage(QuotaSize maxDefaultSize) throws MailboxException {
+    public void setDefaultMaxStorage(Optional<QuotaSize> maxDefaultSize) throws MailboxException {
         quotaManagement.setDefaultMaxStorage(maxDefaultSize);
     }
 

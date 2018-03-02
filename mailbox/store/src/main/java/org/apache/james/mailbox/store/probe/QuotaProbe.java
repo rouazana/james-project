@@ -46,8 +46,8 @@ public interface QuotaProbe {
 
     void setMaxStorage(String quotaRoot, QuotaSize maxSize) throws MailboxException;
 
-    void setDefaultMaxMessageCount(QuotaCount maxDefaultMessageCount) throws MailboxException;
+    void setDefaultMaxMessageCount(Optional<QuotaCount> maxDefaultMessageCount) throws MailboxException;
 
-    void setDefaultMaxStorage(QuotaSize maxDefaultSize) throws MailboxException;
+    void setDefaultMaxStorage(Optional<QuotaSize> maxDefaultSize) throws MailboxException;
 
 }

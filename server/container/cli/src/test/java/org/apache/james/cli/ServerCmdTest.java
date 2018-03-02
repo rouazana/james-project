@@ -408,7 +408,7 @@ public class ServerCmdTest {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.SETDEFAULTMAXMESSAGECOUNTQUOTA.getCommand(), "1054"};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
-        quotaProbe.setDefaultMaxMessageCount(QuotaCount.count(1054));
+        quotaProbe.setDefaultMaxMessageCount(Optional.of(QuotaCount.count(1054)));
         expectLastCall();
 
         control.replay();
@@ -417,16 +417,58 @@ public class ServerCmdTest {
     }
 
     @Test
-    public void setDefaultMaxStorageCommandShouldWork() throws Exception {
-        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.SETDEFAULTMAXSTORAGEQUOTA.getCommand(), "1G"};
+    public void setDefaultMaxMessageCountCommandShouldWorkWhenUnlimited() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETDEFAULTMAXMESSAGECOUNTQUOTA.getCommand(), "-1"};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
-        quotaProbe.setDefaultMaxStorage(QuotaSize.size(1024 * 1024 * 1024));
+        quotaProbe.setDefaultMaxMessageCount(Optional.of(QuotaCount.unlimited()));
         expectLastCall();
 
         control.replay();
         testee.executeCommandLine(commandLine);
         control.verify();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setDefaultMaxMessageCountCommandShouldThrowWhenNegativeAndNotUnlimited() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETDEFAULTMAXMESSAGECOUNTQUOTA.getCommand(), "-2"};
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+
+        testee.executeCommandLine(commandLine);
+    }
+
+    @Test
+    public void setDefaultMaxStorageCommandShouldWork() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.SETDEFAULTMAXSTORAGEQUOTA.getCommand(), "1G"};
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+
+        quotaProbe.setDefaultMaxStorage(Optional.of(QuotaSize.size(1024 * 1024 * 1024)));
+        expectLastCall();
+
+        control.replay();
+        testee.executeCommandLine(commandLine);
+        control.verify();
+    }
+
+    @Test
+    public void setDefaultMaxStorageCommandShouldWorkWhenUnlimited() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETDEFAULTMAXSTORAGEQUOTA.getCommand(), "-1"};
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+
+        quotaProbe.setDefaultMaxStorage(Optional.of(QuotaSize.unlimited()));
+        expectLastCall();
+
+        control.replay();
+        testee.executeCommandLine(commandLine);
+        control.verify();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setDefaultMaxStorageCommandShouldThrowWhenNegativeAndNotUnlimited() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETDEFAULTMAXSTORAGEQUOTA.getCommand(), "-2"};
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+
+        testee.executeCommandLine(commandLine);
     }
 
     @Test
@@ -444,6 +486,29 @@ public class ServerCmdTest {
     }
 
     @Test
+    public void setMaxMessageCountCommandShouldWorkWhenUnlimited() throws Exception {
+        String quotaroot = "#private&user@domain";
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETMAXMESSAGECOUNTQUOTA.getCommand(), quotaroot, "-1"};
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+
+        quotaProbe.setMaxMessageCount(quotaroot, QuotaCount.unlimited());
+        expectLastCall();
+
+        control.replay();
+        testee.executeCommandLine(commandLine);
+        control.verify();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setMaxMessageCountCommandShouldThrowWhenNegativeAndNotUnlimited() throws Exception {
+        String quotaroot = "#private&user@domain";
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETMAXMESSAGECOUNTQUOTA.getCommand(), quotaroot, "-2"};
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+
+        testee.executeCommandLine(commandLine);
+    }
+
+    @Test
     public void setMaxStorageCommandShouldWork() throws Exception {
         String quotaroot = "#private&user@domain";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.SETMAXSTORAGEQUOTA.getCommand(), quotaroot, "5M"};
@@ -455,6 +520,29 @@ public class ServerCmdTest {
         control.replay();
         testee.executeCommandLine(commandLine);
         control.verify();
+    }
+
+    @Test
+    public void setMaxStorageCommandShouldWorkWhenUnlimited() throws Exception {
+        String quotaroot = "#private&user@domain";
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETMAXSTORAGEQUOTA.getCommand(), quotaroot, "-1"};
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+
+        quotaProbe.setMaxStorage(quotaroot, QuotaSize.unlimited());
+        expectLastCall();
+
+        control.replay();
+        testee.executeCommandLine(commandLine);
+        control.verify();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setMaxStorageCommandShouldThrowWhenNegativeAndNotUnlimited() throws Exception {
+        String quotaroot = "#private&user@domain";
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETMAXSTORAGEQUOTA.getCommand(), quotaroot, "-2"};
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+
+        testee.executeCommandLine(commandLine);
     }
 
     @Test
