@@ -20,6 +20,7 @@ package org.apache.james.mailbox.quota;
 
 import java.util.Optional;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class QuotaSize implements QuotaValue<QuotaSize> {
@@ -51,11 +52,6 @@ public class QuotaSize implements QuotaValue<QuotaSize> {
     }
 
     @Override
-    public boolean isUnlimited() {
-        return !value.isPresent();
-    }
-
-    @Override
     public QuotaSize add(long additionalValue) {
         return new QuotaSize(value.map(x -> x + additionalValue));
     }
@@ -71,6 +67,13 @@ public class QuotaSize implements QuotaValue<QuotaSize> {
     @Override
     public boolean isGreaterThan(QuotaSize other) {
         return value.orElse(Long.MAX_VALUE) > other.value.orElse(Long.MAX_VALUE);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("value", value)
+            .toString();
     }
 
     @Override
