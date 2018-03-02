@@ -24,7 +24,9 @@ public interface QuotaValue<T extends QuotaValue<T>> {
 
     boolean isLimited();
 
-    boolean isUnlimited();
+    default boolean isUnlimited() {
+        return !isLimited();
+    }
 
     T add(long additionalValue);
 

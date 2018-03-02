@@ -58,8 +58,6 @@ import spark.Service;
 @Produces("application/json")
 public class UserQuotaRoutes implements Routes {
 
-    public static long UNLIMITED_QUOTA = -1;
-
     private static final String USER = "user";
     static final String QUOTA_ENDPOINT = "/quota/users/:" + USER;
     private static final String COUNT_ENDPOINT = QUOTA_ENDPOINT + "/count";

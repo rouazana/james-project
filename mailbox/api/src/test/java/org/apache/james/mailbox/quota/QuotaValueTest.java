@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 public interface QuotaValueTest<T extends QuotaValue<T>> {
 
-    T instance(int i);
+    T instance(long i);
 
     T unlimited();
 
@@ -44,22 +44,22 @@ public interface QuotaValueTest<T extends QuotaValue<T>> {
     }
 
     @Test
-    default void greaterThanShouldReturnFalseWhenFirstIsFiniteAndSecondInfinite() {
+    default void greaterThanShouldReturnFalseWhenFirstIsLimitedAndSecondUnlimited() {
         assertThat(instance(1).isGreaterThan(unlimited())).isFalse();
     }
 
     @Test
-    default void greaterThanShouldReturnFalseWhenBothAreInfinite() {
+    default void greaterThanShouldReturnFalseWhenBothAreUnlimited() {
         assertThat(unlimited().isGreaterThan(unlimited())).isFalse();
     }
 
     @Test
-    default void greaterThanShouldReturnTrueWhenFirstIsInfiniteAndSecondFinite() {
+    default void greaterThanShouldReturnTrueWhenFirstIsUnlimitedAndSecondLimited() {
         assertThat(unlimited().isGreaterThan(instance(1))).isTrue();
     }
 
     @Test
-    default void addShouldReturnUnlimitedWhenThisIsInfinite() {
+    default void addShouldReturnUnlimitedWhenThisIsUnlimited() {
         assertThat(unlimited().add(2)).isEqualTo(unlimited());
     }
 

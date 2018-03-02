@@ -24,7 +24,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class QuotaSizeTest implements QuotaValueTest<QuotaSize> {
 
-    public QuotaSize instance(int value) {
+    public QuotaSize instance(long value) {
         return QuotaSize.size(value);
     }
 
