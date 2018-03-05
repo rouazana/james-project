@@ -22,6 +22,8 @@ package org.apache.james.webadmin.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.apache.james.mailbox.quota.QuotaCount;
+import org.apache.james.mailbox.quota.QuotaSize;
 import org.junit.Test;
 
 import spark.HaltException;
@@ -47,8 +49,13 @@ public class QuotaValueTest {
     }
 
     @Test
+    public void quotaCountShouldBeUnlimitedOnMinusOne() {
+        assertThat(Quotas.quotaCount("-1")).isEqualTo(QuotaCount.unlimited());
+    }
+
+    @Test
     public void quotaCountShouldThrowOnNegativeNumber() {
-        assertThatThrownBy(() -> Quotas.quotaCount("-1"))
+        assertThatThrownBy(() -> Quotas.quotaCount("-2"))
             .isInstanceOf(HaltException.class);
     }
 
@@ -71,9 +78,14 @@ public class QuotaValueTest {
     }
 
     @Test
-    public void quotaSizeShouldThrowOnNegativeNumber() {
-        assertThatThrownBy(() -> Quotas.quotaSize("-1"))
-            .isInstanceOf(HaltException.class);
+    public void quotaSizeShouldBeUnlimitedOnMinusOne() {
+        assertThat(Quotas.quotaSize("-1")).isEqualTo(QuotaSize.unlimited());
+
     }
 
+    @Test
+    public void quotaSizeShouldThrowOnNegativeNumber() {
+        assertThatThrownBy(() -> Quotas.quotaSize("-2"))
+            .isInstanceOf(HaltException.class);
+    }
 }
