@@ -351,7 +351,7 @@ public class ServerCmd {
         if (value == -1) {
             return unlimited;
         }
-        if (value >=0) {
+        if (value >= 0) {
             return factory.apply(value);
         }
         throw new IllegalArgumentException("Quota should be -1 for unlimited or a positive value");

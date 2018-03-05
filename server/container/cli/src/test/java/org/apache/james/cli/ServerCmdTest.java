@@ -429,7 +429,7 @@ public class ServerCmdTest {
         control.verify();
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void setDefaultMaxMessageCountCommandShouldThrowWhenNegativeAndNotUnlimited() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETDEFAULTMAXMESSAGECOUNTQUOTA.getCommand(), "-2"};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
@@ -463,7 +463,7 @@ public class ServerCmdTest {
         control.verify();
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void setDefaultMaxStorageCommandShouldThrowWhenNegativeAndNotUnlimited() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETDEFAULTMAXSTORAGEQUOTA.getCommand(), "-2"};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
@@ -499,7 +499,7 @@ public class ServerCmdTest {
         control.verify();
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void setMaxMessageCountCommandShouldThrowWhenNegativeAndNotUnlimited() throws Exception {
         String quotaroot = "#private&user@domain";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETMAXMESSAGECOUNTQUOTA.getCommand(), quotaroot, "-2"};
@@ -536,7 +536,7 @@ public class ServerCmdTest {
         control.verify();
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void setMaxStorageCommandShouldThrowWhenNegativeAndNotUnlimited() throws Exception {
         String quotaroot = "#private&user@domain";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETMAXSTORAGEQUOTA.getCommand(), quotaroot, "-2"};
