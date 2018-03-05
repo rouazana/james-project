@@ -42,7 +42,11 @@ public class MaxUserMessageCount {
     public MaxUserMessageCount() {
     }
 
-    public long getValue() {
+    public Long getValue() {
         return value;
+    }
+
+    public void setValue(Long value) {
+        this.value = value;
     }
 }

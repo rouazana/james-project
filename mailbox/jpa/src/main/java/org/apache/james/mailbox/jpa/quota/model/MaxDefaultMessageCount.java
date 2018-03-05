@@ -47,4 +47,8 @@ public class MaxDefaultMessageCount {
     public Long getValue() {
         return value;
     }
+
+    public void setValue(Long value) {
+        this.value = value;
+    }
 }

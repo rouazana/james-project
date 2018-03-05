@@ -47,4 +47,8 @@ public class MaxDefaultStorage {
     public Long getValue() {
         return value;
     }
+
+    public void setValue(Long value) {
+        this.value = value;
+    }
 }
