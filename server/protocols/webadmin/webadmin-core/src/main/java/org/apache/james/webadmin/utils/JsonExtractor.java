@@ -20,10 +20,12 @@
 package org.apache.james.webadmin.utils;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.google.common.collect.ImmutableList;
 
 public class JsonExtractor<RequestT> {
 
@@ -31,6 +33,10 @@ public class JsonExtractor<RequestT> {
     private final Class<RequestT> type;
 
     public JsonExtractor(Class<RequestT> type, Module... modules) {
+        this(type, ImmutableList.copyOf(modules));
+    }
+
+    public JsonExtractor(Class<RequestT> type, List<Module> modules) {
         this.objectMapper = new ObjectMapper()
             .registerModule(new Jdk8Module())
             .registerModules(modules);

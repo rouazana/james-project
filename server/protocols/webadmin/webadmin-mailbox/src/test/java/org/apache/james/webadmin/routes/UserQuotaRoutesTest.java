@@ -46,6 +46,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableSet;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
@@ -73,7 +74,8 @@ public class UserQuotaRoutesTest {
         usersRepository.setDomainList(memoryDomainList);
         usersRepository.addUser(BOB, PASSWORD);
         UserQuotaService userQuotaService = new UserQuotaService(maxQuotaManager);
-        UserQuotaRoutes userQuotaRoutes = new UserQuotaRoutes(usersRepository, userQuotaService, new JsonTransformer(new QuotaModule()));
+        QuotaModule quotaModule = new QuotaModule();
+        UserQuotaRoutes userQuotaRoutes = new UserQuotaRoutes(usersRepository, userQuotaService, new JsonTransformer(quotaModule), ImmutableSet.of(quotaModule));
         webAdminServer = WebAdminUtils.createWebAdminServer(
             new NoopMetricFactory(),
             userQuotaRoutes);
