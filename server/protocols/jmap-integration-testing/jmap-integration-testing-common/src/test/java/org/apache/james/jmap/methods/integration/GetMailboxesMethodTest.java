@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
@@ -68,8 +69,12 @@ import org.apache.james.modules.QuotaProbesImpl;
 import org.apache.james.probe.DataProbe;
 import org.apache.james.utils.DataProbeImpl;
 import org.apache.james.utils.JmapGuiceProbe;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -82,6 +87,7 @@ public abstract class GetMailboxesMethodTest {
     private static final String NAME = "[0][0]";
     private static final String ARGUMENTS = "[0][1]";
     private static final String FIRST_MAILBOX = ARGUMENTS + ".list[0]";
+    private static final String SECOND_MAILBOX = ARGUMENTS + ".list[1]";
 
     public static final String READ = String.valueOf(Right.Read.asCharacter());
     public static final String LOOKUP = String.valueOf(Right.Lookup.asCharacter());
@@ -822,6 +828,68 @@ public abstract class GetMailboxesMethodTest {
             .body(NAME, equalTo("mailboxes"))
             .body(ARGUMENTS + ".list", hasSize(1))
             .body(FIRST_MAILBOX + ".quotas['#private&alice@domain.tld']['MESSAGE'].max", equalTo(43));
+    }
+
+    @Test
+    @Ignore("Not handled by DefaultQuotaRootResolver for now")
+    public void getMailboxesShouldDisplayDifferentMaxQuotaPerMailboxWhenSet() throws Exception {
+        String mailboxId = mailboxProbe.createMailbox(MailboxConstants.USER_NAMESPACE, alice, DefaultMailboxes.INBOX).serialize();
+        String otherMailboxId = mailboxProbe.createMailbox(MailboxConstants.USER_NAMESPACE, alice, DefaultMailboxes.SENT).serialize();
+        quotaProbe.setMaxMessageCount("#private&alice@domain.tld&INBOX", SerializableQuotaValue.valueOf(Optional.of(QuotaCount.count(42))));
+        quotaProbe.setMaxMessageCount("#private&alice@domain.tld&SENT", SerializableQuotaValue.valueOf(Optional.of(QuotaCount.count(43))));
+
+        given()
+            .header("Authorization", accessToken.serialize())
+            .body("[[\"getMailboxes\", {\"ids\": [\"" + mailboxId + "\",\"" + otherMailboxId + "\"]}, \"#0\"]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200)
+            .body(NAME, equalTo("mailboxes"))
+            .body(ARGUMENTS + ".list", hasSize(2))
+            .body(FIRST_MAILBOX + ".quotas['#private&alice@domain.tld&INBOX']['MESSAGE'].max", equalTo(42))
+            .body(SECOND_MAILBOX + ".quotas['#private&alice@domain.tld&SENT']['MESSAGE'].max", equalTo(43));
+    }
+
+    @Test
+    public void getMailboxesShouldReturnQuotaRootForAllMailboxes() throws Exception {
+        given()
+        .header("Authorization", accessToken.serialize())
+        .body("[[\"getMailboxes\", {}, \"#0\"]]")
+    .when()
+        .post("/jmap")
+    .then()
+        .statusCode(200)
+        .body(NAME, equalTo("mailboxes"))
+        .body(ARGUMENTS + ".list*.quotas", new AllMatching<>(hasKey("#private&alice@domain.tld")));
+    }
+
+    class AllMatching<T> extends BaseMatcher<List<T>> {
+        String[] items;
+        private final Matcher<T> matcher;
+
+        AllMatching(Matcher<T> matcher) {
+            
+            this.matcher = matcher;
+        }
+
+        @Override
+        public boolean matches(Object item) {
+            @SuppressWarnings("unchecked")
+            Iterable<Object> list = (Iterable<Object>) (item);
+            for (Object element: list) {
+                if (!matcher.matches(element)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("All elements of the iterable should match: ")
+                .appendDescriptionOf(matcher);
+        }
     }
 
     @Test
