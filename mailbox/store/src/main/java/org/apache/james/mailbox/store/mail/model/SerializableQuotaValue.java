@@ -23,37 +23,45 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.apache.james.mailbox.model.Quota;
 import org.apache.james.mailbox.quota.QuotaValue;
 
-public class SerializableQuota<T extends QuotaValue<T>> implements Serializable {
+public class SerializableQuotaValue<T extends QuotaValue<T>> implements Serializable {
+
+    public static <U extends QuotaValue<U>> SerializableQuotaValue<U> valueOf(Optional<U> input) {
+        return new SerializableQuotaValue<>(input.orElse(null));
+    }
 
     public static final long UNLIMITED = -1;
 
-    public static <U extends QuotaValue<U>> SerializableQuota<U> newInstance(Quota<U> quota) {
-        return new SerializableQuota<>(new SerializableQuotaValue<>(quota.getMax()), getUsed(quota.getUsed(), SerializableQuotaValue::new));
+    private final Long value;
+
+    public SerializableQuotaValue(T value) {
+        this(encodeAsLong(value));
     }
 
-
-    private static <U extends QuotaValue<U>> SerializableQuotaValue<U> getUsed(Optional<U> quota, Function<U, SerializableQuotaValue<U>> factory) {
-        return quota.map(factory).orElse(null);
+    SerializableQuotaValue(Long value) {
+        this.value = value;
     }
 
-    private final SerializableQuotaValue<T> max;
-    private final SerializableQuotaValue<T> used;
-
-    public SerializableQuota(SerializableQuotaValue<T> max, SerializableQuotaValue<T> used) {
-        this.max = max;
-        this.used = used;
+    private static <U extends QuotaValue<U>> Long encodeAsLong(U quota) {
+        if (quota.isLimited()) {
+            return quota.asLong();
+        }
+        return UNLIMITED;
     }
-
 
     public Long encodeAsLong() {
-        return max.encodeAsLong();
+        return value;
     }
 
-    public Long getUsed() {
-        return used.encodeAsLong();
+    public Optional<T> toValue(Function<Long, T> factory, T unlimited) {
+        Long longValue = encodeAsLong();
+        if (longValue == null) {
+            return Optional.empty();
+        }
+        if (longValue == UNLIMITED) {
+            return Optional.of(unlimited);
+        }
+        return Optional.of(factory.apply(longValue));
     }
-
 }
