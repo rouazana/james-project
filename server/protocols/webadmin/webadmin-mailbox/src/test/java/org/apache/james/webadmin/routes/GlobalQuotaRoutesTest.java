@@ -36,10 +36,11 @@ import org.apache.james.webadmin.WebAdminUtils;
 import org.apache.james.webadmin.jackson.QuotaModule;
 import org.apache.james.webadmin.service.GlobalQuotaService;
 import org.apache.james.webadmin.utils.JsonTransformer;
-import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.JUnitSoftAssertions;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.jayway.restassured.RestAssured;
@@ -47,6 +48,9 @@ import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 
 public class GlobalQuotaRoutesTest {
+
+    @Rule
+    public JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
     private WebAdminServer webAdminServer;
     private InMemoryPerUserMaxQuotaManager maxQuotaManager;
@@ -108,12 +112,11 @@ public class GlobalQuotaRoutesTest {
             .jsonPath()
             .getMap(".");
 
-        SoftAssertions.assertSoftly(softly ->
-            softly.assertThat(errors)
-                .containsEntry("statusCode", HttpStatus.BAD_REQUEST_400)
-                .containsEntry("type", "InvalidArgument")
-                .containsEntry("message", "Invalid quota. Need to be an integer value greater or equal to -1")
-                .containsEntry("cause", "For input string: \"invalid\""));
+        softly.assertThat(errors)
+            .containsEntry("statusCode", HttpStatus.BAD_REQUEST_400)
+            .containsEntry("type", "InvalidArgument")
+            .containsEntry("message", "Invalid quota. Need to be an integer value greater or equal to -1")
+            .containsEntry("cause", "For input string: \"invalid\"");
     }
 
     @Test
@@ -130,12 +133,11 @@ public class GlobalQuotaRoutesTest {
             .jsonPath()
             .getMap(".");
 
-        SoftAssertions.assertSoftly(softly ->
-            softly
-                .assertThat(errors)
-                .containsEntry("statusCode", HttpStatus.BAD_REQUEST_400)
-                .containsEntry("type", "InvalidArgument")
-                .containsEntry("message", "Invalid quota. Need to be an integer value greater or equal to -1"));
+        softly
+            .assertThat(errors)
+            .containsEntry("statusCode", HttpStatus.BAD_REQUEST_400)
+            .containsEntry("type", "InvalidArgument")
+            .containsEntry("message", "Invalid quota. Need to be an integer value greater or equal to -1");
     }
 
     @Test
@@ -215,13 +217,12 @@ public class GlobalQuotaRoutesTest {
             .jsonPath()
             .getMap(".");
 
-        SoftAssertions.assertSoftly(softly ->
-            softly
-                .assertThat(errors)
-                .containsEntry("statusCode", HttpStatus.BAD_REQUEST_400)
-                .containsEntry("type", "InvalidArgument")
-                .containsEntry("message", "Invalid quota. Need to be an integer value greater or equal to -1")
-                .containsEntry("cause", "For input string: \"invalid\""));
+        softly
+            .assertThat(errors)
+            .containsEntry("statusCode", HttpStatus.BAD_REQUEST_400)
+            .containsEntry("type", "InvalidArgument")
+            .containsEntry("message", "Invalid quota. Need to be an integer value greater or equal to -1")
+            .containsEntry("cause", "For input string: \"invalid\"");
     }
 
     @Test
@@ -250,12 +251,11 @@ public class GlobalQuotaRoutesTest {
             .jsonPath()
             .getMap(".");
 
-        SoftAssertions.assertSoftly(softly ->
-            softly
-                .assertThat(errors)
-                .containsEntry("statusCode", HttpStatus.BAD_REQUEST_400)
-                .containsEntry("type", "InvalidArgument")
-                .containsEntry("message", "Invalid quota. Need to be an integer value greater or equal to -1"));
+        softly
+            .assertThat(errors)
+            .containsEntry("statusCode", HttpStatus.BAD_REQUEST_400)
+            .containsEntry("type", "InvalidArgument")
+            .containsEntry("message", "Invalid quota. Need to be an integer value greater or equal to -1");
     }
 
     @Test
@@ -298,10 +298,8 @@ public class GlobalQuotaRoutesTest {
                 .extract()
                 .jsonPath();
 
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(jsonPath.getLong("size")).isEqualTo(maxStorage);
-            softly.assertThat(jsonPath.getLong("count")).isEqualTo(maxMessage);
-        });
+        softly.assertThat(jsonPath.getLong("size")).isEqualTo(maxStorage);
+        softly.assertThat(jsonPath.getLong("count")).isEqualTo(maxMessage);
     }
 
     @Test
@@ -315,10 +313,8 @@ public class GlobalQuotaRoutesTest {
                 .extract()
                 .jsonPath();
 
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(jsonPath.getObject("size", Long.class)).isNull();
-            softly.assertThat(jsonPath.getObject("count", Long.class)).isNull();
-        });
+        softly.assertThat(jsonPath.getObject("size", Long.class)).isNull();
+        softly.assertThat(jsonPath.getObject("count", Long.class)).isNull();
     }
 
     @Test
@@ -334,10 +330,8 @@ public class GlobalQuotaRoutesTest {
                 .extract()
                 .jsonPath();
 
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(jsonPath.getLong("size")).isEqualTo(42);
-            softly.assertThat(jsonPath.getObject("count", Long.class)).isNull();
-        });
+        softly.assertThat(jsonPath.getLong("size")).isEqualTo(42);
+        softly.assertThat(jsonPath.getObject("count", Long.class)).isNull();
     }
 
     @Test
@@ -355,10 +349,8 @@ public class GlobalQuotaRoutesTest {
                 .extract()
                 .jsonPath();
 
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(jsonPath.getObject("size", Long.class)).isNull();
-            softly.assertThat(jsonPath.getLong("count")).isEqualTo(maxMessage);
-        });
+        softly.assertThat(jsonPath.getObject("size", Long.class)).isNull();
+        softly.assertThat(jsonPath.getLong("count")).isEqualTo(maxMessage);
     }
 
     @Test
@@ -369,8 +361,7 @@ public class GlobalQuotaRoutesTest {
             .put("/quota")
         .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
-
-        SoftAssertions softly = new SoftAssertions();
+        
         softly.assertThat(maxQuotaManager.getDefaultMaxMessage()).contains(QuotaCount.count(52));
         softly.assertThat(maxQuotaManager.getDefaultMaxStorage()).contains(QuotaSize.size(42));
     }
@@ -383,8 +374,7 @@ public class GlobalQuotaRoutesTest {
             .put("/quota")
         .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
-
-        SoftAssertions softly = new SoftAssertions();
+        
         softly.assertThat(maxQuotaManager.getDefaultMaxMessage()).contains(QuotaCount.unlimited());
         softly.assertThat(maxQuotaManager.getDefaultMaxStorage()).contains(QuotaSize.unlimited());
     }
