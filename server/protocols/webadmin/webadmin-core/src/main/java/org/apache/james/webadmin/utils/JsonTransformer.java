@@ -19,26 +19,35 @@
 
 package org.apache.james.webadmin.utils;
 
+import java.util.Set;
+
+import javax.inject.Inject;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
+import com.google.common.collect.ImmutableSet;
 import spark.ResponseTransformer;
 
 public class JsonTransformer implements ResponseTransformer {
 
     private final ObjectMapper objectMapper;
 
-    public JsonTransformer(Module... modules) {
+    public JsonTransformer(JsonTransformerModule... modules) {
+        this(ImmutableSet.copyOf(modules));
+    }
+
+    @Inject
+    public JsonTransformer(Set<JsonTransformerModule> jsonTransformerModules) {
         objectMapper = new ObjectMapper()
             .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .registerModule(new Jdk8Module())
             .registerModule(new JavaTimeModule())
-            .registerModules(modules);
+            .registerModules(ImmutableSet.copyOf(jsonTransformerModules));
     }
 
     @Override

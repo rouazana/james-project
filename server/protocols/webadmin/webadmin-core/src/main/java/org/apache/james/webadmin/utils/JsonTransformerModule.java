@@ -17,9 +17,10 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.modules.server;
+package org.apache.james.webadmin.utils;
 
-import com.google.inject.Module;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
-public interface JsonTransformerModule extends Module {
+public abstract class JsonTransformerModule extends SimpleModule {
+
 }

@@ -22,10 +22,11 @@ import org.apache.james.mailbox.quota.QuotaCount;
 import org.apache.james.mailbox.quota.QuotaSize;
 import org.apache.james.webadmin.dto.QuotaValueDeserializer;
 import org.apache.james.webadmin.dto.QuotaValueSerializer;
+import org.apache.james.webadmin.utils.JsonTransformerModule;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-public class QuotaModule extends SimpleModule {
+public class QuotaModule extends JsonTransformerModule {
 
     public QuotaModule() {
         addSerializer(QuotaSize.class, new QuotaValueSerializer<>());
