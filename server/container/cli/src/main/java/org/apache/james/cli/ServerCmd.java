@@ -293,10 +293,10 @@ public class ServerCmd {
             quotaProbe.setMaxMessageCount(arguments[1], parseQuotaCount(arguments[2]));
             break;
         case SETDEFAULTMAXSTORAGEQUOTA:
-            quotaProbe.setDefaultMaxStorage(parseQuotaSize(arguments[1]));
+            quotaProbe.setDefaultMaxStorage(Optional.of(parseQuotaSize(arguments[1])));
             break;
         case SETDEFAULTMAXMESSAGECOUNTQUOTA:
-            quotaProbe.setDefaultMaxMessageCount(parseQuotaCount(arguments[1]));
+            quotaProbe.setDefaultMaxMessageCount(Optional.of(parseQuotaCount(arguments[1])));
             break;
         case GETDEFAULTMAXSTORAGEQUOTA:
             printStream.println("Default Maximum Storage Quota: " + formatStorageValue(quotaProbe.getDefaultMaxStorage()));

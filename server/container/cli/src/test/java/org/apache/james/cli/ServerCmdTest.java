@@ -408,7 +408,7 @@ public class ServerCmdTest {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.SETDEFAULTMAXMESSAGECOUNTQUOTA.getCommand(), "1054"};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
-        quotaProbe.setDefaultMaxMessageCount(QuotaCount.count(1054));
+        quotaProbe.setDefaultMaxMessageCount(Optional.of(QuotaCount.count(1054)));
         expectLastCall();
 
         control.replay();
@@ -421,7 +421,7 @@ public class ServerCmdTest {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETDEFAULTMAXMESSAGECOUNTQUOTA.getCommand(), "-1"};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
-        quotaProbe.setDefaultMaxMessageCount(QuotaCount.unlimited());
+        quotaProbe.setDefaultMaxMessageCount(Optional.of(QuotaCount.unlimited()));
         expectLastCall();
 
         control.replay();
@@ -442,7 +442,7 @@ public class ServerCmdTest {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.SETDEFAULTMAXSTORAGEQUOTA.getCommand(), "1G"};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
-        quotaProbe.setDefaultMaxStorage(QuotaSize.size(1024 * 1024 * 1024));
+        quotaProbe.setDefaultMaxStorage(Optional.of(QuotaSize.size(1024 * 1024 * 1024)));
         expectLastCall();
 
         control.replay();
@@ -455,7 +455,7 @@ public class ServerCmdTest {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "--", CmdType.SETDEFAULTMAXSTORAGEQUOTA.getCommand(), "-1"};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
-        quotaProbe.setDefaultMaxStorage(QuotaSize.unlimited());
+        quotaProbe.setDefaultMaxStorage(Optional.of(QuotaSize.unlimited()));
         expectLastCall();
 
         control.replay();

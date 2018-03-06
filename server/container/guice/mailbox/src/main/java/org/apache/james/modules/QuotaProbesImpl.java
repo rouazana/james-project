@@ -34,6 +34,8 @@ import org.apache.james.mailbox.store.mail.model.SerializableQuota;
 import org.apache.james.mailbox.store.probe.QuotaProbe;
 import org.apache.james.utils.GuiceProbe;
 
+import com.github.fge.lambdas.Throwing;
+
 public class QuotaProbesImpl implements QuotaProbe, GuiceProbe {
 
     private final MaxQuotaManager maxQuotaManager;
@@ -95,12 +97,12 @@ public class QuotaProbesImpl implements QuotaProbe, GuiceProbe {
     }
 
     @Override
-    public void setDefaultMaxMessageCount(QuotaCount maxDefaultMessageCount) throws MailboxException {
-        maxQuotaManager.setDefaultMaxMessage(maxDefaultMessageCount);
+    public void setDefaultMaxMessageCount(Optional<QuotaCount> maxDefaultMessageCount) throws MailboxException {
+        maxDefaultMessageCount.ifPresent(Throwing.consumer(maxQuotaManager::setDefaultMaxMessage).sneakyThrow());
     }
 
     @Override
-    public void setDefaultMaxStorage(QuotaSize maxDefaultSize) throws MailboxException {
-        maxQuotaManager.setDefaultMaxStorage(maxDefaultSize);
+    public void setDefaultMaxStorage(Optional<QuotaSize> maxDefaultSize) throws MailboxException {
+        maxDefaultSize.ifPresent(Throwing.consumer(maxQuotaManager::setDefaultMaxStorage).sneakyThrow());
     }
 }

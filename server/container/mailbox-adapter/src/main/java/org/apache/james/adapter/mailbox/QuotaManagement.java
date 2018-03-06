@@ -35,6 +35,7 @@ import org.apache.james.mailbox.quota.QuotaSize;
 import org.apache.james.mailbox.store.mail.model.SerializableQuota;
 import org.apache.james.util.MDCBuilder;
 
+import com.github.fge.lambdas.Throwing;
 import com.google.common.base.Throwables;
 
 public class QuotaManagement implements QuotaManagementMBean {
@@ -142,26 +143,26 @@ public class QuotaManagement implements QuotaManagementMBean {
     }
 
     @Override
-    public void setDefaultMaxMessageCount(QuotaCount maxDefaultMessageCount) throws MailboxException {
+    public void setDefaultMaxMessageCount(Optional<QuotaCount> maxDefaultMessageCount) throws MailboxException {
         try (Closeable closeable =
                  MDCBuilder.create()
                      .addContext(MDCBuilder.PROTOCOL, "CLI")
                      .addContext(MDCBuilder.ACTION, "setDefaultMaxMessageCount")
                      .build()) {
-            maxQuotaManager.setDefaultMaxMessage(maxDefaultMessageCount);
+            maxDefaultMessageCount.ifPresent(Throwing.consumer(maxQuotaManager::setDefaultMaxMessage));
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
     }
 
     @Override
-    public void setDefaultMaxStorage(QuotaSize maxDefaultSize) throws MailboxException {
+    public void setDefaultMaxStorage(Optional<QuotaSize> maxDefaultSize) throws MailboxException {
         try (Closeable closeable =
                  MDCBuilder.create()
                      .addContext(MDCBuilder.PROTOCOL, "CLI")
                      .addContext(MDCBuilder.ACTION, "setDefaultMaxStorage")
                      .build()) {
-            maxQuotaManager.setDefaultMaxStorage(maxDefaultSize);
+            maxDefaultSize.ifPresent(Throwing.consumer(maxQuotaManager::setDefaultMaxStorage));
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
