@@ -74,7 +74,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -831,37 +830,41 @@ public abstract class GetMailboxesMethodTest {
     }
 
     @Test
-    @Ignore("Not handled by DefaultQuotaRootResolver for now")
     public void getMailboxesShouldDisplayDifferentMaxQuotaPerMailboxWhenSet() throws Exception {
         String mailboxId = mailboxProbe.createMailbox(MailboxConstants.USER_NAMESPACE, alice, DefaultMailboxes.INBOX).serialize();
-        String otherMailboxId = mailboxProbe.createMailbox(MailboxConstants.USER_NAMESPACE, alice, DefaultMailboxes.SENT).serialize();
-        quotaProbe.setMaxMessageCount("#private&alice@domain.tld&INBOX", SerializableQuotaValue.valueOf(Optional.of(QuotaCount.count(42))));
-        quotaProbe.setMaxMessageCount("#private&alice@domain.tld&SENT", SerializableQuotaValue.valueOf(Optional.of(QuotaCount.count(43))));
+        String sharedMailboxName = "BobShared";
+        MailboxId sharedMailboxId = mailboxProbe.createMailbox(MailboxConstants.USER_NAMESPACE, bob, sharedMailboxName);
+
+        MailboxPath bobMailboxPath = MailboxPath.forUser(bob, sharedMailboxName);
+        aclProbe.replaceRights(bobMailboxPath, alice, new Rfc4314Rights(Right.Lookup, Right.Read));
+
+        quotaProbe.setMaxMessageCount("#private&alice@domain.tld", SerializableQuotaValue.valueOf(Optional.of(QuotaCount.count(42))));
+        quotaProbe.setMaxMessageCount("#private&bob@domain.tld", SerializableQuotaValue.valueOf(Optional.of(QuotaCount.count(43))));
 
         given()
             .header("Authorization", accessToken.serialize())
-            .body("[[\"getMailboxes\", {\"ids\": [\"" + mailboxId + "\",\"" + otherMailboxId + "\"]}, \"#0\"]]")
+            .body("[[\"getMailboxes\", {\"ids\": [\"" + mailboxId + "\",\"" + sharedMailboxId + "\"]}, \"#0\"]]")
         .when()
             .post("/jmap")
         .then()
             .statusCode(200)
             .body(NAME, equalTo("mailboxes"))
             .body(ARGUMENTS + ".list", hasSize(2))
-            .body(FIRST_MAILBOX + ".quotas['#private&alice@domain.tld&INBOX']['MESSAGE'].max", equalTo(42))
-            .body(SECOND_MAILBOX + ".quotas['#private&alice@domain.tld&SENT']['MESSAGE'].max", equalTo(43));
+            .body(FIRST_MAILBOX + ".quotas['#private&alice@domain.tld']['MESSAGE'].max", equalTo(42))
+            .body(SECOND_MAILBOX + ".quotas['#private&bob@domain.tld']['MESSAGE'].max", equalTo(43));
     }
 
     @Test
     public void getMailboxesShouldReturnQuotaRootForAllMailboxes() throws Exception {
         given()
-        .header("Authorization", accessToken.serialize())
-        .body("[[\"getMailboxes\", {}, \"#0\"]]")
-    .when()
-        .post("/jmap")
-    .then()
-        .statusCode(200)
-        .body(NAME, equalTo("mailboxes"))
-        .body(ARGUMENTS + ".list*.quotas", new AllMatching<>(hasKey("#private&alice@domain.tld")));
+            .header("Authorization", accessToken.serialize())
+            .body("[[\"getMailboxes\", {}, \"#0\"]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200)
+            .body(NAME, equalTo("mailboxes"))
+            .body(ARGUMENTS + ".list*.quotas", new AllMatching<>(hasKey("#private&alice@domain.tld")));
     }
 
     class AllMatching<T> extends BaseMatcher<List<T>> {
