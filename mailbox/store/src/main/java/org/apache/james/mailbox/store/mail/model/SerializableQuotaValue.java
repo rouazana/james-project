@@ -49,7 +49,7 @@ public class SerializableQuotaValue<T extends QuotaValue<T>> implements Serializ
     @Override
     public boolean equals(Object o) {
         if (o instanceof SerializableQuotaValue<?>) {
-            @SuppressWarnings("ConstantConditions") SerializableQuotaValue<?> that = (SerializableQuotaValue<?>) o;
+            SerializableQuotaValue<?> that = (SerializableQuotaValue<?>) o;
             return Objects.equals(value, that.value);
         }
         return false;
