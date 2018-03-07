@@ -23,6 +23,9 @@ import java.util.Optional;
 
 import org.apache.james.jmap.model.Number;
 import org.apache.james.mailbox.model.QuotaRoot;
+import org.apache.james.mailbox.quota.QuotaCount;
+import org.apache.james.mailbox.quota.QuotaSize;
+import org.apache.james.mailbox.quota.QuotaValue;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.collect.ImmutableMap;
@@ -66,18 +69,23 @@ public class Quotas {
     }
 
     public static class Quota {
-        private final Map<Type, Value> quota;
+        private final Map<Type, Value<?>> quota;
 
-        public static Quota from(ImmutableMap<Type, Value> quota) {
+        public static Quota from(ImmutableMap<Type, Value<?>> quota) {
             return new Quota(quota);
         }
 
-        private Quota(ImmutableMap<Type, Value> quota) {
+        public static Quota from(Value<QuotaSize> storage, Value<QuotaCount> message) {
+            return new Quota(ImmutableMap.of(Type.STORAGE, storage,
+                Type.MESSAGE, message));
+        }
+
+        private Quota(ImmutableMap<Type, Value<?>> quota) {
             this.quota = quota;
         }
 
         @JsonValue
-        public Map<Type, Value> getQuota() {
+        public Map<Type, Value<?>> getQuota() {
             return quota;
         }
     }
@@ -87,7 +95,7 @@ public class Quotas {
         MESSAGE;
     }
 
-    public static class Value {
+    public static class Value<T extends QuotaValue<T>> {
         private final Number used;
         private final Optional<Number> max;
         
