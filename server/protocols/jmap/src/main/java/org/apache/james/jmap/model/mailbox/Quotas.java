@@ -31,7 +31,15 @@ public class Quotas {
 
     private final Map<QuotaId, Quota> quotas;
 
-    public Quotas(ImmutableMap<QuotaId, Quota> quotas) {
+    public static Quotas from(ImmutableMap<QuotaId, Quota> quotas) {
+        return new Quotas(quotas);
+    }
+
+    public static Quotas from(QuotaId quotaId, Quota quota) {
+        return new Quotas(ImmutableMap.of(quotaId, quota));
+    }
+
+    private Quotas(ImmutableMap<QuotaId, Quota> quotas) {
         this.quotas = quotas;
     }
 
@@ -42,8 +50,12 @@ public class Quotas {
 
     public static class QuotaId {
         private final QuotaRoot quotaRoot;
+
+        public static QuotaId fromQuotaRoot(QuotaRoot quotaRoot) {
+            return new QuotaId(quotaRoot);
+        }
         
-        public QuotaId(QuotaRoot quotaRoot) {
+        private QuotaId(QuotaRoot quotaRoot) {
             this.quotaRoot = quotaRoot;
         }
         
@@ -55,8 +67,12 @@ public class Quotas {
 
     public static class Quota {
         private final Map<Type, Value> quota;
-        
-        public Quota(ImmutableMap<Type, Value> quota) {
+
+        public static Quota from(ImmutableMap<Type, Value> quota) {
+            return new Quota(quota);
+        }
+
+        private Quota(ImmutableMap<Type, Value> quota) {
             this.quota = quota;
         }
 

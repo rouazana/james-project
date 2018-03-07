@@ -145,9 +145,12 @@ public class MailboxFactory {
 
     private Quotas getQuotas(MailboxPath mailboxPath) throws MailboxException {
         QuotaRoot quotaRoot = quotaRootResolver.getQuotaRoot(mailboxPath);
-        return new Quotas(ImmutableMap.of(new QuotaId(quotaRoot), new Quotas.Quota(ImmutableMap.of(
-                Type.STORAGE, quotaToValue(quotaManager.getStorageQuota(quotaRoot)),
-                Type.MESSAGE, quotaToValue(quotaManager.getMessageQuota(quotaRoot))))));
+        return Quotas.from(
+            QuotaId.fromQuotaRoot(quotaRoot),
+            Quotas.Quota.from(
+                ImmutableMap.of(
+                    Type.STORAGE, quotaToValue(quotaManager.getStorageQuota(quotaRoot)),
+                    Type.MESSAGE, quotaToValue(quotaManager.getMessageQuota(quotaRoot)))));
     }
 
     private Quotas.Value quotaToValue(Quota<? extends QuotaValue<?>> quota) {
