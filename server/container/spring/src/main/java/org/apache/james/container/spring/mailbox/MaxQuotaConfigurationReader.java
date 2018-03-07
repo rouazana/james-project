@@ -27,6 +27,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.lifecycle.api.Configurable;
 import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.model.QuotaRoot;
 import org.apache.james.mailbox.quota.MaxQuotaManager;
 import org.apache.james.mailbox.quota.QuotaCount;
 import org.apache.james.mailbox.quota.QuotaRootResolver;
@@ -76,10 +77,10 @@ public class MaxQuotaConfigurationReader implements Configurable {
 
     private void configureQuotaRootSpecificValues(Map<String, Long> maxMessage, Map<String, Long> maxStorage) throws MailboxException {
         for (Map.Entry<String, Long> entry : maxMessage.entrySet()) {
-            maxQuotaManager.setMaxMessage(quotaRootResolver.createQuotaRoot(entry.getKey()), QuotaCount.count(entry.getValue()));
+            maxQuotaManager.setMaxMessage(QuotaRoot.quotaRoot(entry.getKey()), QuotaCount.count(entry.getValue()));
         }
         for (Map.Entry<String, Long> entry : maxStorage.entrySet()) {
-            maxQuotaManager.setMaxStorage(quotaRootResolver.createQuotaRoot(entry.getKey()), QuotaSize.size(entry.getValue()));
+            maxQuotaManager.setMaxStorage(QuotaRoot.quotaRoot(entry.getKey()), QuotaSize.size(entry.getValue()));
         }
     }
 }

@@ -89,8 +89,6 @@ public class GetQuotaProcessorTest {
         when(mockedImapSession.getState()).thenReturn(ImapSessionState.AUTHENTICATED);
         when(mockedImapSession.getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY))
             .thenReturn(mailboxSession);
-        when(mockedQuotaRootResolver.createQuotaRoot("quotaRoot"))
-            .thenReturn(QUOTA_ROOT);
         when(mockedQuotaRootResolver.retrieveAssociatedMailboxes(QUOTA_ROOT, mailboxSession))
             .thenReturn(ImmutableList.of(MAILBOX_PATH));
         when(mockedMailboxManager.hasRight(MAILBOX_PATH, MailboxACL.Right.Read, mailboxSession))
@@ -121,8 +119,6 @@ public class GetQuotaProcessorTest {
         when(mockedImapSession.getState()).thenReturn(ImapSessionState.AUTHENTICATED);
         when(mockedImapSession.getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY))
             .thenReturn(mailboxSession);
-        when(mockedQuotaRootResolver.createQuotaRoot("quotaRoot"))
-            .thenReturn(QUOTA_ROOT);
         when(mockedQuotaRootResolver.retrieveAssociatedMailboxes(QUOTA_ROOT, mailboxSession))
             .thenReturn(ImmutableList.of(MAILBOX_PATH));
         when(mockedMailboxManager.hasRight(MAILBOX_PATH, MailboxACL.Right.Read, mailboxSession))
@@ -148,8 +144,6 @@ public class GetQuotaProcessorTest {
         when(mockedImapSession.getState()).thenReturn(ImapSessionState.AUTHENTICATED);
         when(mockedImapSession.getAttribute(ImapSessionUtils.MAILBOX_SESSION_ATTRIBUTE_SESSION_KEY))
             .thenReturn(mailboxSession);
-        when(mockedQuotaRootResolver.createQuotaRoot("quotaRoot"))
-            .thenReturn(QUOTA_ROOT);
         when(mockedQuotaRootResolver.retrieveAssociatedMailboxes(QUOTA_ROOT, mailboxSession))
             .thenReturn(ImmutableList.of(MAILBOX_PATH));
         when(mockedMailboxManager.hasRight(MAILBOX_PATH, MailboxACL.Right.Read, mailboxSession))
