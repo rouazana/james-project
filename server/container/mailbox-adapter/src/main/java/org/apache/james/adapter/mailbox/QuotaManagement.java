@@ -160,7 +160,7 @@ public class QuotaManagement implements QuotaManagementMBean {
                      .build()) {
             maxDefaultMessageCount
                 .toValue(QuotaCount::count, QuotaCount.unlimited())
-                .ifPresent(Throwing.consumer(maxQuotaManager::setDefaultMaxMessage));
+                .ifPresent(Throwing.consumer(maxQuotaManager::setDefaultMaxMessage).sneakyThrow());
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
@@ -175,7 +175,7 @@ public class QuotaManagement implements QuotaManagementMBean {
                      .build()) {
             maxDefaultSize
                 .toValue(QuotaSize::size, QuotaSize.unlimited())
-                .ifPresent(Throwing.consumer(maxQuotaManager::setDefaultMaxStorage));
+                .ifPresent(Throwing.consumer(maxQuotaManager::setDefaultMaxStorage).sneakyThrow());
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
