@@ -26,7 +26,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 public class AllMatching<T> extends BaseMatcher<List<T>> {
-    String[] items;
     private final Matcher<T> matcher;
 
     public static <U> AllMatching<U> matcher(Matcher<U> matcher) {
