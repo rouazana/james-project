@@ -30,7 +30,6 @@ import org.apache.james.mailbox.exception.MailboxException;
 import org.apache.james.mailbox.model.QuotaRoot;
 import org.apache.james.mailbox.quota.MaxQuotaManager;
 import org.apache.james.mailbox.quota.QuotaCount;
-import org.apache.james.mailbox.quota.QuotaRootResolver;
 import org.apache.james.mailbox.quota.QuotaSize;
 
 public class MaxQuotaConfigurationReader implements Configurable {
