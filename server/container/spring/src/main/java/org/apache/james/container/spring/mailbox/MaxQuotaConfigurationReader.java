@@ -36,11 +36,9 @@ import org.apache.james.mailbox.quota.QuotaSize;
 public class MaxQuotaConfigurationReader implements Configurable {
 
     private final MaxQuotaManager maxQuotaManager;
-    private final QuotaRootResolver quotaRootResolver;
 
-    public MaxQuotaConfigurationReader(MaxQuotaManager maxQuotaManager, QuotaRootResolver quotaRootResolver) {
+    public MaxQuotaConfigurationReader(MaxQuotaManager maxQuotaManager) {
         this.maxQuotaManager = maxQuotaManager;
-        this.quotaRootResolver = quotaRootResolver;
     }
 
     @Override
