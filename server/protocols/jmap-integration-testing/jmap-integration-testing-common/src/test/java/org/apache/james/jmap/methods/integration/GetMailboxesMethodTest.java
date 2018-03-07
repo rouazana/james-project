@@ -67,11 +67,9 @@ import org.apache.james.modules.ACLProbeImpl;
 import org.apache.james.modules.MailboxProbeImpl;
 import org.apache.james.modules.QuotaProbesImpl;
 import org.apache.james.probe.DataProbe;
+import org.apache.james.utils.AllMatching;
 import org.apache.james.utils.DataProbeImpl;
 import org.apache.james.utils.JmapGuiceProbe;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -864,35 +862,7 @@ public abstract class GetMailboxesMethodTest {
         .then()
             .statusCode(200)
             .body(NAME, equalTo("mailboxes"))
-            .body(ARGUMENTS + ".list*.quotas", new AllMatching<>(hasKey("#private&alice@domain.tld")));
-    }
-
-    class AllMatching<T> extends BaseMatcher<List<T>> {
-        String[] items;
-        private final Matcher<T> matcher;
-
-        AllMatching(Matcher<T> matcher) {
-            
-            this.matcher = matcher;
-        }
-
-        @Override
-        public boolean matches(Object item) {
-            @SuppressWarnings("unchecked")
-            Iterable<Object> list = (Iterable<Object>) (item);
-            for (Object element: list) {
-                if (!matcher.matches(element)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public void describeTo(Description description) {
-            description.appendText("All elements of the iterable should match: ")
-                .appendDescriptionOf(matcher);
-        }
+            .body(ARGUMENTS + ".list*.quotas", AllMatching.matcher(hasKey("#private&alice@domain.tld")));
     }
 
     @Test
