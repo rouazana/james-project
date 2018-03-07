@@ -590,7 +590,7 @@ public class ServerCmdTest {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.GETMESSAGECOUNTQUOTA.getCommand(), quotaroot};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
-        expect(quotaProbe.getMessageCountQuota(quotaroot)).andReturn(SerializableQuota.newInstance((Quota.unknownUsedQuota(QuotaCount.unlimited()))));
+        expect(quotaProbe.getMessageCountQuota(quotaroot)).andReturn(SerializableQuota.newInstance(Quota.unknownUsedQuota(QuotaCount.unlimited())));
 
         control.replay();
         testee.executeCommandLine(commandLine);

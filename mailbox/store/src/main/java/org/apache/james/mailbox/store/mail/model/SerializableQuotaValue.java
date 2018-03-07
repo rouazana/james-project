@@ -20,10 +20,13 @@
 package org.apache.james.mailbox.store.mail.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.james.mailbox.quota.QuotaValue;
+
+import com.google.common.base.MoreObjects;
 
 public class SerializableQuotaValue<T extends QuotaValue<T>> implements Serializable {
 
@@ -41,6 +44,27 @@ public class SerializableQuotaValue<T extends QuotaValue<T>> implements Serializ
 
     SerializableQuotaValue(Long value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof SerializableQuotaValue<?>) {
+            @SuppressWarnings("ConstantConditions") SerializableQuotaValue<?> that = (SerializableQuotaValue<?>) o;
+            return Objects.equals(value, that.value);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("value", value)
+            .toString();
     }
 
     private static <U extends QuotaValue<U>> Long encodeAsLong(U quota) {

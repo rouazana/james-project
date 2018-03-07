@@ -20,11 +20,14 @@
 package org.apache.james.mailbox.store.mail.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.james.mailbox.model.Quota;
 import org.apache.james.mailbox.quota.QuotaValue;
+
+import com.google.common.base.MoreObjects;
 
 public class SerializableQuota<T extends QuotaValue<T>> implements Serializable {
 
@@ -47,13 +50,34 @@ public class SerializableQuota<T extends QuotaValue<T>> implements Serializable 
         this.used = used;
     }
 
-
     public Long encodeAsLong() {
         return max.encodeAsLong();
     }
 
     public Long getUsed() {
-        return used.encodeAsLong();
+        return Optional.ofNullable(used).map(SerializableQuotaValue::encodeAsLong).orElse(null);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof SerializableQuota<?>) {
+            SerializableQuota<?> that = (SerializableQuota<?>) o;
+            return Objects.equals(max, that.max) &&
+                Objects.equals(used, that.used);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(max, used);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("max", max)
+            .add("used", used)
+            .toString();
+    }
 }
