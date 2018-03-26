@@ -84,7 +84,8 @@ public class ReferenceUpdater {
 
     private void updateFlag(String messageId, MailboxSession session, Flags flag) throws MailboxException {
         int limit = 2;
-        List<MessageId> references = mailboxManager.search(MultimailboxesSearchQuery.from(new SearchQuery(SearchQuery.headerContains(RFC2822Headers.MESSAGE_ID, messageId))).build(), session, limit);
+        MultimailboxesSearchQuery searchByRFC822MessageId = MultimailboxesSearchQuery.from(new SearchQuery(SearchQuery.headerContains(RFC2822Headers.MESSAGE_ID, messageId))).build();
+        List<MessageId> references = mailboxManager.search(searchByRFC822MessageId, session, limit);
         if (references.isEmpty()) {
             logger.info("Unable to find a message with this Mime Message Id: " + messageId);
             return;
