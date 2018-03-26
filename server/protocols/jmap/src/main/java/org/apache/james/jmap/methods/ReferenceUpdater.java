@@ -21,6 +21,7 @@ package org.apache.james.jmap.methods;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.fge.lambdas.Throwing;
 import com.github.steveash.guavate.Guavate;
+import com.google.common.collect.Iterables;
 
 public class ReferenceUpdater {
     public static final String X_FORWARDED_ID_HEADER = "X-Forwarded-Message-Id";
@@ -86,18 +88,18 @@ public class ReferenceUpdater {
         int limit = 2;
         MultimailboxesSearchQuery searchByRFC822MessageId = MultimailboxesSearchQuery.from(new SearchQuery(SearchQuery.headerContains(RFC2822Headers.MESSAGE_ID, messageId))).build();
         List<MessageId> references = mailboxManager.search(searchByRFC822MessageId, session, limit);
-        if (references.isEmpty()) {
+        try {
+            MessageId reference = Iterables.getOnlyElement(references);
+            List<MailboxId> mailboxIds = messageIdManager.getMessages(references, FetchGroupImpl.MINIMAL, session).stream()
+                .map(result -> result.getMailboxId())
+                .collect(Guavate.toImmutableList());
+            messageIdManager.setFlags(flag, FlagsUpdateMode.ADD, reference, mailboxIds, session);
+        } catch (NoSuchElementException e) {
             logger.info("Unable to find a message with this Mime Message Id: " + messageId);
             return;
-        }
-        if (references.size() > 1) {
+        } catch (IllegalArgumentException e) {
             logger.info("Too many messages are matching this Mime Message Id: " + messageId);
             return;
         }
-        MessageId reference = references.get(0);
-        List<MailboxId> mailboxIds = messageIdManager.getMessages(references, FetchGroupImpl.MINIMAL, session).stream()
-            .map(result -> result.getMailboxId())
-            .collect(Guavate.toImmutableList());
-        messageIdManager.setFlags(flag, FlagsUpdateMode.ADD, reference, mailboxIds, session);
     }
 }
