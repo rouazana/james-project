@@ -4558,8 +4558,8 @@ public abstract class SetMessagesMethodTest {
         String messageId = given()
             .header("Authorization", accessToken.serialize())
             .body(requestBody)
-        // When
-        .post("/jmap")
+        .when()
+            .post("/jmap")
         .then()
             .extract()
             .body()
