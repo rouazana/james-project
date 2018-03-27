@@ -80,6 +80,10 @@ public class JPAJamesServerTest extends AbstractJamesServerTest {
         smtpMessageSender.connect(LOCALHOST, SMTP_PORT)
             .sendMessageWithHeaders(USER, USER, "header: toto\\r\\n\\r\\n" + Strings.repeat("0123456789\n", 1024))
             .awaitSent(AWAIT);
+        AWAIT.until(() -> imapMessageReader.connect(LOCALHOST, IMAP_PORT)
+            .login(USER, PASSWORD)
+            .select(IMAPMessageReader.INBOX)
+            .hasAMessage());
 
         assertThat(
             imapMessageReader.connect(LOCALHOST, IMAP_PORT)
@@ -87,7 +91,7 @@ public class JPAJamesServerTest extends AbstractJamesServerTest {
                 .getQuotaRoot(IMAPMessageReader.INBOX))
             .isEqualTo("* QUOTAROOT \"INBOX\" #private&toto@james.local\r\n" +
                 "* QUOTA #private&toto@james.local (STORAGE 12 50)\r\n" +
-                "AAAB OK GETQUOTAROOT completed.\r\n");
+                "AAAE OK GETQUOTAROOT completed.\r\n");
     }
 
 }
