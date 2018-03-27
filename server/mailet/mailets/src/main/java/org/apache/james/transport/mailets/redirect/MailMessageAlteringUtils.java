@@ -95,9 +95,6 @@ public class MailMessageAlteringUtils {
         MimeMessage originalMessage = originalMail.getMessage();
         MimeMessage newMessage = newMail.getMessage();
 
-        // Copy the relevant headers
-        copyRelevantHeaders(originalMessage, newMessage);
-
         String head = new MimeMessageUtils(originalMessage).getMessageHeaders();
         try {
             // Create the message body
@@ -122,8 +119,11 @@ public class MailMessageAlteringUtils {
             if (mailet.getInitParameters().isAttachError() && originalMail.getErrorMessage() != null) {
                 multipart.addBodyPart(getErrorPart(originalMail));
             }
-            newMail.getMessage().setContent(multipart);
-            newMail.getMessage().setHeader(RFC2822Headers.CONTENT_TYPE, multipart.getContentType());
+            newMessage.setContent(multipart);
+            newMessage.setHeader(RFC2822Headers.CONTENT_TYPE, multipart.getContentType());
+
+            // Copy the relevant headers
+            copyRelevantHeaders(originalMessage, newMessage);
 
         } catch (Exception ioe) {
             throw new MessagingException("Unable to create multipart body", ioe);

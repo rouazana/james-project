@@ -33,8 +33,14 @@ import com.github.fge.lambdas.consumers.ThrowingConsumer;
 public class MimeMessageWrapper extends MimeMessage {
 
     public static MimeMessageWrapper wrap(MimeMessage mimeMessage) throws MessagingException {
+        String messageID = mimeMessage.getMessageID();
         try {
-            return new MimeMessageWrapper(mimeMessage);
+            MimeMessageWrapper mimeMessageWrapper = new MimeMessageWrapper(mimeMessage);
+            if (messageID != null) {
+                mimeMessageWrapper.setHeader("Message-ID", messageID);
+                mimeMessageWrapper.saveChanges();
+            }
+            return mimeMessageWrapper;
         } catch (MessagingException e) {
             // Copying a mime message fails when the body is empty
             // Copying manually the headers is the best alternative...
@@ -43,6 +49,10 @@ public class MimeMessageWrapper extends MimeMessage {
             ThrowingConsumer<Header> consumer = header -> result.addHeader(header.getName(), header.getValue());
             Collections.list(mimeMessage.getAllHeaders())
                 .forEach(Throwing.consumer(consumer).sneakyThrow());
+            if (messageID != null) {
+                result.setHeader("Message-ID", messageID);
+                result.saveChanges();
+            }
             return result;
         }
     }

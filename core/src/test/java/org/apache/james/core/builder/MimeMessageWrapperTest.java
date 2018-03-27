@@ -85,4 +85,23 @@ public class MimeMessageWrapperTest {
                 new MimeMessageBuilder.Header("header2", "value3"));
     }
 
+    @Test
+    public void wrapShouldPreserveMessageIdWhenNotEmpty() throws Exception {
+        MimeMessage originalMessage = new MimeMessage(Session.getDefaultInstance(new Properties()));
+        originalMessage.addHeader("Message-ID", "preserve@me");
+        originalMessage.setContent("Hi!", "text/plain");
+        MimeMessageWrapper mimeMessageWrapper = MimeMessageWrapper.wrap(originalMessage);
+
+        assertThat(mimeMessageWrapper.getHeader("Message-ID")).contains("preserve@me");
+    }
+
+    @Test
+    public void wrapShouldPreserveMessageIdWhenEmpty() throws Exception {
+        MimeMessage originalMessage = new MimeMessage(Session.getDefaultInstance(new Properties()));
+        originalMessage.addHeader("Message-ID", "preserve@me");
+        MimeMessageWrapper mimeMessageWrapper = MimeMessageWrapper.wrap(originalMessage);
+
+        assertThat(mimeMessageWrapper.getHeader("Message-ID")).contains("preserve@me");
+    }
+
 }
