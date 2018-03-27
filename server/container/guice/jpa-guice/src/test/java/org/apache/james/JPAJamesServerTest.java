@@ -89,9 +89,9 @@ public class JPAJamesServerTest extends AbstractJamesServerTest {
             imapMessageReader.connect(LOCALHOST, IMAP_PORT)
                 .login(USER, PASSWORD)
                 .getQuotaRoot(IMAPMessageReader.INBOX))
-            .isEqualTo("* QUOTAROOT \"INBOX\" #private&toto@james.local\r\n" +
-                "* QUOTA #private&toto@james.local (STORAGE 12 50)\r\n" +
-                "AAAE OK GETQUOTAROOT completed.\r\n");
+            .startsWith("* QUOTAROOT \"INBOX\" #private&toto@james.local\r\n" +
+                "* QUOTA #private&toto@james.local (STORAGE 12 50)\r\n")
+            .endsWith("OK GETQUOTAROOT completed.\r\n");
     }
 
 }
