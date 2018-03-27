@@ -49,6 +49,7 @@ import static org.apache.james.mailbox.elasticsearch.json.JsonMessageConstants.I
 import static org.apache.james.mailbox.elasticsearch.json.JsonMessageConstants.MAILBOX_ID;
 import static org.apache.james.mailbox.elasticsearch.json.JsonMessageConstants.MEDIA_TYPE;
 import static org.apache.james.mailbox.elasticsearch.json.JsonMessageConstants.MESSAGE_ID;
+import static org.apache.james.mailbox.elasticsearch.json.JsonMessageConstants.MIME_MESSAGE_ID;
 import static org.apache.james.mailbox.elasticsearch.json.JsonMessageConstants.MODSEQ;
 import static org.apache.james.mailbox.elasticsearch.json.JsonMessageConstants.SENT_DATE;
 import static org.apache.james.mailbox.elasticsearch.json.JsonMessageConstants.SIZE;
@@ -224,6 +225,11 @@ public class MailboxMappingFactory {
                             .endObject()
 
                             .startObject(MAILBOX_ID)
+                                .field(TYPE, STRING)
+                                .field(INDEX, NOT_ANALYZED)
+                            .endObject()
+
+                            .startObject(MIME_MESSAGE_ID)
                                 .field(TYPE, STRING)
                                 .field(INDEX, NOT_ANALYZED)
                             .endObject()
