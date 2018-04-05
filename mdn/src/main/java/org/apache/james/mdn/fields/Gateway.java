@@ -53,6 +53,8 @@ public class Gateway implements Field {
         }
 
         public Gateway build() {
+            Preconditions.checkNotNull(name);
+
             return new Gateway(nameType.orElse(AddressType.DNS), name);
         }
     }
@@ -61,9 +63,6 @@ public class Gateway implements Field {
     private final Text name;
 
     private Gateway(AddressType nameType, Text name) {
-        Preconditions.checkNotNull(nameType);
-        Preconditions.checkNotNull(name);
-
         this.nameType = nameType;
         this.name = name;
     }
