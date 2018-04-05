@@ -55,6 +55,8 @@ public class FinalRecipient implements Field {
         }
 
         public FinalRecipient build() {
+            Preconditions.checkNotNull(finalRecipient);
+
             return new FinalRecipient(addressType.orElse(AddressType.RFC_822), finalRecipient);
         }
     }
@@ -63,9 +65,6 @@ public class FinalRecipient implements Field {
     private final AddressType addressType;
 
     private FinalRecipient(AddressType addressType, Text finalRecipient) {
-        Preconditions.checkNotNull(finalRecipient);
-        Preconditions.checkNotNull(addressType);
-
         this.finalRecipient = finalRecipient;
         this.addressType = addressType;
     }
