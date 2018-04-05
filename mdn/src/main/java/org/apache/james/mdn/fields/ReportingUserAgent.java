@@ -60,18 +60,18 @@ public class ReportingUserAgent implements Field {
         }
 
         public ReportingUserAgent build() {
-            return new ReportingUserAgent(userAgentName, userAgentProduct);
+            Preconditions.checkNotNull(userAgentName);
+            Preconditions.checkNotNull(userAgentProduct);
+            Preconditions.checkArgument(!userAgentName.contains("\n"), "Name should not contain line break");
+            String trimmedName = userAgentName.trim();
+            Preconditions.checkArgument(!trimmedName.isEmpty(), "Name should not be empty");
+
+            return new ReportingUserAgent(trimmedName, userAgentProduct);
         }
     }
 
     private ReportingUserAgent(String userAgentName, Optional<String> userAgentProduct) {
-        Preconditions.checkNotNull(userAgentName);
-        Preconditions.checkNotNull(userAgentProduct);
-        Preconditions.checkArgument(!userAgentName.contains("\n"), "Name should not contain line break");
-        String trimmedName = userAgentName.trim();
-        Preconditions.checkArgument(!trimmedName.isEmpty(), "Name should not be empty");
-
-        this.userAgentName = trimmedName;
+        this.userAgentName = userAgentName;
         this.userAgentProduct = userAgentProduct
             .map(String::trim)
             .filter(IS_EMPTY.negate());
