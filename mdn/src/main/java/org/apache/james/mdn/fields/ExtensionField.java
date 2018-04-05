@@ -49,6 +49,10 @@ public class ExtensionField implements Field {
         }
 
         public ExtensionField build() {
+            Preconditions.checkNotNull(fieldName);
+            Preconditions.checkNotNull(rawValue);
+            Preconditions.checkArgument(!fieldName.contains("\n"), "Field name can not be multiline");
+
             return new ExtensionField(fieldName, rawValue);
         }
     }
@@ -57,10 +61,6 @@ public class ExtensionField implements Field {
     private final String rawValue;
 
     private ExtensionField(String fieldName, String rawValue) {
-        Preconditions.checkNotNull(fieldName);
-        Preconditions.checkNotNull(rawValue);
-        Preconditions.checkArgument(!fieldName.contains("\n"), "Field name can not be multiline");
-
         this.fieldName = fieldName;
         this.rawValue = rawValue;
     }
