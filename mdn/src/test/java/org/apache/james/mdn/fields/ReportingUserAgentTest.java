@@ -74,7 +74,7 @@ public class ReportingUserAgentTest {
 
     @Test
     public void shouldThrowOnEmptyName() {
-        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expect(IllegalStateException.class);
 
         String userAgentName = "";
         ReportingUserAgent.builder().userAgentName(userAgentName).build();
@@ -82,7 +82,7 @@ public class ReportingUserAgentTest {
 
     @Test
     public void shouldThrowOnFoldingWhiteSpaceName() {
-        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expect(IllegalStateException.class);
 
         String userAgentName = "   ";
         ReportingUserAgent.builder().userAgentName(userAgentName).build();
@@ -90,7 +90,7 @@ public class ReportingUserAgentTest {
 
     @Test
     public void shouldThrowOnNameWithLineBreak() {
-        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expect(IllegalStateException.class);
 
         String userAgentName = "a\nb";
         ReportingUserAgent.builder().userAgentName(userAgentName).build();
@@ -98,7 +98,7 @@ public class ReportingUserAgentTest {
 
     @Test
     public void shouldThrowOnNameWithLineBreakAtTheEnd() {
-        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expect(IllegalStateException.class);
 
         String userAgentName = "a\n";
         ReportingUserAgent.builder().userAgentName(userAgentName).build();
@@ -106,7 +106,7 @@ public class ReportingUserAgentTest {
 
     @Test
     public void shouldThrowOnNameWithLineBreakAtTheBeginning() {
-        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expect(IllegalStateException.class);
 
         String userAgentName = "\nb";
         ReportingUserAgent.builder().userAgentName(userAgentName).build();

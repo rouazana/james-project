@@ -62,9 +62,9 @@ public class ReportingUserAgent implements Field {
         public ReportingUserAgent build() {
             Preconditions.checkNotNull(userAgentName);
             Preconditions.checkNotNull(userAgentProduct);
-            Preconditions.checkArgument(!userAgentName.contains("\n"), "Name should not contain line break");
+            Preconditions.checkState(!userAgentName.contains("\n"), "Name should not contain line break");
             String trimmedName = userAgentName.trim();
-            Preconditions.checkArgument(!trimmedName.isEmpty(), "Name should not be empty");
+            Preconditions.checkState(!trimmedName.isEmpty(), "Name should not be empty");
 
             return new ReportingUserAgent(trimmedName, userAgentProduct);
         }
