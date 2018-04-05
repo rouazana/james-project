@@ -51,7 +51,7 @@ public class ExtensionField implements Field {
         public ExtensionField build() {
             Preconditions.checkNotNull(fieldName);
             Preconditions.checkNotNull(rawValue);
-            Preconditions.checkArgument(!fieldName.contains("\n"), "Field name can not be multiline");
+            Preconditions.checkState(!fieldName.contains("\n"), "Field name can not be multiline");
 
             return new ExtensionField(fieldName, rawValue);
         }

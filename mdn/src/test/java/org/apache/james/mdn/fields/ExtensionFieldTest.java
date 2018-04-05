@@ -55,7 +55,7 @@ public class ExtensionFieldTest {
 
     @Test
     public void shouldThrowOnMultilineName() {
-        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expect(IllegalStateException.class);
 
         ExtensionField.builder().fieldName("name\nmultiline").rawValue("rawValue").build();
     }
