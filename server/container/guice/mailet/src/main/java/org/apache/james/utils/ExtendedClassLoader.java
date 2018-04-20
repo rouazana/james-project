@@ -41,6 +41,10 @@ public class ExtendedClassLoader {
 
     public static final String EXTENSIONS_JARS_FOLDER_NAME = "extensions-jars/";
 
+    public static final ExtendedClassLoader getInstance(File file) {
+        return new ExtendedClassLoader(file);
+    }
+
     private final URLClassLoader urlClassLoader;
 
     @Inject
@@ -48,15 +52,23 @@ public class ExtendedClassLoader {
         this.urlClassLoader = new URLClassLoader(retrieveExtensionsUrls(fileSystem), getClass().getClassLoader());
     }
 
+    private ExtendedClassLoader(File file) {
+        this.urlClassLoader = new URLClassLoader(retrieveExtensionsUrls(file), getClass().getClassLoader());
+    }
+
     private URL[] retrieveExtensionsUrls(FileSystem fileSystem) {
         try {
             File file = fileSystem.getFile("file://" + EXTENSIONS_JARS_FOLDER_NAME);
-            return recursiveExpand(file)
-                .toArray(URL[]::new);
+            return retrieveExtensionsUrls(file);
         } catch (IOException e) {
             LOGGER.info("No " + EXTENSIONS_JARS_FOLDER_NAME + " folder.");
             return new URL[]{};
         }
+    }
+
+    private URL[] retrieveExtensionsUrls(File file) {
+        return recursiveExpand(file)
+            .toArray(URL[]::new);
     }
 
     private Stream<URL> recursiveExpand(File file) {
@@ -74,6 +86,10 @@ public class ExtendedClassLoader {
 
     @SuppressWarnings("unchecked")
     public <T> Class<T> locateClass(String className) throws ClassNotFoundException {
-        return (Class<T>) urlClassLoader.loadClass(className);
+        return (Class<T>) getClassLoader().loadClass(className);
+    }
+
+    public URLClassLoader getClassLoader() {
+        return urlClassLoader;
     }
 }

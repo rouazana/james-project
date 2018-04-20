@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.james.lifecycle.api.Configurable;
 import org.apache.james.utils.ConfigurationPerformer;
 import org.junit.After;
@@ -15,7 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.name.Named;
 
 public class GuiceJamesServerTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuiceJamesServerTest.class);
@@ -121,6 +126,22 @@ public class GuiceJamesServerTest {
             if (overWrittenServer != null) {
                 overWrittenServer.stop();
             }
+        }
+    }
+
+    @Test
+    public void shouldBeAbleToLoadAnExternalJar() throws Exception {
+        Injector injector = Guice.createInjector(guiceJamesServer.module);
+        ExtensionUser user = injector.getInstance(ExtensionUser.class);
+        assertThat(user.answer).isEqualTo(42);
+    }
+    
+    private static class ExtensionUser {
+        private final Integer answer;
+
+        @Inject
+        public ExtensionUser(@Named("life.anwer") Integer answer) {
+            this.answer = answer;
         }
     }
 }

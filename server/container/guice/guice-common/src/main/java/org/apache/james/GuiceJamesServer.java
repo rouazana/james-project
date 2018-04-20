@@ -18,8 +18,10 @@
  ****************************************************************/
 package org.apache.james;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import javax.annotation.PreDestroy;
 
@@ -27,9 +29,11 @@ import org.apache.james.modules.CommonServicesModule;
 import org.apache.james.modules.MailetProcessingModule;
 import org.apache.james.onami.lifecycle.Stager;
 import org.apache.james.utils.ConfigurationsPerformer;
+import org.apache.james.utils.ExtendedClassLoader;
 import org.apache.james.utils.GuiceProbe;
 import org.apache.james.utils.GuiceProbeProvider;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -48,7 +52,15 @@ public class GuiceJamesServer {
     public GuiceJamesServer() {
         this(Modules.combine(
                         new CommonServicesModule(),
-                        new MailetProcessingModule()));
+                        new MailetProcessingModule(),
+                        extensionsModules()));
+    }
+
+    private static Module extensionsModules() {
+        // TODO the extensions-jars folder should be taken from filesystem (ie from configuration, not default class path)
+        String file = GuiceJamesServer.class.getClassLoader().getResource(ExtendedClassLoader.EXTENSIONS_JARS_FOLDER_NAME).getFile();
+        ServiceLoader<Module> loader = ServiceLoader.load(Module.class, ExtendedClassLoader.getInstance(new File(file)).getClassLoader());
+        return Modules.combine(ImmutableList.copyOf(loader.iterator()));
     }
 
     protected GuiceJamesServer(Module module) {
