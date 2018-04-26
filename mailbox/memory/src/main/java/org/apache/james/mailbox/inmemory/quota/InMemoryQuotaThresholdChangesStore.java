@@ -53,7 +53,8 @@ public class InMemoryQuotaThresholdChangesStore implements QuotaThresholdChanges
     @Override
     public QuotaThresholdChanges retrieveQuotaCountThresholdChanges(User user) {
         return Optional.ofNullable(countChanges.get(user))
-            .orElse(new QuotaThresholdChanges());    }
+            .orElse(new QuotaThresholdChanges());
+    }
 
     @Override
     public void persistQuotaCountThresholdChange(User user, QuotaThresholdChange change) {
