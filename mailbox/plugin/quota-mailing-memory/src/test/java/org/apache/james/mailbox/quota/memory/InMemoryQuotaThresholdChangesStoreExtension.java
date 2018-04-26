@@ -17,12 +17,23 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailbox.inmemory.quota;
+package org.apache.james.mailbox.quota.memory;
 
-import org.apache.james.mailbox.quota.QuotaThresholdChangesStoreTest;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.apache.james.mailbox.quota.QuotaThresholdChangesStore;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 
-@ExtendWith(InMemoryQuotaThresholdChangesStoreExtension.class)
-public class InMemoryQuotaThresholdChangesStoreTest implements QuotaThresholdChangesStoreTest {
+public class InMemoryQuotaThresholdChangesStoreExtension implements ParameterResolver {
 
+    @Override
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+        return (parameterContext.getParameter().getType() == QuotaThresholdChangesStore.class);
+    }
+
+    @Override
+    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+        return new InMemoryQuotaThresholdChangesStore();
+    }
 }

@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailbox.inmemory.quota;
+package org.apache.james.mailbox.quota.memory;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
