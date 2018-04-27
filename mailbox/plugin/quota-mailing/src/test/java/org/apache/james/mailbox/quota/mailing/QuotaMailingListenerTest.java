@@ -19,6 +19,7 @@
 
 package org.apache.james.mailbox.quota.mailing;
 
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._50;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
@@ -47,7 +48,7 @@ import com.google.common.collect.ImmutableList;
 public interface QuotaMailingListenerTest {
 
     Duration GRACE_PERIOD = Duration.ofDays(1);
-    QuotaThresholds SINGLE_THRESHOLD = new QuotaThresholds(ImmutableList.of(new QuotaThreshold(0.5)));
+    QuotaThresholds SINGLE_THRESHOLD = new QuotaThresholds(ImmutableList.of(_50));
     String BOB = "bob@domain";
     User BOB_USER = User.fromUsername(BOB);
 
@@ -80,7 +81,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
         store.persistQuotaSizeThresholdChange(BOB_USER,
-            new QuotaThresholdChange(new QuotaThreshold(0.5),
+            new QuotaThresholdChange(_50,
                 Instant.now().minus(Duration.ofDays(2))));
 
         testee.event(new MailboxListener.QuotaUsageUpdatedEvent(new MockMailboxSession(BOB),
@@ -105,7 +106,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
         store.persistQuotaSizeThresholdChange(BOB_USER,
-            new QuotaThresholdChange(new QuotaThreshold(0.5),
+            new QuotaThresholdChange(_50,
                 Instant.now().minus(Duration.ofHours(12))));
         store.persistQuotaSizeThresholdChange(BOB_USER,
             new QuotaThresholdChange(QuotaThreshold.ZERO,
@@ -239,7 +240,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
         store.persistQuotaSizeThresholdChange(BOB_USER,
-            new QuotaThresholdChange(new QuotaThreshold(0.5),
+            new QuotaThresholdChange(_50,
                 Instant.now().minus(Duration.ofDays(12))));
         store.persistQuotaSizeThresholdChange(BOB_USER,
             new QuotaThresholdChange(QuotaThreshold.ZERO,
@@ -267,7 +268,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
         store.persistQuotaCountThresholdChange(BOB_USER,
-            new QuotaThresholdChange(new QuotaThreshold(0.5),
+            new QuotaThresholdChange(_50,
                 Instant.now().minus(Duration.ofDays(2))));
 
         testee.event(new MailboxListener.QuotaUsageUpdatedEvent(new MockMailboxSession(BOB),
@@ -292,7 +293,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
         store.persistQuotaCountThresholdChange(BOB_USER,
-            new QuotaThresholdChange(new QuotaThreshold(0.5),
+            new QuotaThresholdChange(_50,
                 Instant.now().minus(Duration.ofHours(12))));
         store.persistQuotaCountThresholdChange(BOB_USER,
             new QuotaThresholdChange(QuotaThreshold.ZERO,
@@ -341,7 +342,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
         store.persistQuotaCountThresholdChange(BOB_USER,
-            new QuotaThresholdChange(new QuotaThreshold(0.5),
+            new QuotaThresholdChange(_50,
                 Instant.now().minus(Duration.ofDays(12))));
         store.persistQuotaCountThresholdChange(BOB_USER,
             new QuotaThresholdChange(QuotaThreshold.ZERO,
@@ -387,7 +388,7 @@ public interface QuotaMailingListenerTest {
         assertThat(store.retrieveQuotaSizeThresholdChanges(BOB_USER))
             .isEqualTo(new QuotaThresholdHistory(
                 new QuotaThresholdChange(
-                    new QuotaThreshold(0.5),
+                    _50,
                     instantSupplier.now())));
     }
 
@@ -419,7 +420,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
 
-        QuotaThresholdChange oldChange = new QuotaThresholdChange(new QuotaThreshold(0.5),
+        QuotaThresholdChange oldChange = new QuotaThresholdChange(_50,
             instantSupplier.now().minus(Duration.ofDays(6)));
         store.persistQuotaSizeThresholdChange(BOB_USER, oldChange);
 
@@ -445,7 +446,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
 
-        QuotaThresholdChange oldChange = new QuotaThresholdChange(new QuotaThreshold(0.5),
+        QuotaThresholdChange oldChange = new QuotaThresholdChange(_50,
             instantSupplier.now().minus(Duration.ofDays(6)));
         store.persistQuotaSizeThresholdChange(BOB_USER, oldChange);
 
@@ -489,7 +490,7 @@ public interface QuotaMailingListenerTest {
 
         assertThat(store.retrieveQuotaSizeThresholdChanges(BOB_USER))
             .isEqualTo(new QuotaThresholdHistory(oldChange,
-                new QuotaThresholdChange(new QuotaThreshold(0.5), instantSupplier.now())));
+                new QuotaThresholdChange(_50, instantSupplier.now())));
     }
 
     @Test
@@ -499,7 +500,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
 
-        QuotaThresholdChange oldChange1 = new QuotaThresholdChange(new QuotaThreshold(0.5),
+        QuotaThresholdChange oldChange1 = new QuotaThresholdChange(_50,
             instantSupplier.now().minus(Duration.ofHours(12)));
         QuotaThresholdChange oldChange2 = new QuotaThresholdChange(QuotaThreshold.ZERO,
             instantSupplier.now().minus(Duration.ofHours(6)));
@@ -519,7 +520,7 @@ public interface QuotaMailingListenerTest {
 
         assertThat(store.retrieveQuotaSizeThresholdChanges(BOB_USER))
             .isEqualTo(new QuotaThresholdHistory(oldChange1, oldChange2,
-                new QuotaThresholdChange(new QuotaThreshold(0.5), instantSupplier.now())));
+                new QuotaThresholdChange(_50, instantSupplier.now())));
     }
 
     @Test
@@ -542,7 +543,7 @@ public interface QuotaMailingListenerTest {
         assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER))
             .isEqualTo(new QuotaThresholdHistory(
                 new QuotaThresholdChange(
-                    new QuotaThreshold(0.5),
+                    _50,
                     instantSupplier.now())));
     }
 
@@ -574,7 +575,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
 
-        QuotaThresholdChange oldChange = new QuotaThresholdChange(new QuotaThreshold(0.5),
+        QuotaThresholdChange oldChange = new QuotaThresholdChange(_50,
             instantSupplier.now().minus(Duration.ofDays(6)));
         store.persistQuotaCountThresholdChange(BOB_USER, oldChange);
 
@@ -600,7 +601,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
 
-        QuotaThresholdChange oldChange = new QuotaThresholdChange(new QuotaThreshold(0.5),
+        QuotaThresholdChange oldChange = new QuotaThresholdChange(_50,
             instantSupplier.now().minus(Duration.ofDays(6)));
         store.persistQuotaCountThresholdChange(BOB_USER, oldChange);
 
@@ -644,7 +645,7 @@ public interface QuotaMailingListenerTest {
 
         assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER))
             .isEqualTo(new QuotaThresholdHistory(oldChange,
-                new QuotaThresholdChange(new QuotaThreshold(0.5), instantSupplier.now())));
+                new QuotaThresholdChange(_50, instantSupplier.now())));
     }
 
     @Test
@@ -654,7 +655,7 @@ public interface QuotaMailingListenerTest {
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
 
 
-        QuotaThresholdChange oldChange1 = new QuotaThresholdChange(new QuotaThreshold(0.5),
+        QuotaThresholdChange oldChange1 = new QuotaThresholdChange(_50,
             instantSupplier.now().minus(Duration.ofHours(12)));
         QuotaThresholdChange oldChange2 = new QuotaThresholdChange(QuotaThreshold.ZERO,
             instantSupplier.now().minus(Duration.ofHours(6)));
@@ -674,6 +675,6 @@ public interface QuotaMailingListenerTest {
 
         assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER))
             .isEqualTo(new QuotaThresholdHistory(oldChange1, oldChange2,
-                new QuotaThresholdChange(new QuotaThreshold(0.5), instantSupplier.now())));
+                new QuotaThresholdChange(_50, instantSupplier.now())));
     }
 }
