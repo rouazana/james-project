@@ -24,25 +24,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
 import org.apache.james.core.User;
-import org.apache.james.mailbox.quota.QuotaThresholdChangesStore;
+import org.apache.james.mailbox.quota.QuotaThresholdHistoryStore;
 import org.apache.james.mailbox.quota.model.QuotaThresholdChange;
-import org.apache.james.mailbox.quota.model.QuotaThresholdChanges;
+import org.apache.james.mailbox.quota.model.QuotaThresholdHistory;
 
-public class InMemoryQuotaThresholdChangesStore implements QuotaThresholdChangesStore {
+public class InMemoryQuotaThresholdHistoryStore implements QuotaThresholdHistoryStore {
     private static final int MAX_RETRY = 50;
 
-    private final ConcurrentHashMap<User, QuotaThresholdChanges> countChanges;
-    private final ConcurrentHashMap<User, QuotaThresholdChanges> sizeChanges;
+    private final ConcurrentHashMap<User, QuotaThresholdHistory> countChanges;
+    private final ConcurrentHashMap<User, QuotaThresholdHistory> sizeChanges;
 
-    public InMemoryQuotaThresholdChangesStore() {
+    public InMemoryQuotaThresholdHistoryStore() {
         countChanges = new ConcurrentHashMap<>();
         sizeChanges = new ConcurrentHashMap<>();
     }
 
     @Override
-    public QuotaThresholdChanges retrieveQuotaSizeThresholdChanges(User user) {
+    public QuotaThresholdHistory retrieveQuotaSizeThresholdChanges(User user) {
         return Optional.ofNullable(sizeChanges.get(user))
-            .orElse(new QuotaThresholdChanges());
+            .orElse(new QuotaThresholdHistory());
     }
 
     @Override
@@ -51,9 +51,9 @@ public class InMemoryQuotaThresholdChangesStore implements QuotaThresholdChanges
     }
 
     @Override
-    public QuotaThresholdChanges retrieveQuotaCountThresholdChanges(User user) {
+    public QuotaThresholdHistory retrieveQuotaCountThresholdChanges(User user) {
         return Optional.ofNullable(countChanges.get(user))
-            .orElse(new QuotaThresholdChanges());
+            .orElse(new QuotaThresholdHistory());
     }
 
     @Override
@@ -61,19 +61,19 @@ public class InMemoryQuotaThresholdChangesStore implements QuotaThresholdChanges
         doAddChange(countChanges, user, change);
     }
 
-    private void doAddChange(ConcurrentHashMap<User, QuotaThresholdChanges> map, User user, QuotaThresholdChange change) {
+    private void doAddChange(ConcurrentHashMap<User, QuotaThresholdHistory> map, User user, QuotaThresholdChange change) {
         IntStream.range(0, MAX_RETRY)
             .filter(i -> tryAddChange(map, user, change))
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Failure to persist change after several trial"));
     }
 
-    private boolean tryAddChange(ConcurrentHashMap<User, QuotaThresholdChanges> map, User user, QuotaThresholdChange change) {
-        Optional<QuotaThresholdChanges> currentState = Optional.ofNullable(map.get(user));
+    private boolean tryAddChange(ConcurrentHashMap<User, QuotaThresholdHistory> map, User user, QuotaThresholdChange change) {
+        Optional<QuotaThresholdHistory> currentState = Optional.ofNullable(map.get(user));
 
-        QuotaThresholdChanges newState = currentState
+        QuotaThresholdHistory newState = currentState
             .map(state -> state.combineWith(change))
-            .orElse(new QuotaThresholdChanges(change));
+            .orElse(new QuotaThresholdHistory(change));
 
         if (currentState.isPresent()) {
             return map.replace(user, currentState.get(), newState);

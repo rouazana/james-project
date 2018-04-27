@@ -19,21 +19,21 @@
 
 package org.apache.james.mailbox.quota.memory;
 
-import org.apache.james.mailbox.quota.QuotaThresholdChangesStore;
+import org.apache.james.mailbox.quota.QuotaThresholdHistoryStore;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-public class InMemoryQuotaThresholdChangesStoreExtension implements ParameterResolver {
+public class InMemoryQuotaThresholdHistoryStoreExtension implements ParameterResolver {
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return (parameterContext.getParameter().getType() == QuotaThresholdChangesStore.class);
+        return (parameterContext.getParameter().getType() == QuotaThresholdHistoryStore.class);
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return new InMemoryQuotaThresholdChangesStore();
+        return new InMemoryQuotaThresholdHistoryStore();
     }
 }

@@ -17,12 +17,18 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailbox.quota.memory;
+package org.apache.james.mailbox.quota;
 
-import org.apache.james.mailbox.quota.QuotaThresholdChangesStoreTest;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.apache.james.core.User;
+import org.apache.james.mailbox.quota.model.QuotaThresholdChange;
+import org.apache.james.mailbox.quota.model.QuotaThresholdHistory;
 
-@ExtendWith(InMemoryQuotaThresholdChangesStoreExtension.class)
-public class InMemoryQuotaThresholdChangesStoreTest implements QuotaThresholdChangesStoreTest {
+public interface QuotaThresholdHistoryStore {
+    QuotaThresholdHistory retrieveQuotaSizeThresholdChanges(User user);
 
+    void persistQuotaSizeThresholdChange(User user, QuotaThresholdChange quotaThresholdChange);
+
+    QuotaThresholdHistory retrieveQuotaCountThresholdChanges(User user);
+
+    void persistQuotaCountThresholdChange(User user, QuotaThresholdChange quotaThresholdChange);
 }
