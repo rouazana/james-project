@@ -19,6 +19,8 @@
 
 package org.apache.james.mailbox.quota.mailing.listeners;
 
+import java.time.Clock;
+
 import org.apache.james.core.User;
 import org.apache.james.mailbox.Event;
 import org.apache.james.mailbox.MailboxListener;
@@ -36,12 +38,18 @@ public class QuotaThresholdEmitter implements MailboxListener {
 
     private final MailboxEventDispatcher dispatcher;
     private final QuotaThresholdHistoryStore quotaThresholdHistoryStore;
+    private final Clock clock;
     private QuotaMailingListenerConfiguration configuration;
 
-    public QuotaThresholdEmitter(MailboxEventDispatcher dispatcher, QuotaThresholdHistoryStore quotaThresholdHistoryStore) {
+    public QuotaThresholdEmitter(MailboxEventDispatcher dispatcher, QuotaThresholdHistoryStore quotaThresholdHistoryStore, Clock clock) {
         this.dispatcher = dispatcher;
         this.quotaThresholdHistoryStore = quotaThresholdHistoryStore;
+        this.clock = clock;
         this.configuration = QuotaMailingListenerConfiguration.DEFAULT;
+    }
+
+    public QuotaThresholdEmitter(MailboxEventDispatcher dispatcher, QuotaThresholdHistoryStore quotaThresholdHistoryStore) {
+        this(dispatcher, quotaThresholdHistoryStore, Clock.systemUTC());
     }
 
     public void configure(QuotaMailingListenerConfiguration configuration) {
@@ -75,10 +83,10 @@ public class QuotaThresholdEmitter implements MailboxListener {
 
         HistoryEvolution countHistoryEvolution = quotaThresholdHistoryStore
             .retrieveQuotaCountThresholdChanges(user)
-            .compareWithCurrentThreshold(countThreshold, configuration.getGracePeriod());
+            .compareWithCurrentThreshold(countThreshold, configuration.getGracePeriod(), clock);
         HistoryEvolution sizeHistoryEvolution = quotaThresholdHistoryStore
             .retrieveQuotaSizeThresholdChanges(user)
-            .compareWithCurrentThreshold(sizeThreshold, configuration.getGracePeriod());
+            .compareWithCurrentThreshold(sizeThreshold, configuration.getGracePeriod(), clock);
 
         if (countHistoryEvolution.isModified() || sizeHistoryEvolution.isModified()) {
             dispatcher.event(

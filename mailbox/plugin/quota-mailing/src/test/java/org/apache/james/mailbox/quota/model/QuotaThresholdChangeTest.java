@@ -22,14 +22,18 @@ package org.apache.james.mailbox.quota.model;
 import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._75;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 
 import org.junit.jupiter.api.Test;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class QuotaThresholdChangeTest {
+
+    public static final Clock CLOCK = Clock.fixed(Instant.now(), ZoneId.systemDefault());
 
     @Test
     public void shouldMatchBeanContract() {
@@ -41,9 +45,9 @@ public class QuotaThresholdChangeTest {
     @Test
     public void isNotOlderThanShouldReturnTrueWhenRecent() {
         QuotaThresholdChange change = new QuotaThresholdChange(_75,
-            Instant.now().minus(Duration.ofHours(2)));
+            Instant.now(CLOCK).minus(Duration.ofHours(2)));
 
-        assertThat(change.isNotOlderThan(Duration.ofHours(3)))
+        assertThat(change.isNotOlderThan(Duration.ofHours(3), CLOCK))
             .isTrue();
     }
 
@@ -52,17 +56,17 @@ public class QuotaThresholdChangeTest {
         QuotaThresholdChange change = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofHours(2)));
 
-        assertThat(change.isNotOlderThan(Duration.ofHours(1)))
+        assertThat(change.isNotOlderThan(Duration.ofHours(1), CLOCK))
             .isFalse();
     }
 
     @Test
-    public void isNotOlderThanShouldReturnFalseWhenLimit() {
+    public void isNotOlderThanShouldReturnTrueWhenExactlyOldOfGracePeriod() {
         QuotaThresholdChange change = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofHours(2)));
 
-        assertThat(change.isNotOlderThan(Duration.ofHours(2)))
-            .isFalse();
+        assertThat(change.isNotOlderThan(Duration.ofHours(2), CLOCK))
+            .isTrue();
     }
 
 }

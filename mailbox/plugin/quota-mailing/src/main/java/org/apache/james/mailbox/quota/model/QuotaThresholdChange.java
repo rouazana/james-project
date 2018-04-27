@@ -19,6 +19,7 @@
 
 package org.apache.james.mailbox.quota.model;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
@@ -34,8 +35,8 @@ public class QuotaThresholdChange {
         this.instant = instant;
     }
 
-    public boolean isNotOlderThan(Duration duration) {
-        return instant.isAfter(Instant.now().minus(duration));
+    public boolean isNotOlderThan(Duration duration, Clock clock) {
+        return instant.isAfter(Instant.now(clock).minus(duration));
     }
 
     public QuotaThreshold getQuotaThreshold() {

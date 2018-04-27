@@ -19,9 +19,10 @@
 
 package org.apache.james.mailbox.quota.model;
 
-import static org.apache.james.mailbox.quota.HistoryEvolution.HighestThresholdRecentness.NotAlreadyReachedDuringGracePeriod;
 import static org.apache.james.mailbox.quota.HistoryEvolution.HighestThresholdRecentness.AlreadyReachedDuringGracePriod;
+import static org.apache.james.mailbox.quota.HistoryEvolution.HighestThresholdRecentness.NotAlreadyReachedDuringGracePeriod;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -49,14 +50,14 @@ public class QuotaThresholdHistory {
         this.changes = ImmutableList.copyOf(changes);
     }
 
-    public HistoryEvolution compareWithCurrentThreshold(QuotaThreshold currentThreshold, Duration gracePeriod) {
+    public HistoryEvolution compareWithCurrentThreshold(QuotaThreshold currentThreshold, Duration gracePeriod, Clock clock) {
         Optional<QuotaThreshold> lastThreshold = Optional.ofNullable(Iterables.getLast(changes, null))
             .map(QuotaThresholdChange::getQuotaThreshold);
 
-        return compareWithCurrentThreshold(currentThreshold, gracePeriod, lastThreshold.orElse(QuotaThreshold.ZERO));
+        return compareWithCurrentThreshold(currentThreshold, gracePeriod, lastThreshold.orElse(QuotaThreshold.ZERO), clock);
     }
 
-    private HistoryEvolution compareWithCurrentThreshold(QuotaThreshold currentThreshold, Duration gracePeriod, QuotaThreshold lastThreshold) {
+    private HistoryEvolution compareWithCurrentThreshold(QuotaThreshold currentThreshold, Duration gracePeriod, QuotaThreshold lastThreshold, Clock clock) {
         int comparisonResult = currentThreshold.compareTo(lastThreshold);
 
         if (comparisonResult < 0) {
@@ -65,14 +66,14 @@ public class QuotaThresholdHistory {
         if (comparisonResult == 0) {
             return HistoryEvolution.noChanges(currentThreshold);
         }
-        return recentlyExceededQuotaThreshold(currentThreshold, gracePeriod)
+        return recentlyExceededQuotaThreshold(currentThreshold, gracePeriod, clock)
                 .map(any -> HistoryEvolution.higherThresholdReached(currentThreshold, AlreadyReachedDuringGracePriod))
                 .orElse(HistoryEvolution.higherThresholdReached(currentThreshold, NotAlreadyReachedDuringGracePeriod));
     }
 
-    private Optional<QuotaThresholdChange> recentlyExceededQuotaThreshold(QuotaThreshold currentThreshold, Duration gracePeriod) {
+    private Optional<QuotaThresholdChange> recentlyExceededQuotaThreshold(QuotaThreshold currentThreshold, Duration gracePeriod, Clock clock) {
         return changes.stream()
-            .filter(change -> change.isNotOlderThan(gracePeriod))
+            .filter(change -> change.isNotOlderThan(gracePeriod, clock))
             .filter(change -> change.getQuotaThreshold().compareTo(currentThreshold) >= 0)
             .findFirst();
     }
