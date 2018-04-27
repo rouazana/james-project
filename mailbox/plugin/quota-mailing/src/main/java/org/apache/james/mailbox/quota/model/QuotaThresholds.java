@@ -19,9 +19,9 @@
 
 package org.apache.james.mailbox.quota.model;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.james.mailbox.model.Quota;
 
@@ -31,6 +31,10 @@ import com.google.common.collect.ImmutableList;
 
 public class QuotaThresholds {
     private final ImmutableList<QuotaThreshold> quotaThresholds;
+
+    public QuotaThresholds(QuotaThreshold... thresholds) {
+        this(Arrays.asList(thresholds));
+    }
 
     public QuotaThresholds(List<QuotaThreshold> quotaThresholds) {
         this.quotaThresholds = quotaThresholds.stream()

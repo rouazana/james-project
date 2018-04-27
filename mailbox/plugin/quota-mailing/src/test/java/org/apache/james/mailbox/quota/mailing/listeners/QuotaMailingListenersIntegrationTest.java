@@ -20,6 +20,7 @@
 package org.apache.james.mailbox.quota.mailing.listeners;
 
 import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._50;
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._80;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Clock;
@@ -667,5 +668,36 @@ public interface QuotaMailingListenersIntegrationTest {
         assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER))
             .isEqualTo(new QuotaThresholdHistory(oldChange1, oldChange2,
                 new QuotaThresholdChange(_50, BASE_INSTANT)));
+    }
+
+    @Test
+    default void shouldSendOneNoticePerThreshold(QuotaThresholdHistoryStore store) throws Exception {
+        FakeMailContext mailetContext = mailetContext();
+        QuotaThresholdListenersTestSystem testee = new QuotaThresholdListenersTestSystem(store, mailetContext);
+        testee.configure(new QuotaMailingListenerConfiguration(new QuotaThresholds(_50, _80), GRACE_PERIOD));
+
+        testee.event(new MailboxListener.QuotaUsageUpdatedEvent(new MockMailboxSession(BOB),
+            QuotaRoot.quotaRoot("any", Optional.empty()),
+            Quota.<QuotaCount>builder()
+                .used(QuotaCount.count(55))
+                .computedLimit(QuotaCount.count(100))
+                .build(),
+            Quota.<QuotaSize>builder()
+                .used(QuotaSize.size(40))
+                .computedLimit(QuotaSize.size(100))
+                .build()));
+        testee.event(new MailboxListener.QuotaUsageUpdatedEvent(new MockMailboxSession(BOB),
+            QuotaRoot.quotaRoot("any", Optional.empty()),
+            Quota.<QuotaCount>builder()
+                .used(QuotaCount.count(85))
+                .computedLimit(QuotaCount.count(100))
+                .build(),
+            Quota.<QuotaSize>builder()
+                .used(QuotaSize.size(42))
+                .computedLimit(QuotaSize.size(100))
+                .build()));
+
+        assertThat(mailetContext.getSentMails())
+            .hasSize(2);
     }
 }
