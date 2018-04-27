@@ -19,5 +19,12 @@
 
 package org.apache.james.mailbox.quota.model;
 
-public class QuotaThresholdFixture {
+public interface QuotaThresholdFixture {
+    QuotaThreshold _50 = new QuotaThreshold(0.50);
+    QuotaThreshold _75 = new QuotaThreshold(0.75);
+    QuotaThreshold _759 = new QuotaThreshold(0.759);
+    QuotaThreshold _80 = new QuotaThreshold(0.8);
+    QuotaThreshold _90 = new QuotaThreshold(0.9);
+    QuotaThreshold _95 = new QuotaThreshold(0.95);
+    QuotaThreshold _99 = new QuotaThreshold(0.99);
 }
