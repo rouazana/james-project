@@ -19,6 +19,10 @@
 
 package org.apache.james.mailbox.quota.model;
 
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._50;
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._80;
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._95;
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._99;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.james.mailbox.model.Quota;
@@ -32,12 +36,7 @@ public class QuotaThresholdsTest {
     @Test
     public void firstExceededThresholdShouldReturnZeroWhenBelowAllThresholds() {
         assertThat(
-            new QuotaThresholds(
-                ImmutableList.of(
-                    new QuotaThreshold(0.5),
-                    new QuotaThreshold(0.8),
-                    new QuotaThreshold(0.95),
-                    new QuotaThreshold(0.99)))
+            new QuotaThresholds(ImmutableList.of(_50, _80, _95, _99))
                 .firstExceededThreshold(Quota.<QuotaSize>builder()
                     .used(QuotaSize.size(40))
                     .computedLimit(QuotaSize.size(100))
@@ -48,33 +47,23 @@ public class QuotaThresholdsTest {
     @Test
     public void firstExceededThresholdShouldReturnHighestExceededThreshold() {
         assertThat(
-            new QuotaThresholds(
-                ImmutableList.of(
-                    new QuotaThreshold(0.5),
-                    new QuotaThreshold(0.8),
-                    new QuotaThreshold(0.95),
-                    new QuotaThreshold(0.99)))
+            new QuotaThresholds(ImmutableList.of(_50, _80, _95, _99))
                 .firstExceededThreshold(Quota.<QuotaSize>builder()
                     .used(QuotaSize.size(92))
                     .computedLimit(QuotaSize.size(100))
                     .build()))
-            .isEqualTo(new QuotaThreshold(0.8));
+            .isEqualTo(_80);
     }
 
     @Test
     public void firstExceededThresholdShouldReturnHighestThresholdWhenAboveAllThresholds() {
         assertThat(
-            new QuotaThresholds(
-                ImmutableList.of(
-                    new QuotaThreshold(0.5),
-                    new QuotaThreshold(0.8),
-                    new QuotaThreshold(0.95),
-                    new QuotaThreshold(0.99)))
+            new QuotaThresholds(ImmutableList.of(_50, _80, _95, _99))
                 .firstExceededThreshold(Quota.<QuotaSize>builder()
                     .used(QuotaSize.size(992))
                     .computedLimit(QuotaSize.size(1000))
                     .build()))
-            .isEqualTo(new QuotaThreshold(0.99));
+            .isEqualTo(_99);
     }
 
     @Test
