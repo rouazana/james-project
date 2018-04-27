@@ -21,9 +21,11 @@ package org.apache.james.mailbox.quota.model;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.james.mailbox.model.Quota;
 
+import com.github.steveash.guavate.Guavate;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 
@@ -31,12 +33,13 @@ public class QuotaThresholds {
     private final ImmutableList<QuotaThreshold> quotaThresholds;
 
     public QuotaThresholds(List<QuotaThreshold> quotaThresholds) {
-        this.quotaThresholds = ImmutableList.copyOf(quotaThresholds);
+        this.quotaThresholds = quotaThresholds.stream()
+            .sorted(Comparator.comparing(QuotaThreshold::getQuotaOccupationRatio).reversed())
+            .collect(Guavate.toImmutableList());
     }
 
-    public QuotaThreshold firstExceededThreshold(Quota quota) {
+    public QuotaThreshold highestExceededThreshold(Quota quota) {
         return quotaThresholds.stream()
-            .sorted(Comparator.comparing(QuotaThreshold::getQuotaOccupationRatio).reversed())
             .filter(quotaLevel -> quotaLevel.isExceeded(quota))
             .findFirst()
             .orElse(QuotaThreshold.ZERO);

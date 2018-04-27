@@ -34,10 +34,10 @@ import com.google.common.collect.ImmutableList;
 public class QuotaThresholdsTest {
 
     @Test
-    public void firstExceededThresholdShouldReturnZeroWhenBelowAllThresholds() {
+    public void highestExceededThresholdShouldReturnZeroWhenBelowAllThresholds() {
         assertThat(
             new QuotaThresholds(ImmutableList.of(_50, _80, _95, _99))
-                .firstExceededThreshold(Quota.<QuotaSize>builder()
+                .highestExceededThreshold(Quota.<QuotaSize>builder()
                     .used(QuotaSize.size(40))
                     .computedLimit(QuotaSize.size(100))
                     .build()))
@@ -45,10 +45,10 @@ public class QuotaThresholdsTest {
     }
 
     @Test
-    public void firstExceededThresholdShouldReturnHighestExceededThreshold() {
+    public void highestExceededThresholdShouldReturnHighestExceededThreshold() {
         assertThat(
             new QuotaThresholds(ImmutableList.of(_50, _80, _95, _99))
-                .firstExceededThreshold(Quota.<QuotaSize>builder()
+                .highestExceededThreshold(Quota.<QuotaSize>builder()
                     .used(QuotaSize.size(92))
                     .computedLimit(QuotaSize.size(100))
                     .build()))
@@ -56,10 +56,10 @@ public class QuotaThresholdsTest {
     }
 
     @Test
-    public void firstExceededThresholdShouldReturnHighestThresholdWhenAboveAllThresholds() {
+    public void highestExceededThresholdShouldReturnHighestThresholdWhenAboveAllThresholds() {
         assertThat(
             new QuotaThresholds(ImmutableList.of(_50, _80, _95, _99))
-                .firstExceededThreshold(Quota.<QuotaSize>builder()
+                .highestExceededThreshold(Quota.<QuotaSize>builder()
                     .used(QuotaSize.size(992))
                     .computedLimit(QuotaSize.size(1000))
                     .build()))
@@ -67,13 +67,23 @@ public class QuotaThresholdsTest {
     }
 
     @Test
-    public void firstExceededThresholdShouldReturnZeroWhenNoThresholds() {
+    public void highestExceededThresholdShouldReturnZeroWhenNoThresholds() {
         assertThat(
-            new QuotaThresholds(
-                ImmutableList.of())
-                .firstExceededThreshold(Quota.<QuotaSize>builder()
+            new QuotaThresholds(ImmutableList.of())
+                .highestExceededThreshold(Quota.<QuotaSize>builder()
                     .used(QuotaSize.size(992))
                     .computedLimit(QuotaSize.size(1000))
+                    .build()))
+            .isEqualTo(QuotaThreshold.ZERO);
+    }
+
+    @Test
+    public void highestExceededThresholdShouldReturnZeroWhenUnlimitedQuota() {
+        assertThat(
+            new QuotaThresholds(ImmutableList.of(_50, _80, _95, _99))
+                .highestExceededThreshold(Quota.<QuotaSize>builder()
+                    .used(QuotaSize.size(992))
+                    .computedLimit(QuotaSize.unlimited())
                     .build()))
             .isEqualTo(QuotaThreshold.ZERO);
     }
