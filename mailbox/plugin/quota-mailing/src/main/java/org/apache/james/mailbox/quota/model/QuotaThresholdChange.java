@@ -43,6 +43,10 @@ public class QuotaThresholdChange {
         return quotaThreshold;
     }
 
+    public Instant getInstant() {
+        return instant;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (o instanceof QuotaThresholdChange) {

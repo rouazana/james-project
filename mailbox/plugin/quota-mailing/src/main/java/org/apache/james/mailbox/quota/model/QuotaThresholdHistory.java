@@ -25,12 +25,14 @@ import static org.apache.james.mailbox.quota.HistoryEvolution.HighestThresholdRe
 import java.time.Clock;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.james.mailbox.quota.HistoryEvolution;
 
+import com.github.steveash.guavate.Guavate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
@@ -47,7 +49,9 @@ public class QuotaThresholdHistory {
     }
 
     public QuotaThresholdHistory(List<QuotaThresholdChange> changes) {
-        this.changes = ImmutableList.copyOf(changes);
+        this.changes = changes.stream()
+            .sorted(Comparator.comparing(QuotaThresholdChange::getInstant))
+            .collect(Guavate.toImmutableList());
     }
 
     public HistoryEvolution compareWithCurrentThreshold(QuotaThreshold currentThreshold, Duration gracePeriod, Clock clock) {
