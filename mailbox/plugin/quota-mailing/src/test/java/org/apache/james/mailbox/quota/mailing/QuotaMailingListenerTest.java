@@ -32,10 +32,10 @@ import org.apache.james.mailbox.model.Quota;
 import org.apache.james.mailbox.model.QuotaRoot;
 import org.apache.james.mailbox.quota.QuotaCount;
 import org.apache.james.mailbox.quota.QuotaSize;
-import org.apache.james.mailbox.quota.QuotaThresholdChangesStore;
+import org.apache.james.mailbox.quota.QuotaThresholdHistoryStore;
 import org.apache.james.mailbox.quota.model.QuotaThreshold;
 import org.apache.james.mailbox.quota.model.QuotaThresholdChange;
-import org.apache.james.mailbox.quota.model.QuotaThresholdChanges;
+import org.apache.james.mailbox.quota.model.QuotaThresholdHistory;
 import org.apache.james.mailbox.quota.model.QuotaThresholds;
 import org.apache.james.user.memory.MemoryUsersRepository;
 import org.apache.mailet.base.MailAddressFixture;
@@ -52,7 +52,7 @@ public interface QuotaMailingListenerTest {
     User BOB_USER = User.fromUsername(BOB);
 
     @Test
-    default void shouldNotSendMailWhenUnderAllThresholds(QuotaThresholdChangesStore store) {
+    default void shouldNotSendMailWhenUnderAllThresholds(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -73,7 +73,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldNotSendMailWhenNoThresholdUpdate(QuotaThresholdChangesStore store) {
+    default void shouldNotSendMailWhenNoThresholdUpdate(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -98,7 +98,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldNotSendMailWhenThresholdOverPassedRecently(QuotaThresholdChangesStore store) {
+    default void shouldNotSendMailWhenThresholdOverPassedRecently(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -126,7 +126,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldSendMailWhenThresholdOverPassed(QuotaThresholdChangesStore store) {
+    default void shouldSendMailWhenThresholdOverPassed(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -147,7 +147,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldNotSendDuplicates(QuotaThresholdChangesStore store) {
+    default void shouldNotSendDuplicates(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -179,7 +179,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldNotifySeparatelyCountAndSize(QuotaThresholdChangesStore store) {
+    default void shouldNotifySeparatelyCountAndSize(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -211,7 +211,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldGroupSizeAndCountNotificationsWhenTriggeredByASingleEvent(QuotaThresholdChangesStore store) {
+    default void shouldGroupSizeAndCountNotificationsWhenTriggeredByASingleEvent(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -232,7 +232,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldSendMailWhenThresholdOverPassedOverGracePeriod(QuotaThresholdChangesStore store) {
+    default void shouldSendMailWhenThresholdOverPassedOverGracePeriod(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -260,7 +260,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldNotSendMailWhenNoThresholdUpdateForCount(QuotaThresholdChangesStore store) {
+    default void shouldNotSendMailWhenNoThresholdUpdateForCount(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -285,7 +285,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldNotSendMailWhenThresholdOverPassedRecentlyForCount(QuotaThresholdChangesStore store) {
+    default void shouldNotSendMailWhenThresholdOverPassedRecentlyForCount(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -313,7 +313,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldSendMailWhenThresholdOverPassedForCount(QuotaThresholdChangesStore store) {
+    default void shouldSendMailWhenThresholdOverPassedForCount(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -334,7 +334,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldSendMailWhenThresholdOverPassedOverGracePeriodForCount(QuotaThresholdChangesStore store) {
+    default void shouldSendMailWhenThresholdOverPassedOverGracePeriodForCount(QuotaThresholdHistoryStore store) {
         FakeMailContext mailetContext = mailetContext();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext, MemoryUsersRepository.withVirtualHosting(), store);
 
@@ -368,7 +368,7 @@ public interface QuotaMailingListenerTest {
     }
 
     @Test
-    default void shouldUpdateSizeChangesWhenOverPassingLimit(QuotaThresholdChangesStore store) {
+    default void shouldUpdateSizeChangesWhenOverPassingLimit(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -385,14 +385,14 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaSizeThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges(
+            .isEqualTo(new QuotaThresholdHistory(
                 new QuotaThresholdChange(
                     new QuotaThreshold(0.5),
                     instantSupplier.now())));
     }
 
     @Test
-    default void shouldNotUpdateSizeChangesWhenNoChanges(QuotaThresholdChangesStore store) {
+    default void shouldNotUpdateSizeChangesWhenNoChanges(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -409,11 +409,11 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaSizeThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges());
+            .isEqualTo(new QuotaThresholdHistory());
     }
 
     @Test
-    default void shouldNotUpdateSizeChangesWhenNoChange(QuotaThresholdChangesStore store) {
+    default void shouldNotUpdateSizeChangesWhenNoChange(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -435,11 +435,11 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaSizeThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges(oldChange));
+            .isEqualTo(new QuotaThresholdHistory(oldChange));
     }
 
     @Test
-    default void shouldUpdateSizeChangesWhenBelow(QuotaThresholdChangesStore store) {
+    default void shouldUpdateSizeChangesWhenBelow(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -461,12 +461,12 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaSizeThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges(oldChange,
+            .isEqualTo(new QuotaThresholdHistory(oldChange,
                 new QuotaThresholdChange(QuotaThreshold.ZERO, instantSupplier.now())));
     }
 
     @Test
-    default void shouldUpdateSizeChangesWhenAbove(QuotaThresholdChangesStore store) {
+    default void shouldUpdateSizeChangesWhenAbove(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -488,12 +488,12 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaSizeThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges(oldChange,
+            .isEqualTo(new QuotaThresholdHistory(oldChange,
                 new QuotaThresholdChange(new QuotaThreshold(0.5), instantSupplier.now())));
     }
 
     @Test
-    default void shouldUpdateSizeChangesWhenAboveButRecentlyOverpasses(QuotaThresholdChangesStore store) {
+    default void shouldUpdateSizeChangesWhenAboveButRecentlyOverpasses(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -518,12 +518,12 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaSizeThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges(oldChange1, oldChange2,
+            .isEqualTo(new QuotaThresholdHistory(oldChange1, oldChange2,
                 new QuotaThresholdChange(new QuotaThreshold(0.5), instantSupplier.now())));
     }
 
     @Test
-    default void shouldUpdateCountChangesWhenOverPassingLimit(QuotaThresholdChangesStore store) {
+    default void shouldUpdateCountChangesWhenOverPassingLimit(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -540,14 +540,14 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges(
+            .isEqualTo(new QuotaThresholdHistory(
                 new QuotaThresholdChange(
                     new QuotaThreshold(0.5),
                     instantSupplier.now())));
     }
 
     @Test
-    default void shouldNotUpdateCountChangesWhenNoChanges(QuotaThresholdChangesStore store) {
+    default void shouldNotUpdateCountChangesWhenNoChanges(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -564,11 +564,11 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges());
+            .isEqualTo(new QuotaThresholdHistory());
     }
 
     @Test
-    default void shouldNotUpdateCountChangesWhenNoChange(QuotaThresholdChangesStore store) {
+    default void shouldNotUpdateCountChangesWhenNoChange(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -590,11 +590,11 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges(oldChange));
+            .isEqualTo(new QuotaThresholdHistory(oldChange));
     }
 
     @Test
-    default void shouldUpdateCountChangesWhenBelow(QuotaThresholdChangesStore store) {
+    default void shouldUpdateCountChangesWhenBelow(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -616,12 +616,12 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges(oldChange,
+            .isEqualTo(new QuotaThresholdHistory(oldChange,
                 new QuotaThresholdChange(QuotaThreshold.ZERO, instantSupplier.now())));
     }
 
     @Test
-    default void shouldUpdateCountChangesWhenAbove(QuotaThresholdChangesStore store) {
+    default void shouldUpdateCountChangesWhenAbove(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -643,12 +643,12 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges(oldChange,
+            .isEqualTo(new QuotaThresholdHistory(oldChange,
                 new QuotaThresholdChange(new QuotaThreshold(0.5), instantSupplier.now())));
     }
 
     @Test
-    default void shouldUpdateCountChangesWhenAboveButRecentlyOverpasses(QuotaThresholdChangesStore store) {
+    default void shouldUpdateCountChangesWhenAboveButRecentlyOverpasses(QuotaThresholdHistoryStore store) {
         FixedInstantSupplier instantSupplier = new FixedInstantSupplier();
         QuotaMailingListener testee = new QuotaMailingListener(mailetContext(), MemoryUsersRepository.withVirtualHosting(), store, instantSupplier);
         testee.configure(new QuotaMailingListenerConfiguration(SINGLE_THRESHOLD, GRACE_PERIOD));
@@ -673,7 +673,7 @@ public interface QuotaMailingListenerTest {
                 .build()));
 
         assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER))
-            .isEqualTo(new QuotaThresholdChanges(oldChange1, oldChange2,
+            .isEqualTo(new QuotaThresholdHistory(oldChange1, oldChange2,
                 new QuotaThresholdChange(new QuotaThreshold(0.5), instantSupplier.now())));
     }
 }

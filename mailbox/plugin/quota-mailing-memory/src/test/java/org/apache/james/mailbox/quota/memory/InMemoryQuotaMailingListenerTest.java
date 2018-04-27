@@ -22,7 +22,7 @@ package org.apache.james.mailbox.quota.memory;
 import org.apache.james.mailbox.quota.mailing.QuotaMailingListenerTest;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(InMemoryQuotaThresholdChangesStoreExtension.class)
+@ExtendWith(InMemoryQuotaThresholdHistoryStoreExtension.class)
 public class InMemoryQuotaMailingListenerTest implements QuotaMailingListenerTest {
 
 }

@@ -31,7 +31,7 @@ import org.apache.james.core.builder.MimeMessageBuilder;
 import org.apache.james.mailbox.Event;
 import org.apache.james.mailbox.MailboxListener;
 import org.apache.james.mailbox.quota.CompareWithCurrentThreshold;
-import org.apache.james.mailbox.quota.QuotaThresholdChangesStore;
+import org.apache.james.mailbox.quota.QuotaThresholdHistoryStore;
 import org.apache.james.mailbox.quota.model.QuotaThreshold;
 import org.apache.james.mailbox.quota.model.QuotaThresholdChange;
 import org.apache.james.user.api.UsersRepository;
@@ -47,19 +47,19 @@ public class QuotaMailingListener implements MailboxListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(QuotaMailingListener.class);
     private final MailetContext mailetContext;
     private final UsersRepository usersRepository;
-    private final QuotaThresholdChangesStore quotaThresholdChangesStore;
+    private final QuotaThresholdHistoryStore quotaThresholdHistoryStore;
     private final InstantSupplier instantSupplier;
     private QuotaMailingListenerConfiguration configuration;
 
     @Inject
-    public QuotaMailingListener(MailetContext mailetContext, UsersRepository usersRepository, QuotaThresholdChangesStore quotaThresholdChangesStore) {
-        this(mailetContext, usersRepository, quotaThresholdChangesStore, Instant::now);
+    public QuotaMailingListener(MailetContext mailetContext, UsersRepository usersRepository, QuotaThresholdHistoryStore quotaThresholdHistoryStore) {
+        this(mailetContext, usersRepository, quotaThresholdHistoryStore, Instant::now);
     }
 
-    public QuotaMailingListener(MailetContext mailetContext, UsersRepository usersRepository, QuotaThresholdChangesStore quotaThresholdChangesStore, InstantSupplier instantSupplier) {
+    public QuotaMailingListener(MailetContext mailetContext, UsersRepository usersRepository, QuotaThresholdHistoryStore quotaThresholdHistoryStore, InstantSupplier instantSupplier) {
         this.mailetContext = mailetContext;
         this.usersRepository = usersRepository;
-        this.quotaThresholdChangesStore = quotaThresholdChangesStore;
+        this.quotaThresholdHistoryStore = quotaThresholdHistoryStore;
         this.configuration = QuotaMailingListenerConfiguration.DEFAULT;
         this.instantSupplier = instantSupplier;
     }
@@ -110,20 +110,20 @@ public class QuotaMailingListener implements MailboxListener {
 
     public Optional<InformationToEmail> computeInformationToEmail(User user, QuotaUsageUpdatedEvent event) {
         QuotaThreshold countThreshold = configuration.getThresholds().firstExceededThreshold(event.getCountQuota());
-        CompareWithCurrentThreshold compareWithCountThreshold = quotaThresholdChangesStore
+        CompareWithCurrentThreshold compareWithCountThreshold = quotaThresholdHistoryStore
             .retrieveQuotaCountThresholdChanges(user)
             .compareWithCurrentThreshold(countThreshold, configuration.getGracePeriod());
 
         QuotaThreshold sizeThreshold = configuration.getThresholds().firstExceededThreshold(event.getSizeQuota());
-        CompareWithCurrentThreshold compareWithCurrentSizeThreshold = quotaThresholdChangesStore
+        CompareWithCurrentThreshold compareWithCurrentSizeThreshold = quotaThresholdHistoryStore
             .retrieveQuotaSizeThresholdChanges(user)
             .compareWithCurrentThreshold(sizeThreshold, configuration.getGracePeriod());
         if (compareWithCountThreshold != CompareWithCurrentThreshold.NO_CHANGES) {
-            Action updateCountThreshold = () -> quotaThresholdChangesStore.persistQuotaCountThresholdChange(user, new QuotaThresholdChange(countThreshold, instantSupplier.now()));
+            Action updateCountThreshold = () -> quotaThresholdHistoryStore.persistQuotaCountThresholdChange(user, new QuotaThresholdChange(countThreshold, instantSupplier.now()));
             updateThreshold(compareWithCountThreshold, updateCountThreshold);
         }
         if (compareWithCurrentSizeThreshold != CompareWithCurrentThreshold.NO_CHANGES) {
-            Action updateSizeThreshold = () -> quotaThresholdChangesStore.persistQuotaSizeThresholdChange(user, new QuotaThresholdChange(sizeThreshold, instantSupplier.now()));
+            Action updateSizeThreshold = () -> quotaThresholdHistoryStore.persistQuotaSizeThresholdChange(user, new QuotaThresholdChange(sizeThreshold, instantSupplier.now()));
             updateThreshold(compareWithCurrentSizeThreshold, updateSizeThreshold);
         }
 
