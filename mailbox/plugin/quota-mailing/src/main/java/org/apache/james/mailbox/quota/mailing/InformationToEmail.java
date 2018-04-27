@@ -24,7 +24,7 @@ import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.james.mailbox.model.Quota;
-import org.apache.james.mailbox.quota.CompareWithCurrentThreshold;
+import org.apache.james.mailbox.quota.HistoryEvolution;
 import org.apache.james.mailbox.quota.QuotaCount;
 import org.apache.james.mailbox.quota.QuotaSize;
 import org.apache.james.mailbox.quota.model.QuotaThreshold;
@@ -55,28 +55,18 @@ public class InformationToEmail {
             return this;
         }
 
-        public Builder countThreshold(QuotaThreshold countThreshold,
-                                      CompareWithCurrentThreshold compareWithCurrentCountThreshold) {
-            this.countThreshold = filterThresholdIfNoticeNotNeeded(countThreshold, compareWithCurrentCountThreshold);
-            return this;
-        }
-
-        public Builder sizeThreshold(QuotaThreshold sizeThreshold,
-                                     CompareWithCurrentThreshold compareWithCurrentSizeThreshold) {
-            this.sizeThreshold = filterThresholdIfNoticeNotNeeded(sizeThreshold, compareWithCurrentSizeThreshold);
-            return this;
-        }
-
-        private Optional<QuotaThreshold> filterThresholdIfNoticeNotNeeded(QuotaThreshold threshold, CompareWithCurrentThreshold compareWithCurrentThreshold) {
-            switch (compareWithCurrentThreshold) {
-                case ABOVE_CURRENT_THRESHOLD:
-                    return threshold.nonZero();
-                case BELOW_CURRENT_THRESHOLD:
-                case ABOVE_CURRENT_THRESHOLD_WITH_RECENT_CHANGES:
-                case NO_CHANGES:
-                    return Optional.empty();
+        public Builder countThreshold(HistoryEvolution countHistoryEvolution) {
+            if (countHistoryEvolution.needsNotification()) {
+                this.countThreshold = Optional.of(countHistoryEvolution.getCurrentThreshold());
             }
-            return Optional.empty();
+            return this;
+        }
+
+        public Builder sizeThreshold(HistoryEvolution sizeHistoryEvolution) {
+            if (sizeHistoryEvolution.needsNotification()) {
+                this.sizeThreshold = Optional.of(sizeHistoryEvolution.getCurrentThreshold());
+            }
+            return this;
         }
 
         public Optional<InformationToEmail> build() {
@@ -196,5 +186,15 @@ public class InformationToEmail {
     @Override
     public final int hashCode() {
         return Objects.hash(countThreshold, sizeThreshold, sizeQuota, countQuota);
+    }
+
+    @Override
+    public String toString() {
+        return "InformationToEmail{" +
+            "countThreshold=" + countThreshold +
+            ", sizeThreshold=" + sizeThreshold +
+            ", sizeQuota=" + sizeQuota +
+            ", countQuota=" + countQuota +
+            '}';
     }
 }

@@ -19,12 +19,15 @@
 
 package org.apache.james.mailbox.quota.mailing;
 
+import static org.apache.james.mailbox.quota.HistoryEvolution.HighestThresholdRecentness.NotAlreadyReachedDuringGracePeriod;
+import static org.apache.james.mailbox.quota.HistoryEvolution.HighestThresholdRecentness.AlreadyReachedDuringGracePriod;
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._80;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 
 import org.apache.james.mailbox.model.Quota;
-import org.apache.james.mailbox.quota.CompareWithCurrentThreshold;
+import org.apache.james.mailbox.quota.HistoryEvolution;
 import org.apache.james.mailbox.quota.QuotaCount;
 import org.apache.james.mailbox.quota.QuotaSize;
 import org.apache.james.mailbox.quota.model.QuotaThreshold;
@@ -67,7 +70,7 @@ public class InformationToEmailTest {
                 .used(QuotaCount.count(82))
                 .computedLimit(QuotaCount.count(100))
                 .build())
-            .sizeThreshold(new QuotaThreshold(0.8), CompareWithCurrentThreshold.NO_CHANGES)
+            .sizeThreshold(HistoryEvolution.noChanges(_80))
             .build())
             .isEmpty();
     }
@@ -83,7 +86,7 @@ public class InformationToEmailTest {
                 .used(QuotaCount.count(82))
                 .computedLimit(QuotaCount.count(100))
                 .build())
-            .sizeThreshold(new QuotaThreshold(0.8), CompareWithCurrentThreshold.BELOW_CURRENT_THRESHOLD)
+            .sizeThreshold(HistoryEvolution.lowerThresholdReached(_80))
             .build())
             .isEmpty();
     }
@@ -99,7 +102,7 @@ public class InformationToEmailTest {
                 .used(QuotaCount.count(82))
                 .computedLimit(QuotaCount.count(100))
                 .build())
-            .sizeThreshold(new QuotaThreshold(0.8), CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD_WITH_RECENT_CHANGES)
+            .sizeThreshold(HistoryEvolution.higherThresholdReached(_80, AlreadyReachedDuringGracePriod))
             .build())
             .isEmpty();
     }
@@ -114,12 +117,12 @@ public class InformationToEmailTest {
             .used(QuotaCount.count(82))
             .computedLimit(QuotaCount.count(100))
             .build();
-        QuotaThreshold sizeThreshold = new QuotaThreshold(0.8);
+        QuotaThreshold sizeThreshold = _80;
 
         assertThat(InformationToEmail.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
-            .sizeThreshold(sizeThreshold, CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD)
+            .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
             .build())
             .isNotEmpty()
             .contains(new InformationToEmail(Optional.empty(), Optional.of(sizeThreshold), sizeQuota, countQuota));
@@ -135,14 +138,14 @@ public class InformationToEmailTest {
             .used(QuotaCount.count(82))
             .computedLimit(QuotaCount.count(100))
             .build();
-        QuotaThreshold sizeThreshold = new QuotaThreshold(0.8);
-        QuotaThreshold countThreshold = new QuotaThreshold(0.8);
+        QuotaThreshold sizeThreshold = _80;
+        QuotaThreshold countThreshold = _80;
 
         assertThat(InformationToEmail.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
-            .sizeThreshold(sizeThreshold, CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD)
-            .countThreshold(countThreshold, CompareWithCurrentThreshold.BELOW_CURRENT_THRESHOLD)
+            .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
+            .countThreshold(HistoryEvolution.lowerThresholdReached(countThreshold))
             .build())
             .isNotEmpty()
             .contains(new InformationToEmail(Optional.empty(), Optional.of(sizeThreshold), sizeQuota, countQuota));
@@ -158,14 +161,14 @@ public class InformationToEmailTest {
             .used(QuotaCount.count(82))
             .computedLimit(QuotaCount.count(100))
             .build();
-        QuotaThreshold sizeThreshold = new QuotaThreshold(0.8);
-        QuotaThreshold countThreshold = new QuotaThreshold(0.8);
+        QuotaThreshold sizeThreshold = _80;
+        QuotaThreshold countThreshold = _80;
 
         assertThat(InformationToEmail.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
-            .sizeThreshold(sizeThreshold, CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD)
-            .countThreshold(countThreshold, CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD)
+            .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
+            .countThreshold(HistoryEvolution.higherThresholdReached(countThreshold, NotAlreadyReachedDuringGracePeriod))
             .build())
             .isNotEmpty()
             .contains(new InformationToEmail(Optional.of(countThreshold), Optional.of(sizeThreshold), sizeQuota, countQuota));
@@ -181,14 +184,14 @@ public class InformationToEmailTest {
             .used(QuotaCount.count(72))
             .computedLimit(QuotaCount.count(100))
             .build();
-        QuotaThreshold sizeThreshold = new QuotaThreshold(0.8);
-        QuotaThreshold countThreshold = new QuotaThreshold(0.8);
+        QuotaThreshold sizeThreshold = _80;
+        QuotaThreshold countThreshold = _80;
 
         assertThat(InformationToEmail.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
-            .sizeThreshold(sizeThreshold, CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD)
-            .countThreshold(countThreshold, CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD)
+            .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
+            .countThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
             .build()
             .get()
             .generateReport())
@@ -214,12 +217,12 @@ public class InformationToEmailTest {
             .used(QuotaCount.count(72))
             .computedLimit(QuotaCount.count(100))
             .build();
-        QuotaThreshold sizeThreshold = new QuotaThreshold(0.8);
+        QuotaThreshold sizeThreshold = _80;
 
         assertThat(InformationToEmail.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
-            .sizeThreshold(sizeThreshold, CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD)
+            .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
             .build()
             .get()
             .generateReport())
@@ -242,12 +245,12 @@ public class InformationToEmailTest {
             .used(QuotaCount.count(72))
             .computedLimit(QuotaCount.count(100))
             .build();
-        QuotaThreshold countThreshold = new QuotaThreshold(0.8);
+        QuotaThreshold countThreshold = _80;
 
         assertThat(InformationToEmail.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
-            .countThreshold(countThreshold, CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD)
+            .countThreshold(HistoryEvolution.higherThresholdReached(countThreshold, NotAlreadyReachedDuringGracePeriod))
             .build()
             .get()
             .generateReport())
