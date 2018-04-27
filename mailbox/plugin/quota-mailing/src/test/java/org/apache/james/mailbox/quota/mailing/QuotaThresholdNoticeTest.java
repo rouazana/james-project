@@ -181,7 +181,7 @@ public class QuotaThresholdNoticeTest {
             .computedLimit(QuotaSize.size(100))
             .build();
         Quota<QuotaCount> countQuota = Quota.<QuotaCount>builder()
-            .used(QuotaCount.count(72))
+            .used(QuotaCount.count(92))
             .computedLimit(QuotaCount.count(100))
             .build();
         QuotaThreshold sizeThreshold = _80;
@@ -191,7 +191,7 @@ public class QuotaThresholdNoticeTest {
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
             .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
-            .countThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
+            .countThreshold(HistoryEvolution.higherThresholdReached(countThreshold, NotAlreadyReachedDuringGracePeriod))
             .build()
             .get()
             .generateReport())
@@ -201,7 +201,7 @@ public class QuotaThresholdNoticeTest {
                 "You currently occupy 82 bytes on a total of 100 bytes allocated to you.\n" +
                 "\n" +
                 "You currently occupy more than 80 % of the total message count allocated to you.\n" +
-                "You currently have 72 messages on a total of 100 allowed for you.\n" +
+                "You currently have 92 messages on a total of 100 allowed for you.\n" +
                 "\n" +
                 "You need to be aware that actions leading to exceeded quotas will be denied. This will result in a degraded service.\n" +
                 "To mitigate this issue you might reach your administrator in order to increase your configured quota. You might also delete some non important emails.");
@@ -242,7 +242,7 @@ public class QuotaThresholdNoticeTest {
             .computedLimit(QuotaSize.size(100))
             .build();
         Quota<QuotaCount> countQuota = Quota.<QuotaCount>builder()
-            .used(QuotaCount.count(72))
+            .used(QuotaCount.count(92))
             .computedLimit(QuotaCount.count(100))
             .build();
         QuotaThreshold countThreshold = _80;
@@ -257,7 +257,7 @@ public class QuotaThresholdNoticeTest {
             .isEqualTo("You receive this email because you recently exceeded a threshold related to the quotas of your email account.\n" +
                 "\n" +
                 "You currently occupy more than 80 % of the total message count allocated to you.\n" +
-                "You currently have 72 messages on a total of 100 allowed for you.\n" +
+                "You currently have 92 messages on a total of 100 allowed for you.\n" +
                 "\n" +
                 "You need to be aware that actions leading to exceeded quotas will be denied. This will result in a degraded service.\n" +
                 "To mitigate this issue you might reach your administrator in order to increase your configured quota. You might also delete some non important emails.");
