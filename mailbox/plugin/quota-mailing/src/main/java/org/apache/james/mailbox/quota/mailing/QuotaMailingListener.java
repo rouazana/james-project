@@ -91,7 +91,7 @@ public class QuotaMailingListener implements MailboxListener {
     }
 
     public void handleEvent(QuotaUsageUpdatedEvent updatedEvent, User user) throws UsersRepositoryException, MessagingException {
-        Optional<InformationToEmail> notice = computeInformationToEmail(user, updatedEvent);
+        Optional<QuotaThresholdNotice> notice = computeInformationToEmail(user, updatedEvent);
 
         if (notice.isPresent()) {
             MailAddress sender = mailetContext.getPostmaster();
@@ -107,7 +107,7 @@ public class QuotaMailingListener implements MailboxListener {
         }
     }
 
-    public Optional<InformationToEmail> computeInformationToEmail(User user, QuotaUsageUpdatedEvent event) {
+    public Optional<QuotaThresholdNotice> computeInformationToEmail(User user, QuotaUsageUpdatedEvent event) {
         QuotaThreshold countThreshold = configuration.getThresholds().highestExceededThreshold(event.getCountQuota());
         HistoryEvolution countHistoryEvolution = quotaThresholdHistoryStore
             .retrieveQuotaCountThresholdChanges(user)
@@ -123,7 +123,7 @@ public class QuotaMailingListener implements MailboxListener {
         Runnable updateSizeThreshold = () -> quotaThresholdHistoryStore.persistQuotaSizeThresholdChange(user, new QuotaThresholdChange(sizeThreshold, instantSupplier.now()));
         updateThreshold(sizeHistoryEvolution, updateSizeThreshold);
 
-        return InformationToEmail.builder()
+        return QuotaThresholdNotice.builder()
             .countQuota(event.getCountQuota())
             .sizeQuota(event.getSizeQuota())
             .countThreshold(countHistoryEvolution)
