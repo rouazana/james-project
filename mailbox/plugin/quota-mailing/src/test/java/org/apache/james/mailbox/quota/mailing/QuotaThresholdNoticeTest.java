@@ -35,18 +35,18 @@ import org.junit.jupiter.api.Test;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-public class InformationToEmailTest {
+public class QuotaThresholdNoticeTest {
 
     @Test
     public void shouldMatchBeanContract() {
-        EqualsVerifier.forClass(InformationToEmail.class)
+        EqualsVerifier.forClass(QuotaThresholdNotice.class)
             .allFieldsShouldBeUsed()
             .verify();
     }
 
     @Test
     public void buildShouldReturnEmptyWhenNoThresholds() {
-        assertThat(InformationToEmail.builder()
+        assertThat(QuotaThresholdNotice.builder()
             .sizeQuota(Quota.<QuotaSize>builder()
                 .used(QuotaSize.size(82))
                 .computedLimit(QuotaSize.size(100))
@@ -61,7 +61,7 @@ public class InformationToEmailTest {
 
     @Test
     public void buildShouldReturnEmptyWhenNoChanges() {
-        assertThat(InformationToEmail.builder()
+        assertThat(QuotaThresholdNotice.builder()
             .sizeQuota(Quota.<QuotaSize>builder()
                 .used(QuotaSize.size(82))
                 .computedLimit(QuotaSize.size(100))
@@ -77,7 +77,7 @@ public class InformationToEmailTest {
 
     @Test
     public void buildShouldReturnEmptyWhenBelow() {
-        assertThat(InformationToEmail.builder()
+        assertThat(QuotaThresholdNotice.builder()
             .sizeQuota(Quota.<QuotaSize>builder()
                 .used(QuotaSize.size(82))
                 .computedLimit(QuotaSize.size(100))
@@ -93,7 +93,7 @@ public class InformationToEmailTest {
 
     @Test
     public void buildShouldReturnEmptyWhenAboveButRecentChanges() {
-        assertThat(InformationToEmail.builder()
+        assertThat(QuotaThresholdNotice.builder()
             .sizeQuota(Quota.<QuotaSize>builder()
                 .used(QuotaSize.size(82))
                 .computedLimit(QuotaSize.size(100))
@@ -119,13 +119,13 @@ public class InformationToEmailTest {
             .build();
         QuotaThreshold sizeThreshold = _80;
 
-        assertThat(InformationToEmail.builder()
+        assertThat(QuotaThresholdNotice.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
             .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
             .build())
             .isNotEmpty()
-            .contains(new InformationToEmail(Optional.empty(), Optional.of(sizeThreshold), sizeQuota, countQuota));
+            .contains(new QuotaThresholdNotice(Optional.empty(), Optional.of(sizeThreshold), sizeQuota, countQuota));
     }
 
     @Test
@@ -141,14 +141,14 @@ public class InformationToEmailTest {
         QuotaThreshold sizeThreshold = _80;
         QuotaThreshold countThreshold = _80;
 
-        assertThat(InformationToEmail.builder()
+        assertThat(QuotaThresholdNotice.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
             .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
             .countThreshold(HistoryEvolution.lowerThresholdReached(countThreshold))
             .build())
             .isNotEmpty()
-            .contains(new InformationToEmail(Optional.empty(), Optional.of(sizeThreshold), sizeQuota, countQuota));
+            .contains(new QuotaThresholdNotice(Optional.empty(), Optional.of(sizeThreshold), sizeQuota, countQuota));
     }
 
     @Test
@@ -164,14 +164,14 @@ public class InformationToEmailTest {
         QuotaThreshold sizeThreshold = _80;
         QuotaThreshold countThreshold = _80;
 
-        assertThat(InformationToEmail.builder()
+        assertThat(QuotaThresholdNotice.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
             .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
             .countThreshold(HistoryEvolution.higherThresholdReached(countThreshold, NotAlreadyReachedDuringGracePeriod))
             .build())
             .isNotEmpty()
-            .contains(new InformationToEmail(Optional.of(countThreshold), Optional.of(sizeThreshold), sizeQuota, countQuota));
+            .contains(new QuotaThresholdNotice(Optional.of(countThreshold), Optional.of(sizeThreshold), sizeQuota, countQuota));
     }
 
     @Test
@@ -187,7 +187,7 @@ public class InformationToEmailTest {
         QuotaThreshold sizeThreshold = _80;
         QuotaThreshold countThreshold = _80;
 
-        assertThat(InformationToEmail.builder()
+        assertThat(QuotaThresholdNotice.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
             .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
@@ -219,7 +219,7 @@ public class InformationToEmailTest {
             .build();
         QuotaThreshold sizeThreshold = _80;
 
-        assertThat(InformationToEmail.builder()
+        assertThat(QuotaThresholdNotice.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
             .sizeThreshold(HistoryEvolution.higherThresholdReached(sizeThreshold, NotAlreadyReachedDuringGracePeriod))
@@ -247,7 +247,7 @@ public class InformationToEmailTest {
             .build();
         QuotaThreshold countThreshold = _80;
 
-        assertThat(InformationToEmail.builder()
+        assertThat(QuotaThresholdNotice.builder()
             .sizeQuota(sizeQuota)
             .countQuota(countQuota)
             .countThreshold(HistoryEvolution.higherThresholdReached(countThreshold, NotAlreadyReachedDuringGracePeriod))

@@ -32,7 +32,7 @@ import org.apache.james.mailbox.quota.model.QuotaThreshold;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
-public class InformationToEmail {
+public class QuotaThresholdNotice {
 
     public static class Builder {
         private Optional<QuotaThreshold> countThreshold;
@@ -56,26 +56,26 @@ public class InformationToEmail {
         }
 
         public Builder countThreshold(HistoryEvolution countHistoryEvolution) {
-            if (countHistoryEvolution.needsNotification()) {
-                this.countThreshold = Optional.of(countHistoryEvolution.getCurrentThreshold());
-            }
+            this.countThreshold = Optional.of(countHistoryEvolution)
+                .filter(HistoryEvolution::needsNotification)
+                .map(HistoryEvolution::getCurrentThreshold);
             return this;
         }
 
         public Builder sizeThreshold(HistoryEvolution sizeHistoryEvolution) {
-            if (sizeHistoryEvolution.needsNotification()) {
-                this.sizeThreshold = Optional.of(sizeHistoryEvolution.getCurrentThreshold());
-            }
+            this.sizeThreshold = Optional.of(sizeHistoryEvolution)
+                .filter(HistoryEvolution::needsNotification)
+                .map(HistoryEvolution::getCurrentThreshold);
             return this;
         }
 
-        public Optional<InformationToEmail> build() {
+        public Optional<QuotaThresholdNotice> build() {
             Preconditions.checkNotNull(sizeQuota);
             Preconditions.checkNotNull(countQuota);
 
             if (sizeThreshold.isPresent() || countThreshold.isPresent()) {
                 return Optional.of(
-                    new InformationToEmail(countThreshold, sizeThreshold, sizeQuota, countQuota));
+                    new QuotaThresholdNotice(countThreshold, sizeThreshold, sizeQuota, countQuota));
             }
             return Optional.empty();
         }
@@ -153,8 +153,8 @@ public class InformationToEmail {
     private final Quota<QuotaCount> countQuota;
 
     @VisibleForTesting
-    InformationToEmail(Optional<QuotaThreshold> countThreshold, Optional<QuotaThreshold> sizeThreshold,
-                       Quota<QuotaSize> sizeQuota, Quota<QuotaCount> countQuota) {
+    QuotaThresholdNotice(Optional<QuotaThreshold> countThreshold, Optional<QuotaThreshold> sizeThreshold,
+                         Quota<QuotaSize> sizeQuota, Quota<QuotaCount> countQuota) {
         this.countThreshold = countThreshold;
         this.sizeThreshold = sizeThreshold;
         this.sizeQuota = sizeQuota;
@@ -172,8 +172,8 @@ public class InformationToEmail {
 
     @Override
     public final boolean equals(Object o) {
-        if (o instanceof InformationToEmail) {
-            InformationToEmail that = (InformationToEmail) o;
+        if (o instanceof QuotaThresholdNotice) {
+            QuotaThresholdNotice that = (QuotaThresholdNotice) o;
 
             return Objects.equals(this.countThreshold, that.countThreshold)
                 && Objects.equals(this.sizeThreshold, that.sizeThreshold)
@@ -188,13 +188,4 @@ public class InformationToEmail {
         return Objects.hash(countThreshold, sizeThreshold, sizeQuota, countQuota);
     }
 
-    @Override
-    public String toString() {
-        return "InformationToEmail{" +
-            "countThreshold=" + countThreshold +
-            ", sizeThreshold=" + sizeThreshold +
-            ", sizeQuota=" + sizeQuota +
-            ", countQuota=" + countQuota +
-            '}';
-    }
 }
