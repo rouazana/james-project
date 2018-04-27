@@ -27,15 +27,15 @@ import com.google.common.base.MoreObjects;
 
 public class QuotaThresholdChange {
     private final QuotaThreshold quotaThreshold;
-    private final Instant date;
+    private final Instant instant;
 
-    public QuotaThresholdChange(QuotaThreshold quotaThreshold, Instant date) {
+    public QuotaThresholdChange(QuotaThreshold quotaThreshold, Instant instant) {
         this.quotaThreshold = quotaThreshold;
-        this.date = date;
+        this.instant = instant;
     }
 
     public boolean isNotOlderThan(Duration duration) {
-        return date.isAfter(Instant.now().minus(duration));
+        return instant.isAfter(Instant.now().minus(duration));
     }
 
     public QuotaThreshold getQuotaThreshold() {
@@ -48,21 +48,21 @@ public class QuotaThresholdChange {
             QuotaThresholdChange that = (QuotaThresholdChange) o;
 
             return Objects.equals(this.quotaThreshold, that.quotaThreshold)
-                && Objects.equals(this.date, that.date);
+                && Objects.equals(this.instant, that.instant);
         }
         return false;
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(quotaThreshold, date);
+        return Objects.hash(quotaThreshold, instant);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
             .add("quotaThreshold", quotaThreshold)
-            .add("date", date)
+            .add("date", instant)
             .toString();
     }
 }
