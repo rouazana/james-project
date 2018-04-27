@@ -67,7 +67,7 @@ public class QuotaThresholdChange {
     public String toString() {
         return MoreObjects.toStringHelper(this)
             .add("quotaThreshold", quotaThreshold)
-            .add("date", instant)
+            .add("instant", instant)
             .toString();
     }
 }
