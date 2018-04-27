@@ -17,12 +17,13 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.mailbox.quota.memory;
+package org.apache.james.mailbox.quota.memory.listeners;
 
-import org.apache.james.mailbox.quota.mailing.QuotaMailingListenerTest;
+import org.apache.james.mailbox.quota.mailing.listeners.QuotaMailingListenersIntegrationTest;
+import org.apache.james.mailbox.quota.memory.InMemoryQuotaThresholdHistoryStoreExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(InMemoryQuotaThresholdHistoryStoreExtension.class)
-public class InMemoryQuotaMailingListenerTest implements QuotaMailingListenerTest {
+public class InMemoryQuotaMailingListenersIntegrationTest implements QuotaMailingListenersIntegrationTest {
 
 }
