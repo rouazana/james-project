@@ -19,6 +19,7 @@
 
 package org.apache.james.mailbox.quota;
 
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._75;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
@@ -49,8 +50,7 @@ public interface QuotaThresholdHistoryStoreTest {
 
     @Test
     default void persistQuotaSizeThresholdChangeShouldAddTheChangeWhenNone(QuotaThresholdHistoryStore store) {
-        QuotaThresholdChange change = new QuotaThresholdChange(
-            new QuotaThreshold(0.75),
+        QuotaThresholdChange change = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofDays(2)));
 
         store.persistQuotaSizeThresholdChange(USER, change);
@@ -61,8 +61,7 @@ public interface QuotaThresholdHistoryStoreTest {
 
     @Test
     default void persistQuotaSizeThresholdChangeShouldAddTheChangeWhenAlreadySomeChanges(QuotaThresholdHistoryStore store) {
-        QuotaThresholdChange change1 = new QuotaThresholdChange(
-            new QuotaThreshold(0.75),
+        QuotaThresholdChange change1 = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofDays(2)));
         QuotaThresholdChange change2 = new QuotaThresholdChange(
             new QuotaThreshold(0.9),
@@ -77,8 +76,7 @@ public interface QuotaThresholdHistoryStoreTest {
 
     @Test
     default void persistQuotaCountThresholdChangeShouldAddTheChangeWhenNone(QuotaThresholdHistoryStore store) {
-        QuotaThresholdChange change = new QuotaThresholdChange(
-            new QuotaThreshold(0.75),
+        QuotaThresholdChange change = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofDays(2)));
 
         store.persistQuotaCountThresholdChange(USER, change);
@@ -89,8 +87,7 @@ public interface QuotaThresholdHistoryStoreTest {
 
     @Test
     default void persistQuotaCountThresholdChangeShouldAddTheChangeWhenAlreadySomeChanges(QuotaThresholdHistoryStore store) {
-        QuotaThresholdChange change1 = new QuotaThresholdChange(
-            new QuotaThreshold(0.75),
+        QuotaThresholdChange change1 = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofDays(2)));
         QuotaThresholdChange change2 = new QuotaThresholdChange(
             new QuotaThreshold(0.9),
@@ -105,8 +102,7 @@ public interface QuotaThresholdHistoryStoreTest {
 
     @Test
     default void sizeAndCountShouldBeIsolated(QuotaThresholdHistoryStore store) {
-        QuotaThresholdChange change = new QuotaThresholdChange(
-            new QuotaThreshold(0.75),
+        QuotaThresholdChange change = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofDays(2)));
 
         store.persistQuotaCountThresholdChange(USER, change);
@@ -117,8 +113,7 @@ public interface QuotaThresholdHistoryStoreTest {
 
     @Test
     default void usersShouldBeIsolated(QuotaThresholdHistoryStore store) {
-        QuotaThresholdChange change = new QuotaThresholdChange(
-            new QuotaThreshold(0.75),
+        QuotaThresholdChange change = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofDays(2)));
 
         store.persistQuotaCountThresholdChange(USER, change);
