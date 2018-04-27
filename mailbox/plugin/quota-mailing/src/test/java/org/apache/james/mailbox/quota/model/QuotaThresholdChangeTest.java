@@ -19,6 +19,7 @@
 
 package org.apache.james.mailbox.quota.model;
 
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._75;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
@@ -39,8 +40,7 @@ public class QuotaThresholdChangeTest {
 
     @Test
     public void isNotOlderThanShouldReturnTrueWhenRecent() {
-        QuotaThresholdChange change = new QuotaThresholdChange(
-            new QuotaThreshold(0.75),
+        QuotaThresholdChange change = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofHours(2)));
 
         assertThat(change.isNotOlderThan(Duration.ofHours(3)))
@@ -49,8 +49,7 @@ public class QuotaThresholdChangeTest {
 
     @Test
     public void isNotOlderThanShouldReturnFalseWhenOld() {
-        QuotaThresholdChange change = new QuotaThresholdChange(
-            new QuotaThreshold(0.75),
+        QuotaThresholdChange change = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofHours(2)));
 
         assertThat(change.isNotOlderThan(Duration.ofHours(1)))
@@ -59,8 +58,7 @@ public class QuotaThresholdChangeTest {
 
     @Test
     public void isNotOlderThanShouldReturnFalseWhenLimit() {
-        QuotaThresholdChange change = new QuotaThresholdChange(
-            new QuotaThreshold(0.75),
+        QuotaThresholdChange change = new QuotaThresholdChange(_75,
             Instant.now().minus(Duration.ofHours(2)));
 
         assertThat(change.isNotOlderThan(Duration.ofHours(2)))
