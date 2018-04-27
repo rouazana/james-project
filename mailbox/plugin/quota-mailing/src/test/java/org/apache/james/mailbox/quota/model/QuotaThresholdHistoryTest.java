@@ -19,6 +19,8 @@
 
 package org.apache.james.mailbox.quota.model;
 
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._50;
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._75;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
@@ -45,18 +47,10 @@ public class QuotaThresholdHistoryTest {
         assertThat(
             new QuotaThresholdHistory(
                 ImmutableList.of(
-                new QuotaThresholdChange(
-                    new QuotaThreshold(0.5),
-                    Instant.now().minus(Duration.ofDays(24))),
-                new QuotaThresholdChange(
-                    new QuotaThreshold(0.75),
-                    Instant.now().minus(Duration.ofDays(12))),
-                new QuotaThresholdChange(
-                    new QuotaThreshold(0.5),
-                    Instant.now().minus(Duration.ofDays(6)))))
-                .compareWithCurrentThreshold(
-                    new QuotaThreshold(0.75),
-                    Duration.ofDays(1)))
+                new QuotaThresholdChange(_50, Instant.now().minus(Duration.ofDays(24))),
+                new QuotaThresholdChange(_75, Instant.now().minus(Duration.ofDays(12))),
+                new QuotaThresholdChange(_50, Instant.now().minus(Duration.ofDays(6)))))
+                .compareWithCurrentThreshold(_75, Duration.ofDays(1)))
             .isEqualTo(CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD);
     }
 
@@ -65,15 +59,9 @@ public class QuotaThresholdHistoryTest {
         assertThat(
             new QuotaThresholdHistory(
                 ImmutableList.of(
-                new QuotaThresholdChange(
-                    new QuotaThreshold(0.5),
-                    Instant.now().minus(Duration.ofDays(24))),
-                new QuotaThresholdChange(
-                    new QuotaThreshold(0.75),
-                    Instant.now().minus(Duration.ofDays(12)))))
-                .compareWithCurrentThreshold(
-                    new QuotaThreshold(0.5),
-                    Duration.ofDays(1)))
+                new QuotaThresholdChange(_50, Instant.now().minus(Duration.ofDays(24))),
+                new QuotaThresholdChange(_75, Instant.now().minus(Duration.ofDays(12)))))
+                .compareWithCurrentThreshold(_50, Duration.ofDays(1)))
             .isEqualTo(CompareWithCurrentThreshold.BELOW_CURRENT_THRESHOLD);
     }
 
@@ -82,15 +70,9 @@ public class QuotaThresholdHistoryTest {
         assertThat(
             new QuotaThresholdHistory(
                 ImmutableList.of(
-                new QuotaThresholdChange(
-                    new QuotaThreshold(0.5),
-                    Instant.now().minus(Duration.ofDays(24))),
-                new QuotaThresholdChange(
-                    new QuotaThreshold(0.75),
-                    Instant.now().minus(Duration.ofDays(12)))))
-                .compareWithCurrentThreshold(
-                    new QuotaThreshold(0.75),
-                    Duration.ofDays(1)))
+                new QuotaThresholdChange(_50, Instant.now().minus(Duration.ofDays(24))),
+                new QuotaThresholdChange(_75, Instant.now().minus(Duration.ofDays(12)))))
+                .compareWithCurrentThreshold(_75, Duration.ofDays(1)))
             .isEqualTo(CompareWithCurrentThreshold.NO_CHANGES);
     }
 
@@ -99,18 +81,10 @@ public class QuotaThresholdHistoryTest {
         assertThat(
             new QuotaThresholdHistory(
                 ImmutableList.of(
-                    new QuotaThresholdChange(
-                        new QuotaThreshold(0.5),
-                        Instant.now().minus(Duration.ofDays(24))),
-                    new QuotaThresholdChange(
-                        new QuotaThreshold(0.75),
-                        Instant.now().minus(Duration.ofHours(12))),
-                    new QuotaThresholdChange(
-                        new QuotaThreshold(0.5),
-                        Instant.now().minus(Duration.ofHours(6)))))
-                .compareWithCurrentThreshold(
-                    new QuotaThreshold(0.75),
-                    Duration.ofDays(1)))
+                    new QuotaThresholdChange(_50, Instant.now().minus(Duration.ofDays(24))),
+                    new QuotaThresholdChange(_75, Instant.now().minus(Duration.ofHours(12))),
+                    new QuotaThresholdChange(_50, Instant.now().minus(Duration.ofHours(6)))))
+                .compareWithCurrentThreshold(_75, Duration.ofDays(1)))
             .isEqualTo(CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD_WITH_RECENT_CHANGES);
     }
 }
