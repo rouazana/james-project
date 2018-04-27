@@ -62,13 +62,15 @@ public class InMemoryQuotaThresholdHistoryStore implements QuotaThresholdHistory
     }
 
     private void doAddChange(ConcurrentHashMap<User, QuotaThresholdHistory> map, User user, QuotaThresholdChange change) {
-        IntStream.range(0, MAX_RETRY)
-            .filter(i -> tryAddChange(map, user, change))
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Failure to persist change after several trial"));
+        IntStream.range(0, MAX_RETRY + 1)
+            .filter(i -> tryAddChange(map, user, change, i))
+            .findFirst();
     }
 
-    private boolean tryAddChange(ConcurrentHashMap<User, QuotaThresholdHistory> map, User user, QuotaThresholdChange change) {
+    private boolean tryAddChange(ConcurrentHashMap<User, QuotaThresholdHistory> map, User user, QuotaThresholdChange change, int step) {
+        if (step > MAX_RETRY) {
+            throw new RuntimeException("Failure to persist change after several trial");
+        }
         Optional<QuotaThresholdHistory> currentState = Optional.ofNullable(map.get(user));
 
         QuotaThresholdHistory newState = currentState
