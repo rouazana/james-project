@@ -19,6 +19,9 @@
 
 package org.apache.james.mailbox.quota.model;
 
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._75;
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._759;
+import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._90;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -65,53 +68,45 @@ public class QuotaThresholdTest {
 
     @Test
     public void isExceededShouldReturnFalseWhenBelowThreshold() {
-        QuotaThreshold quotaThreshold = new QuotaThreshold(0.75);
-
         Quota<QuotaSize> quota = Quota.<QuotaSize>builder()
             .computedLimit(QuotaSize.size(100))
             .used(QuotaSize.size(50))
             .build();
 
-        assertThat(quotaThreshold.isExceeded(quota))
+        assertThat(_75.isExceeded(quota))
             .isFalse();
     }
 
     @Test
     public void isExceededShouldReturnTrueWhenAboveThreshold() {
-        QuotaThreshold quotaThreshold = new QuotaThreshold(0.75);
-
         Quota<QuotaSize> quota = Quota.<QuotaSize>builder()
             .computedLimit(QuotaSize.size(100))
             .used(QuotaSize.size(80))
             .build();
 
-        assertThat(quotaThreshold.isExceeded(quota))
+        assertThat(_75.isExceeded(quota))
             .isTrue();
     }
 
     @Test
     public void isExceededShouldReturnFalseWhenOnThreshold() {
-        QuotaThreshold quotaThreshold = new QuotaThreshold(0.75);
-
         Quota<QuotaSize> quota = Quota.<QuotaSize>builder()
             .computedLimit(QuotaSize.size(100))
             .used(QuotaSize.size(75))
             .build();
 
-        assertThat(quotaThreshold.isExceeded(quota))
+        assertThat(_75.isExceeded(quota))
             .isFalse();
     }
 
     @Test
     public void isExceededShouldReturnFalseWhenUnlimited() {
-        QuotaThreshold quotaThreshold = new QuotaThreshold(0.75);
-
         Quota<QuotaSize> quota = Quota.<QuotaSize>builder()
             .computedLimit(QuotaSize.unlimited())
             .used(QuotaSize.size(80))
             .build();
 
-        assertThat(quotaThreshold.isExceeded(quota))
+        assertThat(_75.isExceeded(quota))
             .isFalse();
     }
 
@@ -123,51 +118,37 @@ public class QuotaThresholdTest {
 
     @Test
     public void nonZeroShouldNotFilterNonZeroValues() {
-        QuotaThreshold quotaThreshold = new QuotaThreshold(0.75);
-
-        assertThat(quotaThreshold.nonZero())
-            .contains(quotaThreshold);
+        assertThat(_75.nonZero())
+            .contains(_75);
     }
 
     @Test
     public void getQuotaOccupationRatioAsPercentShouldReturnIntRepresentationOfThreshold() {
-        QuotaThreshold quotaThreshold = new QuotaThreshold(0.75);
-
-        assertThat(quotaThreshold.getQuotaOccupationRatioAsPercent())
+        assertThat(_75.getQuotaOccupationRatioAsPercent())
             .isEqualTo(75);
     }
 
     @Test
     public void getQuotaOccupationRatioAsPercentShouldTruncateValues() {
-        QuotaThreshold quotaThreshold = new QuotaThreshold(0.759);
-
-        assertThat(quotaThreshold.getQuotaOccupationRatioAsPercent())
+        assertThat(_759.getQuotaOccupationRatioAsPercent())
             .isEqualTo(75);
     }
 
     @Test
     public void compareToShouldReturnNegativeWhenLowerThanComparedValue() {
-        QuotaThreshold quotaThreshold1 = new QuotaThreshold(0.75);
-        QuotaThreshold quotaThreshold2 = new QuotaThreshold(0.9);
-
-        assertThat(quotaThreshold1.compareTo(quotaThreshold2))
+        assertThat(_75.compareTo(_90))
             .isLessThan(0);
     }
 
     @Test
     public void compareToShouldReturnPositiveWhenHgherThanComparedValue() {
-        QuotaThreshold quotaThreshold1 = new QuotaThreshold(0.75);
-        QuotaThreshold quotaThreshold2 = new QuotaThreshold(0.9);
-
-        assertThat(quotaThreshold2.compareTo(quotaThreshold1))
+        assertThat(_90.compareTo(_75))
             .isGreaterThan(0);
     }
 
     @Test
     public void compareToShouldReturnZeroWhenEquals() {
-        QuotaThreshold quotaThreshold = new QuotaThreshold(0.75);
-
-        assertThat(quotaThreshold.compareTo(quotaThreshold))
+        assertThat(_75.compareTo(_75))
             .isEqualTo(0);
     }
 
