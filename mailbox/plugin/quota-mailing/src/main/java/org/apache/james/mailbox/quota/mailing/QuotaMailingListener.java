@@ -30,13 +30,12 @@ import org.apache.james.core.User;
 import org.apache.james.core.builder.MimeMessageBuilder;
 import org.apache.james.mailbox.Event;
 import org.apache.james.mailbox.MailboxListener;
-import org.apache.james.mailbox.quota.CompareWithCurrentThreshold;
+import org.apache.james.mailbox.quota.HistoryEvolution;
 import org.apache.james.mailbox.quota.QuotaThresholdHistoryStore;
 import org.apache.james.mailbox.quota.model.QuotaThreshold;
 import org.apache.james.mailbox.quota.model.QuotaThresholdChange;
 import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
-import org.apache.james.util.FunctionalInterfacesUtils.Action;
 import org.apache.mailet.MailetContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,37 +109,31 @@ public class QuotaMailingListener implements MailboxListener {
 
     public Optional<InformationToEmail> computeInformationToEmail(User user, QuotaUsageUpdatedEvent event) {
         QuotaThreshold countThreshold = configuration.getThresholds().highestExceededThreshold(event.getCountQuota());
-        CompareWithCurrentThreshold compareWithCountThreshold = quotaThresholdHistoryStore
+        HistoryEvolution countHistoryEvolution = quotaThresholdHistoryStore
             .retrieveQuotaCountThresholdChanges(user)
             .compareWithCurrentThreshold(countThreshold, configuration.getGracePeriod());
 
         QuotaThreshold sizeThreshold = configuration.getThresholds().highestExceededThreshold(event.getSizeQuota());
-        CompareWithCurrentThreshold compareWithCurrentSizeThreshold = quotaThresholdHistoryStore
+        HistoryEvolution sizeHistoryEvolution = quotaThresholdHistoryStore
             .retrieveQuotaSizeThresholdChanges(user)
             .compareWithCurrentThreshold(sizeThreshold, configuration.getGracePeriod());
-        if (compareWithCountThreshold != CompareWithCurrentThreshold.NO_CHANGES) {
-            Action updateCountThreshold = () -> quotaThresholdHistoryStore.persistQuotaCountThresholdChange(user, new QuotaThresholdChange(countThreshold, instantSupplier.now()));
-            updateThreshold(compareWithCountThreshold, updateCountThreshold);
-        }
-        if (compareWithCurrentSizeThreshold != CompareWithCurrentThreshold.NO_CHANGES) {
-            Action updateSizeThreshold = () -> quotaThresholdHistoryStore.persistQuotaSizeThresholdChange(user, new QuotaThresholdChange(sizeThreshold, instantSupplier.now()));
-            updateThreshold(compareWithCurrentSizeThreshold, updateSizeThreshold);
-        }
+
+        Runnable updateCountThreshold = () -> quotaThresholdHistoryStore.persistQuotaCountThresholdChange(user, new QuotaThresholdChange(countThreshold, instantSupplier.now()));
+        updateThreshold(countHistoryEvolution, updateCountThreshold);
+        Runnable updateSizeThreshold = () -> quotaThresholdHistoryStore.persistQuotaSizeThresholdChange(user, new QuotaThresholdChange(sizeThreshold, instantSupplier.now()));
+        updateThreshold(sizeHistoryEvolution, updateSizeThreshold);
 
         return InformationToEmail.builder()
             .countQuota(event.getCountQuota())
             .sizeQuota(event.getSizeQuota())
-            .countThreshold(countThreshold, compareWithCountThreshold)
-            .sizeThreshold(sizeThreshold, compareWithCurrentSizeThreshold)
+            .countThreshold(countHistoryEvolution)
+            .sizeThreshold(sizeHistoryEvolution)
             .build();
     }
 
-    private void updateThreshold(CompareWithCurrentThreshold comparison, Action updateThreshold) {
-        switch (comparison) {
-            case ABOVE_CURRENT_THRESHOLD:
-            case ABOVE_CURRENT_THRESHOLD_WITH_RECENT_CHANGES:
-            case BELOW_CURRENT_THRESHOLD:
-                updateThreshold.perform();
+    private void updateThreshold(HistoryEvolution evolution, Runnable updateThreshold) {
+        if (evolution.isModified()) {
+            updateThreshold.run();
         }
     }
 
