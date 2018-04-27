@@ -19,6 +19,8 @@
 
 package org.apache.james.mailbox.quota.model;
 
+import static org.apache.james.mailbox.quota.HistoryEvolution.HighestThresholdRecentness.NotAlreadyReachedDuringGracePeriod;
+import static org.apache.james.mailbox.quota.HistoryEvolution.HighestThresholdRecentness.AlreadyReachedDuringGracePriod;
 import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._50;
 import static org.apache.james.mailbox.quota.model.QuotaThresholdFixture._75;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Duration;
 import java.time.Instant;
 
-import org.apache.james.mailbox.quota.CompareWithCurrentThreshold;
+import org.apache.james.mailbox.quota.HistoryEvolution;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -51,7 +53,7 @@ public class QuotaThresholdHistoryTest {
                 new QuotaThresholdChange(_75, Instant.now().minus(Duration.ofDays(12))),
                 new QuotaThresholdChange(_50, Instant.now().minus(Duration.ofDays(6)))))
                 .compareWithCurrentThreshold(_75, Duration.ofDays(1)))
-            .isEqualTo(CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD);
+            .isEqualTo(HistoryEvolution.higherThresholdReached(_75, NotAlreadyReachedDuringGracePeriod));
     }
 
     @Test
@@ -62,7 +64,7 @@ public class QuotaThresholdHistoryTest {
                 new QuotaThresholdChange(_50, Instant.now().minus(Duration.ofDays(24))),
                 new QuotaThresholdChange(_75, Instant.now().minus(Duration.ofDays(12)))))
                 .compareWithCurrentThreshold(_50, Duration.ofDays(1)))
-            .isEqualTo(CompareWithCurrentThreshold.BELOW_CURRENT_THRESHOLD);
+            .isEqualTo(HistoryEvolution.lowerThresholdReached(_50));
     }
 
     @Test
@@ -73,7 +75,7 @@ public class QuotaThresholdHistoryTest {
                 new QuotaThresholdChange(_50, Instant.now().minus(Duration.ofDays(24))),
                 new QuotaThresholdChange(_75, Instant.now().minus(Duration.ofDays(12)))))
                 .compareWithCurrentThreshold(_75, Duration.ofDays(1)))
-            .isEqualTo(CompareWithCurrentThreshold.NO_CHANGES);
+            .isEqualTo(HistoryEvolution.noChanges(_75));
     }
 
     @Test
@@ -85,6 +87,6 @@ public class QuotaThresholdHistoryTest {
                     new QuotaThresholdChange(_75, Instant.now().minus(Duration.ofHours(12))),
                     new QuotaThresholdChange(_50, Instant.now().minus(Duration.ofHours(6)))))
                 .compareWithCurrentThreshold(_75, Duration.ofDays(1)))
-            .isEqualTo(CompareWithCurrentThreshold.ABOVE_CURRENT_THRESHOLD_WITH_RECENT_CHANGES);
+            .isEqualTo(HistoryEvolution.higherThresholdReached(_75, AlreadyReachedDuringGracePriod));
     }
 }
