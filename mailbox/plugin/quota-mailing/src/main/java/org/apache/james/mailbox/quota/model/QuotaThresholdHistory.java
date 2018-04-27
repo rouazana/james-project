@@ -30,19 +30,19 @@ import org.apache.james.mailbox.quota.CompareWithCurrentThreshold;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
-public class QuotaThresholdChanges {
+public class QuotaThresholdHistory {
 
     private final ImmutableList<QuotaThresholdChange> changes;
 
-    public QuotaThresholdChanges() {
+    public QuotaThresholdHistory() {
         this(ImmutableList.of());
     }
 
-    public QuotaThresholdChanges(QuotaThresholdChange... changes) {
+    public QuotaThresholdHistory(QuotaThresholdChange... changes) {
         this.changes = ImmutableList.copyOf(Arrays.asList(changes));
     }
 
-    public QuotaThresholdChanges(List<QuotaThresholdChange> changes) {
+    public QuotaThresholdHistory(List<QuotaThresholdChange> changes) {
         this.changes = ImmutableList.copyOf(changes);
     }
 
@@ -74,8 +74,8 @@ public class QuotaThresholdChanges {
             .findFirst();
     }
 
-    public QuotaThresholdChanges combineWith(QuotaThresholdChange change) {
-        return new QuotaThresholdChanges(
+    public QuotaThresholdHistory combineWith(QuotaThresholdChange change) {
+        return new QuotaThresholdHistory(
             ImmutableList.<QuotaThresholdChange>builder()
                 .addAll(changes)
                 .add(change)
@@ -84,8 +84,8 @@ public class QuotaThresholdChanges {
 
     @Override
     public final boolean equals(Object o) {
-        if (o instanceof QuotaThresholdChanges) {
-            QuotaThresholdChanges that = (QuotaThresholdChanges) o;
+        if (o instanceof QuotaThresholdHistory) {
+            QuotaThresholdHistory that = (QuotaThresholdHistory) o;
 
             return Objects.equals(this.changes, that.changes);
         }

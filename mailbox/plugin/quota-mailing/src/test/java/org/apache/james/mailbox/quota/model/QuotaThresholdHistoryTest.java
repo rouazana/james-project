@@ -31,11 +31,11 @@ import com.google.common.collect.ImmutableList;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-public class QuotaThresholdChangesTest {
+public class QuotaThresholdHistoryTest {
 
     @Test
     public void shouldMatchBeanContract() {
-        EqualsVerifier.forClass(QuotaThresholdChanges.class)
+        EqualsVerifier.forClass(QuotaThresholdHistory.class)
             .allFieldsShouldBeUsed()
             .verify();
     }
@@ -43,7 +43,7 @@ public class QuotaThresholdChangesTest {
     @Test
     public void compareWithCurrentThresholdShouldReturnAboveWhenStrictlyAboveDuringDuration() {
         assertThat(
-            new QuotaThresholdChanges(
+            new QuotaThresholdHistory(
                 ImmutableList.of(
                 new QuotaThresholdChange(
                     new QuotaThreshold(0.5),
@@ -63,7 +63,7 @@ public class QuotaThresholdChangesTest {
     @Test
     public void compareWithCurrentThresholdShouldReturnBelowWhenLowerThanLastChange() {
         assertThat(
-            new QuotaThresholdChanges(
+            new QuotaThresholdHistory(
                 ImmutableList.of(
                 new QuotaThresholdChange(
                     new QuotaThreshold(0.5),
@@ -80,7 +80,7 @@ public class QuotaThresholdChangesTest {
     @Test
     public void compareWithCurrentThresholdShouldReturnNoChangeWhenEqualsLastChange() {
         assertThat(
-            new QuotaThresholdChanges(
+            new QuotaThresholdHistory(
                 ImmutableList.of(
                 new QuotaThresholdChange(
                     new QuotaThreshold(0.5),
@@ -97,7 +97,7 @@ public class QuotaThresholdChangesTest {
     @Test
     public void compareWithCurrentThresholdShouldReturnAboveWithRecentChangesWhenThresholdExceededDuringDuration() {
         assertThat(
-            new QuotaThresholdChanges(
+            new QuotaThresholdHistory(
                 ImmutableList.of(
                     new QuotaThresholdChange(
                         new QuotaThreshold(0.5),
