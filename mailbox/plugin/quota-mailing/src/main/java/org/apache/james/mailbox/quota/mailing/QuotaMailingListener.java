@@ -109,12 +109,12 @@ public class QuotaMailingListener implements MailboxListener {
     }
 
     public Optional<InformationToEmail> computeInformationToEmail(User user, QuotaUsageUpdatedEvent event) {
-        QuotaThreshold countThreshold = configuration.getThresholds().firstExceededThreshold(event.getCountQuota());
+        QuotaThreshold countThreshold = configuration.getThresholds().highestExceededThreshold(event.getCountQuota());
         CompareWithCurrentThreshold compareWithCountThreshold = quotaThresholdHistoryStore
             .retrieveQuotaCountThresholdChanges(user)
             .compareWithCurrentThreshold(countThreshold, configuration.getGracePeriod());
 
-        QuotaThreshold sizeThreshold = configuration.getThresholds().firstExceededThreshold(event.getSizeQuota());
+        QuotaThreshold sizeThreshold = configuration.getThresholds().highestExceededThreshold(event.getSizeQuota());
         CompareWithCurrentThreshold compareWithCurrentSizeThreshold = quotaThresholdHistoryStore
             .retrieveQuotaSizeThresholdChanges(user)
             .compareWithCurrentThreshold(sizeThreshold, configuration.getGracePeriod());
