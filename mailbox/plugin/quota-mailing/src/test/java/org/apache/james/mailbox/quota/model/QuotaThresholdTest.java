@@ -141,7 +141,7 @@ public class QuotaThresholdTest {
     }
 
     @Test
-    public void compareToShouldReturnPositiveWhenHgherThanComparedValue() {
+    public void compareToShouldReturnPositiveWhenHigherThanComparedValue() {
         assertThat(_90.compareTo(_75))
             .isGreaterThan(0);
     }
