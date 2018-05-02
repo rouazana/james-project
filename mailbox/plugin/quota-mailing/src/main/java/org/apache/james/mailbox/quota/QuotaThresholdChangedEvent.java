@@ -23,14 +23,14 @@ import org.apache.james.mailbox.Event;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.model.Quota;
 
-public class QuotaThresholdChangeEvent implements Event {
+public class QuotaThresholdChangedEvent implements Event {
     private final HistoryEvolution sizeHistoryEvolution;
     private final HistoryEvolution countHistoryEvolution;
     private final Quota<QuotaSize> sizeQuota;
     private final Quota<QuotaCount> countQuota;
     private final MailboxSession session;
 
-    public QuotaThresholdChangeEvent(HistoryEvolution sizeHistoryEvolution, HistoryEvolution countHistoryEvolution, Quota<QuotaSize> sizeQuota, Quota<QuotaCount> countQuota, MailboxSession session) {
+    public QuotaThresholdChangedEvent(HistoryEvolution sizeHistoryEvolution, HistoryEvolution countHistoryEvolution, Quota<QuotaSize> sizeQuota, Quota<QuotaCount> countQuota, MailboxSession session) {
         this.sizeHistoryEvolution = sizeHistoryEvolution;
         this.countHistoryEvolution = countHistoryEvolution;
         this.sizeQuota = sizeQuota;

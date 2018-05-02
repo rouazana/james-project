@@ -28,7 +28,7 @@ import org.apache.james.core.User;
 import org.apache.james.core.builder.MimeMessageBuilder;
 import org.apache.james.mailbox.Event;
 import org.apache.james.mailbox.MailboxListener;
-import org.apache.james.mailbox.quota.QuotaThresholdChangeEvent;
+import org.apache.james.mailbox.quota.QuotaThresholdChangedEvent;
 import org.apache.james.mailbox.quota.mailing.QuotaThresholdNotice;
 import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
@@ -63,15 +63,15 @@ public class QuotaThresholdMailer implements MailboxListener {
     @Override
     public void event(Event event) {
         try {
-            if (event instanceof QuotaThresholdChangeEvent) {
-                handleEvent((QuotaThresholdChangeEvent) event);
+            if (event instanceof QuotaThresholdChangedEvent) {
+                handleEvent((QuotaThresholdChangedEvent) event);
             }
         } catch (Exception e) {
             LOGGER.error("Can not send a quota mail alert", e);
         }
     }
 
-    public void handleEvent(QuotaThresholdChangeEvent event) {
+    public void handleEvent(QuotaThresholdChangedEvent event) {
         Optional<QuotaThresholdNotice> maybeNotice = QuotaThresholdNotice.builder()
             .countQuota(event.getCountQuota())
             .sizeQuota(event.getSizeQuota())

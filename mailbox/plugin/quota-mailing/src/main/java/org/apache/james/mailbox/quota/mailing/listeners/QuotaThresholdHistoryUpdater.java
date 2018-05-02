@@ -25,7 +25,7 @@ import java.time.Instant;
 import org.apache.james.core.User;
 import org.apache.james.mailbox.Event;
 import org.apache.james.mailbox.MailboxListener;
-import org.apache.james.mailbox.quota.QuotaThresholdChangeEvent;
+import org.apache.james.mailbox.quota.QuotaThresholdChangedEvent;
 import org.apache.james.mailbox.quota.QuotaThresholdHistoryStore;
 import org.apache.james.mailbox.quota.model.QuotaThresholdChange;
 
@@ -55,8 +55,8 @@ public class QuotaThresholdHistoryUpdater implements MailboxListener {
 
     @Override
     public void event(Event event) {
-        if (event instanceof QuotaThresholdChangeEvent) {
-            QuotaThresholdChangeEvent changeEvent = (QuotaThresholdChangeEvent) event;
+        if (event instanceof QuotaThresholdChangedEvent) {
+            QuotaThresholdChangedEvent changeEvent = (QuotaThresholdChangedEvent) event;
             User user = getUser(event);
 
             updateCountHistory(changeEvent, user);
@@ -64,17 +64,17 @@ public class QuotaThresholdHistoryUpdater implements MailboxListener {
         }
     }
 
-    public void updateSizeHistory(QuotaThresholdChangeEvent changeEvent, User user) {
-        if (changeEvent.getSizeHistoryEvolution().isModified()) {
+    public void updateSizeHistory(QuotaThresholdChangedEvent changeEvent, User user) {
+        if (changeEvent.getSizeHistoryEvolution().isChange()) {
             quotaThresholdHistoryStore.persistQuotaSizeThresholdChange(user,
-                new QuotaThresholdChange(changeEvent.getSizeHistoryEvolution().getCurrentThreshold(), Instant.now(clock)));
+                new QuotaThresholdChange(changeEvent.getSizeHistoryEvolution().getThreshold(), Instant.now(clock)));
         }
     }
 
-    public void updateCountHistory(QuotaThresholdChangeEvent changeEvent, User user) {
-        if (changeEvent.getCountHistoryEvolution().isModified()) {
+    public void updateCountHistory(QuotaThresholdChangedEvent changeEvent, User user) {
+        if (changeEvent.getCountHistoryEvolution().isChange()) {
             quotaThresholdHistoryStore.persistQuotaCountThresholdChange(user,
-                new QuotaThresholdChange(changeEvent.getCountHistoryEvolution().getCurrentThreshold(),
+                new QuotaThresholdChange(changeEvent.getCountHistoryEvolution().getThreshold(),
                     Instant.now(clock)));
         }
     }

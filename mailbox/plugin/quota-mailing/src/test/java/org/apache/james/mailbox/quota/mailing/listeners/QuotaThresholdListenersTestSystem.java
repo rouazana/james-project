@@ -34,7 +34,7 @@ import org.apache.mailet.MailetContext;
 public class QuotaThresholdListenersTestSystem {
     private final MailboxEventDispatcher dispatcher;
     private final DefaultDelegatingMailboxListener delegatingListener;
-    private final QuotaThresholdEmitter thresholdEmitter;
+    private final QuotaThresholdCrossingListener thresholdEmitter;
     private final QuotaThresholdHistoryUpdater historyUpdater;
     private final QuotaThresholdMailer thresholdMailer;
 
@@ -42,7 +42,7 @@ public class QuotaThresholdListenersTestSystem {
         delegatingListener = new DefaultDelegatingMailboxListener();
         dispatcher = new MailboxEventDispatcher(delegatingListener);
 
-        thresholdEmitter = new QuotaThresholdEmitter(dispatcher, store, clock);
+        thresholdEmitter = new QuotaThresholdCrossingListener(dispatcher, store, clock);
         historyUpdater = new QuotaThresholdHistoryUpdater(store, clock);
         thresholdMailer = new QuotaThresholdMailer(mailetContext, MemoryUsersRepository.withVirtualHosting());
 
