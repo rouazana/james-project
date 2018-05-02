@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.james.core.User;
 import org.apache.james.mailbox.MailboxListener;
@@ -42,8 +43,10 @@ import org.apache.james.mailbox.quota.model.QuotaThreshold;
 import org.apache.james.mailbox.quota.model.QuotaThresholdChange;
 import org.apache.james.mailbox.quota.model.QuotaThresholdHistory;
 import org.apache.james.mailbox.quota.model.QuotaThresholds;
+import org.apache.james.util.concurrency.ConcurrentTestRunner;
 import org.apache.mailet.base.MailAddressFixture;
 import org.apache.mailet.base.test.FakeMailContext;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -699,5 +702,30 @@ public interface QuotaMailingListenersIntegrationTest {
 
         assertThat(mailetContext.getSentMails())
             .hasSize(2);
+    }
+
+    @Disabled
+    @Test
+    default void shouldSendOneMailUponConcurrentEvents(QuotaThresholdHistoryStore store) throws Exception {
+        FakeMailContext mailetContext = mailetContext();
+        QuotaThresholdListenersTestSystem testee = new QuotaThresholdListenersTestSystem(store, mailetContext);
+        testee.configure(new QuotaMailingListenerConfiguration(new QuotaThresholds(_50, _80), GRACE_PERIOD));
+
+        new ConcurrentTestRunner(10, 1, (threadNb, step) ->
+            testee.event(new MailboxListener.QuotaUsageUpdatedEvent(new MockMailboxSession(BOB),
+                QuotaRoot.quotaRoot("any", Optional.empty()),
+                Quota.<QuotaCount>builder()
+                    .used(QuotaCount.count(55))
+                    .computedLimit(QuotaCount.count(100))
+                    .build(),
+                Quota.<QuotaSize>builder()
+                    .used(QuotaSize.size(40))
+                    .computedLimit(QuotaSize.size(100))
+                    .build())))
+            .run()
+            .awaitTermination(1, TimeUnit.MINUTES);
+
+        assertThat(mailetContext.getSentMails())
+            .hasSize(1);
     }
 }
