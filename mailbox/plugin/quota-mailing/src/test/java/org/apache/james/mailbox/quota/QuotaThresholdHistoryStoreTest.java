@@ -65,7 +65,7 @@ public interface QuotaThresholdHistoryStoreTest {
             Instant.now().minus(Duration.ofDays(2)));
         QuotaThresholdChange change2 = new QuotaThresholdChange(_90,
             Instant.now().minus(Duration.ofDays(1)));
-
+        
         store.persistQuotaSizeThresholdChange(USER, change1);
         store.persistQuotaSizeThresholdChange(USER, change2);
 
