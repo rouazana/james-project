@@ -217,7 +217,7 @@ public abstract class AbstractHookableCmdHandler<HookT extends org.apache.james.
                 return Optional.of("Command accepted");
             case DECLINED:
             case NONE:
-                throw new IllegalStateException();
+                break;
         }
         if (returnCode.isDisconnected()) {
             return Optional.of("Server disconnected");
@@ -235,7 +235,7 @@ public abstract class AbstractHookableCmdHandler<HookT extends org.apache.james.
                 return Optional.of(SMTPRetCode.MAIL_OK);
             case DECLINED:
             case NONE:
-                throw new IllegalStateException();
+                break;
         }
         if (returnCode.isDisconnected()) {
             return Optional.of(SMTPRetCode.TRANSACTION_FAILED);

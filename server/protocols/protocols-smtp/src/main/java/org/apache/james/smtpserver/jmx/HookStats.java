@@ -71,7 +71,7 @@ public class HookStats extends StandardMBean implements HookStatsMBean, Disposab
                 ok.incrementAndGet();
                 break;
             case NONE:
-                throw new IllegalStateException();
+                break;
         }
         all.incrementAndGet();
     }
