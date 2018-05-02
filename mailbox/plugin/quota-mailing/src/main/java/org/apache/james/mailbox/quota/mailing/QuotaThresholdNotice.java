@@ -57,16 +57,22 @@ public class QuotaThresholdNotice {
 
         public Builder countThreshold(HistoryEvolution countHistoryEvolution) {
             this.countThreshold = Optional.of(countHistoryEvolution)
-                .filter(HistoryEvolution::needsNotification)
-                .map(HistoryEvolution::getCurrentThreshold);
+                .filter(this::needsNotification)
+                .map(HistoryEvolution::getThreshold);
             return this;
         }
 
         public Builder sizeThreshold(HistoryEvolution sizeHistoryEvolution) {
             this.sizeThreshold = Optional.of(sizeHistoryEvolution)
-                .filter(HistoryEvolution::needsNotification)
-                .map(HistoryEvolution::getCurrentThreshold);
+                .filter(this::needsNotification)
+                .map(HistoryEvolution::getThreshold);
             return this;
+        }
+
+        boolean needsNotification(HistoryEvolution evolution) {
+            return evolution.getThresholdHistoryChange() == HistoryEvolution.ThresholdHistoryChange.HigherThresholdReached
+                && evolution.currentThresholdNotRecentlyReached()
+                && evolution.getThreshold().nonZero().isPresent();
         }
 
         public Optional<QuotaThresholdNotice> build() {
