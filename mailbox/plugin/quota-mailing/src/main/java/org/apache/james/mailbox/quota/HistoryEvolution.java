@@ -65,24 +65,22 @@ public class HistoryEvolution {
         this.currentThreshold = currentThreshold;
     }
 
-    public boolean isModified() {
+    public boolean isChange() {
         return thresholdHistoryChange != ThresholdHistoryChange.NoChange;
     }
 
-    public boolean needsNotification() {
-        return thresholdHistoryChange == ThresholdHistoryChange.HigherThresholdReached
-            && currentThresholdNotRecentlyReached()
-            && currentThreshold.nonZero().isPresent();
-    }
-
-    private Boolean currentThresholdNotRecentlyReached() {
+    public boolean currentThresholdNotRecentlyReached() {
         return recentness
             .map(value -> value == HighestThresholdRecentness.NotAlreadyReachedDuringGracePeriod)
             .orElse(false);
     }
 
-    public QuotaThreshold getCurrentThreshold() {
+    public QuotaThreshold getThreshold() {
         return currentThreshold;
+    }
+
+    public ThresholdHistoryChange getThresholdHistoryChange() {
+        return thresholdHistoryChange;
     }
 
     @Override

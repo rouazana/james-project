@@ -38,7 +38,7 @@ public class HistoryEvolutionTest {
     public void isModifiedShouldReturnFalseWhenNoChange() {
         assertThat(
             HistoryEvolution.noChanges(_75)
-                .isModified())
+                .isChange())
             .isFalse();
     }
 
@@ -46,7 +46,7 @@ public class HistoryEvolutionTest {
     public void isModifiedShouldReturnTrueWhenLowerThresholdReached() {
         assertThat(
             HistoryEvolution.lowerThresholdReached(_75)
-                .isModified())
+                .isChange())
             .isTrue();
     }
 
@@ -54,7 +54,7 @@ public class HistoryEvolutionTest {
     public void isModifiedShouldReturnTrueWhenHigherThresholdAlreadyReachedWithinGracePeriod() {
         assertThat(
             HistoryEvolution.higherThresholdReached(_75, HistoryEvolution.HighestThresholdRecentness.AlreadyReachedDuringGracePriod)
-                .isModified())
+                .isChange())
             .isTrue();
     }
 
@@ -62,39 +62,39 @@ public class HistoryEvolutionTest {
     public void isModifiedShouldReturnTrueWhenHigherThresholdReachedNotAlreadyReachedWithinGracePeriod() {
         assertThat(
             HistoryEvolution.higherThresholdReached(_75, HistoryEvolution.HighestThresholdRecentness.NotAlreadyReachedDuringGracePeriod)
-                .isModified())
+                .isChange())
             .isTrue();
     }
 
     @Test
-    public void needsNotificationShouldReturnFalseWhenNoChange() {
+    public void currentThresholdNotRecentlyReachedShouldReturnFalseWhenNoChange() {
         assertThat(
             HistoryEvolution.noChanges(_75)
-                .needsNotification())
+                .currentThresholdNotRecentlyReached())
             .isFalse();
     }
 
     @Test
-    public void needsNotificationShouldReturnFalseWhenLowerThresholdReached() {
+    public void currentThresholdNotRecentlyReachedShouldReturnFalseWhenLowerThresholdReached() {
         assertThat(
             HistoryEvolution.lowerThresholdReached(_75)
-                .needsNotification())
+                .currentThresholdNotRecentlyReached())
             .isFalse();
     }
 
     @Test
-    public void needsNotificationShouldReturnFalseWhenHigherThresholdReachedAlreadyReachedWithinGracePeriod() {
+    public void currentThresholdNotRecentlyReachedShouldReturnFalseWhenHigherThresholdReachedAlreadyReachedWithinGracePeriod() {
         assertThat(
             HistoryEvolution.higherThresholdReached(_75, HistoryEvolution.HighestThresholdRecentness.AlreadyReachedDuringGracePriod)
-                .needsNotification())
+                .currentThresholdNotRecentlyReached())
             .isFalse();
     }
 
     @Test
-    public void needsNotificationShouldReturnTrueWhenHigherThresholdReachedNotAlreadyReachedWithinGracePeriod() {
+    public void currentThresholdNotRecentlyReachedShouldReturnTrueWhenHigherThresholdReachedNotAlreadyReachedWithinGracePeriod() {
         assertThat(
             HistoryEvolution.higherThresholdReached(_75, HistoryEvolution.HighestThresholdRecentness.NotAlreadyReachedDuringGracePeriod)
-                .needsNotification())
+                .currentThresholdNotRecentlyReached())
             .isTrue();
     }
 }
