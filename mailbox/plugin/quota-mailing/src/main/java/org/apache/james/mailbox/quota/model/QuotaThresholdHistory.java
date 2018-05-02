@@ -90,6 +90,10 @@ public class QuotaThresholdHistory {
                 .build());
     }
 
+    public ImmutableList<QuotaThresholdChange> getChanges() {
+        return changes;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (o instanceof QuotaThresholdHistory) {

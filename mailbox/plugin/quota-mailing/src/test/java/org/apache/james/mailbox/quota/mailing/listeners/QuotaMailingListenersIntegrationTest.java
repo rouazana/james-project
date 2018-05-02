@@ -728,4 +728,31 @@ public interface QuotaMailingListenersIntegrationTest {
         assertThat(mailetContext.getSentMails())
             .hasSize(1);
     }
+
+    @Disabled
+    @Test
+    default void storeShouldOnlyStoreOneOverPassedThresholdOnceWhenConcurrentEvents(QuotaThresholdHistoryStore store) throws Exception {
+        FakeMailContext mailetContext = mailetContext();
+        QuotaThresholdListenersTestSystem testee = new QuotaThresholdListenersTestSystem(store, mailetContext);
+        testee.configure(new QuotaMailingListenerConfiguration(new QuotaThresholds(_50, _80), GRACE_PERIOD));
+
+        int threadCount = 5;
+        new ConcurrentTestRunner(threadCount, 1, (threadNb, step) ->
+            testee.event(new MailboxListener.QuotaUsageUpdatedEvent(new MockMailboxSession(BOB),
+                QuotaRoot.quotaRoot("any", Optional.empty()),
+                Quota.<QuotaCount>builder()
+                    .used(QuotaCount.count(60 + threadNb))
+                    .computedLimit(QuotaCount.count(100))
+                    .build(),
+                Quota.<QuotaSize>builder()
+                    .used(QuotaSize.size(40))
+                    .computedLimit(QuotaSize.size(100))
+                    .build())))
+            .run()
+            .awaitTermination(1, TimeUnit.MINUTES);
+
+        assertThat(store.retrieveQuotaCountThresholdChanges(BOB_USER)
+            .getChanges())
+            .hasSize(1);
+    }
 }
