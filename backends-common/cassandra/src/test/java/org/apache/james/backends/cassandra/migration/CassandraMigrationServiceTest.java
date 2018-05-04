@@ -80,19 +80,19 @@ public class CassandraMigrationServiceTest {
     }
 
     @Test
-    public void getCurrentVersionShouldReturnCurrentVersion() throws Exception {
+    public void getCurrentVersionShouldReturnCurrentVersion() {
         when(schemaVersionDAO.getCurrentSchemaVersion()).thenReturn(CompletableFuture.completedFuture(Optional.of(CURRENT_VERSION)));
 
-        assertThat(testee.getCurrentVersion().get()).isEqualTo(CURRENT_VERSION);
+        assertThat(testee.getCurrentVersion()).contains(CURRENT_VERSION);
     }
 
     @Test
-    public void getLatestVersionShouldReturnTheLatestVersion() throws Exception {
-        assertThat(testee.getLatestVersion().get()).isEqualTo(LATEST_VERSION);
+    public void getLatestVersionShouldReturnTheLatestVersion() {
+        assertThat(testee.getLatestVersion()).contains(LATEST_VERSION);
     }
 
     @Test
-    public void upgradeToVersionShouldNotThrowWhenCurrentVersionIsUpToDate() throws Exception {
+    public void upgradeToVersionShouldNotThrowWhenCurrentVersionIsUpToDate() {
         when(schemaVersionDAO.getCurrentSchemaVersion()).thenReturn(CompletableFuture.completedFuture(Optional.of(CURRENT_VERSION)));
 
         assertThat(testee.upgradeToVersion(OLDER_VERSION).run())
@@ -100,7 +100,7 @@ public class CassandraMigrationServiceTest {
     }
 
     @Test
-    public void upgradeToVersionShouldUpdateToVersion() throws Exception {
+    public void upgradeToVersionShouldUpdateToVersion() {
         when(schemaVersionDAO.getCurrentSchemaVersion()).thenReturn(CompletableFuture.completedFuture(Optional.of(OLDER_VERSION)));
 
         testee.upgradeToVersion(CURRENT_VERSION).run();
@@ -109,7 +109,7 @@ public class CassandraMigrationServiceTest {
     }
 
     @Test
-    public void upgradeToLastVersionShouldNotThrowWhenVersionIsUpToDate() throws Exception {
+    public void upgradeToLastVersionShouldNotThrowWhenVersionIsUpToDate() {
 
         when(schemaVersionDAO.getCurrentSchemaVersion()).thenReturn(CompletableFuture.completedFuture(Optional.of(LATEST_VERSION)));
 
@@ -118,7 +118,7 @@ public class CassandraMigrationServiceTest {
     }
 
     @Test
-    public void upgradeToLastVersionShouldUpdateToLatestVersion() throws Exception {
+    public void upgradeToLastVersionShouldUpdateToLatestVersion() {
         when(schemaVersionDAO.getCurrentSchemaVersion()).thenReturn(CompletableFuture.completedFuture(Optional.of(OLDER_VERSION)));
 
         testee.upgradeToLastVersion().run();
@@ -127,7 +127,7 @@ public class CassandraMigrationServiceTest {
     }
 
     @Test
-    public void upgradeToVersionShouldThrowOnMissingVersion() throws Exception {
+    public void upgradeToVersionShouldThrowOnMissingVersion() {
         Map<SchemaVersion, Migration> allMigrationClazz = ImmutableMap.<SchemaVersion, Migration>builder()
             .put(OLDER_VERSION, successfulMigration)
             .put(LATEST_VERSION, successfulMigration)
@@ -141,7 +141,7 @@ public class CassandraMigrationServiceTest {
     }
 
     @Test
-    public void upgradeToVersionShouldUpdateIntermediarySuccessfulMigrationsInCaseOfError() throws Exception {
+    public void upgradeToVersionShouldUpdateIntermediarySuccessfulMigrationsInCaseOfError() {
         try {
             Map<SchemaVersion, Migration> allMigrationClazz = ImmutableMap.<SchemaVersion, Migration>builder()
                 .put(OLDER_VERSION, successfulMigration)
@@ -160,7 +160,7 @@ public class CassandraMigrationServiceTest {
     }
 
     @Test
-    public void partialMigrationShouldThrow() throws Exception {
+    public void partialMigrationShouldThrow() {
         Migration migration1 = mock(Migration.class);
         when(migration1.run()).thenReturn(Migration.Result.PARTIAL);
         Migration migration2 = successfulMigration;
@@ -177,7 +177,7 @@ public class CassandraMigrationServiceTest {
     }
 
     @Test
-    public void partialMigrationShouldAbortMigrations() throws Exception {
+    public void partialMigrationShouldAbortMigrations() {
         Migration migration1 = mock(Migration.class);
         when(migration1.run()).thenReturn(Migration.Result.PARTIAL);
         Migration migration2 = mock(Migration.class);
