@@ -51,58 +51,58 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>apache-james-mailbox-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>apache-james-mailbox-api</artifactId>
                 <version>${project.version}</version>
                 <type>test-jar</type>
             </dependency>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>apache-james-mailbox-store</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>apache-jsieve-core</artifactId>
                 <version>${jsieve.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>apache-mime4j-core</artifactId>
                 <version>${apache-mime4j.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>apache-mime4j-dom</artifactId>
                 <version>${apache-mime4j.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>james-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>james-server-data-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>james-server-util</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>james-server-util-java8</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.james</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>metrics-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
