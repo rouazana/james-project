@@ -20,6 +20,7 @@ package org.apache.james.backends.es;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -31,10 +32,12 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
 public class Indexer {
     private static int DEBUG_MAX_LENGTH_CONTENT = 1000;
+    public static final int DEFAULT_BATCH_SIZE = 100;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Indexer.class);
 
@@ -43,11 +46,19 @@ public class Indexer {
     private final AliasName aliasName;
     private final TypeName typeName;
 
-    public Indexer(Client client, DeleteByQueryPerformer deleteByQueryPerformer,
+    public Indexer(Client client, ExecutorService executor,
                    AliasName aliasName,
                    TypeName typeName) {
+        this(client, executor, aliasName, typeName, DEFAULT_BATCH_SIZE);
+    }
+
+    @VisibleForTesting
+    public Indexer(Client client, ExecutorService executor,
+                   AliasName aliasName,
+                   TypeName typeName,
+                   int batchSize) {
         this.client = client;
-        this.deleteByQueryPerformer = deleteByQueryPerformer;
+        this.deleteByQueryPerformer = new DeleteByQueryPerformer(client, executor, batchSize, aliasName, typeName);
         this.aliasName = aliasName;
         this.typeName = typeName;
     }

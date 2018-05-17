@@ -18,11 +18,12 @@
  ****************************************************************/
 package org.apache.james.mailbox.elasticsearch;
 
+import java.util.concurrent.ExecutorService;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.james.backends.es.AliasName;
-import org.apache.james.backends.es.DeleteByQueryPerformer;
 import org.apache.james.backends.es.ElasticSearchConstants;
 import org.apache.james.backends.es.Indexer;
 import org.apache.james.backends.es.IndexerSupplier;
@@ -33,10 +34,19 @@ public class MailboxIndexerSupplier implements IndexerSupplier {
     private final Indexer indexer;
 
     @Inject
-    public MailboxIndexerSupplier(Client client, DeleteByQueryPerformer deleteByQueryPerformer,
-                                  @Named(ElasticSearchConstants.WRITE_ALIAS) AliasName aliasName,
-                                  TypeName typeName) {
-        this.indexer = new Indexer(client, deleteByQueryPerformer, aliasName, typeName);
+    public MailboxIndexerSupplier(Client client,
+                                  @Named("AsyncExecutor") ExecutorService executor,
+                                  @Named(ElasticSearchConstants.MAILBOX_WRITE_ALIAS) AliasName aliasName,
+                                  @Named(ElasticSearchConstants.MAILBOX_MAPPING) TypeName typeName) {
+        this.indexer = new Indexer(client, executor, aliasName, typeName);
+    }
+
+    public MailboxIndexerSupplier(Client client,
+                                  ExecutorService executor,
+                                  AliasName aliasName,
+                                  TypeName typeName,
+                                  int batchSize) {
+        this.indexer = new Indexer(client, executor, aliasName, typeName, batchSize);
     }
 
     @Override

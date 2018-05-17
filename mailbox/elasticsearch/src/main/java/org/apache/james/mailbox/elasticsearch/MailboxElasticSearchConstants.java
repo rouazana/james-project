@@ -28,4 +28,6 @@ public interface MailboxElasticSearchConstants {
     AliasName DEFAULT_MAILBOX_READ_ALIAS = new AliasName("mailboxReadAlias");
     IndexName DEFAULT_MAILBOX_INDEX = new IndexName("mailbox_v1");
     TypeName MESSAGE_TYPE = new TypeName("message");
+
+    String MAILBOX = "mailbox";
 }

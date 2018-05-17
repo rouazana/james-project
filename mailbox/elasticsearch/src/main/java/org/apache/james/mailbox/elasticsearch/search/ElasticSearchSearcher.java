@@ -66,7 +66,8 @@ public class ElasticSearchSearcher {
     @Inject
     public ElasticSearchSearcher(Client client, QueryConverter queryConverter,
                                  MailboxId.Factory mailboxIdFactory, MessageId.Factory messageIdFactory,
-                                 @Named(ElasticSearchConstants.READ_ALIAS) AliasName aliasName, TypeName typeName) {
+                                 @Named(ElasticSearchConstants.MAILBOX_READ_ALIAS) AliasName aliasName,
+                                 @Named(ElasticSearchConstants.MAILBOX_MAPPING) TypeName typeName) {
         this(client, queryConverter, DEFAULT_SIZE, mailboxIdFactory, messageIdFactory, aliasName, typeName);
     }
 

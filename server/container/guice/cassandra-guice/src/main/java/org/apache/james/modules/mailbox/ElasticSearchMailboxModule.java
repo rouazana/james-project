@@ -21,6 +21,7 @@ package org.apache.james.modules.mailbox;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Named;
@@ -50,6 +51,7 @@ import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
@@ -63,14 +65,17 @@ public class ElasticSearchMailboxModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(TypeName.class).toInstance(MailboxElasticSearchConstants.MESSAGE_TYPE);
         bind(ElasticSearchListeningMessageSearchIndex.class).in(Scopes.SINGLETON);
         bind(MessageSearchIndex.class).to(ElasticSearchListeningMessageSearchIndex.class);
         bind(ListeningMessageSearchIndex.class).to(ElasticSearchListeningMessageSearchIndex.class);
         bind(MailboxIndexerSupplier.class).in(Scopes.SINGLETON);
+
         bind(IndexerSupplier.class)
             .annotatedWith(Names.named(ElasticSearchConstants.MAILBOX_INDEX))
             .to(MailboxIndexerSupplier.class);
+        bind(TypeName.class)
+            .annotatedWith(Names.named(ElasticSearchConstants.MAILBOX_MAPPING))
+            .toInstance(MailboxElasticSearchConstants.MESSAGE_TYPE);
     }
 
     @Provides
@@ -86,29 +91,31 @@ public class ElasticSearchMailboxModule extends AbstractModule {
     }
 
     @Provides
+    @Named(ElasticSearchConstants.MAILBOX_INDEX)
     protected IndexName provideIndexName(ElasticSearchConfiguration configuration) {
-        return configuration.getIndexName();
+        return configuration.getIndexMailboxName();
     }
 
     @Provides
-    @Named(ElasticSearchConstants.READ_ALIAS)
+    @Named(ElasticSearchConstants.MAILBOX_READ_ALIAS)
     protected AliasName provideReadAliasName(ElasticSearchConfiguration configuration) {
-        return configuration.getReadAliasName();
+        return configuration.getReadAliasMailboxName();
     }
 
     @Provides
-    @Named(ElasticSearchConstants.WRITE_ALIAS)
+    @Named(ElasticSearchConstants.MAILBOX_WRITE_ALIAS)
     protected AliasName provideWriteAliasName(ElasticSearchConfiguration configuration) {
-        return configuration.getWriteAliasName();
+        return configuration.getWriteAliasMailboxName();
     }
 
     @Provides
     @Singleton
+    @Named(MailboxElasticSearchConstants.MAILBOX)
     protected IndexCreationFactory provideIndexCreationFactory(ElasticSearchConfiguration configuration) {
         return new IndexCreationFactory()
-            .useIndex(configuration.getIndexName())
-            .addAlias(configuration.getReadAliasName())
-            .addAlias(configuration.getWriteAliasName())
+            .useIndex(configuration.getIndexMailboxName())
+            .addAlias(configuration.getReadAliasMailboxName())
+            .addAlias(configuration.getWriteAliasMailboxName())
             .nbShards(configuration.getNbShards())
             .nbReplica(configuration.getNbReplica());
     }
@@ -116,24 +123,27 @@ public class ElasticSearchMailboxModule extends AbstractModule {
     @Provides
     @Singleton
     protected Client provideClient(ElasticSearchConfiguration configuration,
-                                           IndexCreationFactory indexCreationFactory,
-                                           AsyncRetryExecutor executor) throws ExecutionException, InterruptedException {
+                                   @Named(MailboxElasticSearchConstants.MAILBOX) IndexCreationFactory mailboxIndexCreationFactory,
+                                   AsyncRetryExecutor executor) throws ExecutionException, InterruptedException {
 
         return RetryExecutorUtil.retryOnExceptions(executor, configuration.getMaxRetries(), configuration.getMinDelay(), NoNodeAvailableException.class)
-            .getWithRetry(context -> connectToCluster(configuration, indexCreationFactory))
+            .getWithRetry(context -> connectToCluster(configuration, ImmutableList.of(mailboxIndexCreationFactory)))
             .get();
     }
 
-    private Client connectToCluster(ElasticSearchConfiguration configuration, IndexCreationFactory indexCreationFactory) {
+    private Client connectToCluster(ElasticSearchConfiguration configuration, Collection<IndexCreationFactory> indexCreationFactories) {
         LOGGER.info("Trying to connect to ElasticSearch service at {}", LocalDateTime.now());
 
         Client client = ClientProviderImpl.fromHosts(configuration.getHosts()).get();
 
-        indexCreationFactory.createIndexAndAliases(client);
-        return NodeMappingFactory.applyMapping(client,
-            configuration.getIndexName(),
+        indexCreationFactories.forEach(factory -> factory.createIndexAndAliases(client));
+
+        NodeMappingFactory.applyMapping(client,
+            configuration.getIndexMailboxName(),
             MailboxElasticSearchConstants.MESSAGE_TYPE,
             MailboxMappingFactory.getMappingContent());
+
+        return client;
     }
 
     @Provides

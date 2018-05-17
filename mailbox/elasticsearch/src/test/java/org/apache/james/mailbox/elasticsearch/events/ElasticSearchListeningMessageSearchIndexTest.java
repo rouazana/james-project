@@ -82,7 +82,7 @@ public class ElasticSearchListeningMessageSearchIndexTest {
 
         indexer = mock(Indexer.class);
         
-        testee = new ElasticSearchListeningMessageSearchIndex(mapperFactory, indexer, elasticSearchSearcher, messageToElasticSearchJson);
+        testee = new ElasticSearchListeningMessageSearchIndex(mapperFactory, () -> indexer, elasticSearchSearcher, messageToElasticSearchJson);
         session = new MockMailboxSession(USERNAME);
         users = ImmutableList.of(session.getUser());
     }

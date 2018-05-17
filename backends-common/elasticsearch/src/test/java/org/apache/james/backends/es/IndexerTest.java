@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 import org.apache.james.backends.es.utils.TestingClientProvider;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.junit.Before;
@@ -61,17 +60,7 @@ public class IndexerTest {
             .useIndex(INDEX_NAME)
             .addAlias(ALIAS_NAME)
             .createIndexAndAliases(clientProvider.get());
-        DeleteByQueryPerformer deleteByQueryPerformer = new DeleteByQueryPerformer(clientProvider.get(),
-            Executors.newSingleThreadExecutor(),
-            MINIMUM_BATCH_SIZE,
-            ALIAS_NAME,
-            TYPE_NAME) {
-            @Override
-            public void perform(QueryBuilder queryBuilder) {
-                doDeleteByQuery(queryBuilder);
-            }
-        };
-        testee = new Indexer(clientProvider.get(), deleteByQueryPerformer, ALIAS_NAME, TYPE_NAME);
+        testee = new Indexer(clientProvider.get(), Executors.newSingleThreadExecutor(), ALIAS_NAME, TYPE_NAME, MINIMUM_BATCH_SIZE);
     }
     
     @Test
