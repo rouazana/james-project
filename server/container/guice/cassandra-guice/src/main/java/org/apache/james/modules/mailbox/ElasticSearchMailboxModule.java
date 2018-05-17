@@ -31,7 +31,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.james.backends.es.AliasName;
 import org.apache.james.backends.es.ClientProviderImpl;
-import org.apache.james.backends.es.ElasticSearchConstants;
 import org.apache.james.backends.es.IndexCreationFactory;
 import org.apache.james.backends.es.IndexName;
 import org.apache.james.backends.es.IndexerSupplier;
@@ -71,10 +70,10 @@ public class ElasticSearchMailboxModule extends AbstractModule {
         bind(MailboxIndexerSupplier.class).in(Scopes.SINGLETON);
 
         bind(IndexerSupplier.class)
-            .annotatedWith(Names.named(ElasticSearchConstants.MAILBOX_INDEX))
+            .annotatedWith(Names.named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_INDEX))
             .to(MailboxIndexerSupplier.class);
         bind(TypeName.class)
-            .annotatedWith(Names.named(ElasticSearchConstants.MAILBOX_MAPPING))
+            .annotatedWith(Names.named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_MAPPING))
             .toInstance(MailboxElasticSearchConstants.MESSAGE_TYPE);
     }
 
@@ -91,26 +90,26 @@ public class ElasticSearchMailboxModule extends AbstractModule {
     }
 
     @Provides
-    @Named(ElasticSearchConstants.MAILBOX_INDEX)
+    @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_INDEX)
     protected IndexName provideIndexName(ElasticSearchConfiguration configuration) {
         return configuration.getIndexMailboxName();
     }
 
     @Provides
-    @Named(ElasticSearchConstants.MAILBOX_READ_ALIAS)
+    @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_READ_ALIAS)
     protected AliasName provideReadAliasName(ElasticSearchConfiguration configuration) {
         return configuration.getReadAliasMailboxName();
     }
 
     @Provides
-    @Named(ElasticSearchConstants.MAILBOX_WRITE_ALIAS)
+    @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_WRITE_ALIAS)
     protected AliasName provideWriteAliasName(ElasticSearchConfiguration configuration) {
         return configuration.getWriteAliasMailboxName();
     }
 
     @Provides
     @Singleton
-    @Named(MailboxElasticSearchConstants.MAILBOX)
+    @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX)
     protected IndexCreationFactory provideIndexCreationFactory(ElasticSearchConfiguration configuration) {
         return new IndexCreationFactory()
             .useIndex(configuration.getIndexMailboxName())
@@ -123,7 +122,7 @@ public class ElasticSearchMailboxModule extends AbstractModule {
     @Provides
     @Singleton
     protected Client provideClient(ElasticSearchConfiguration configuration,
-                                   @Named(MailboxElasticSearchConstants.MAILBOX) IndexCreationFactory mailboxIndexCreationFactory,
+                                   @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX) IndexCreationFactory mailboxIndexCreationFactory,
                                    AsyncRetryExecutor executor) throws ExecutionException, InterruptedException {
 
         return RetryExecutorUtil.retryOnExceptions(executor, configuration.getMaxRetries(), configuration.getMinDelay(), NoNodeAvailableException.class)

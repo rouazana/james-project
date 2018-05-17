@@ -24,10 +24,19 @@ import org.apache.james.backends.es.IndexName;
 import org.apache.james.backends.es.TypeName;
 
 public interface MailboxElasticSearchConstants {
+
+    interface InjectionNames {
+        String MAILBOX_WRITE_ALIAS = "injectWriteAlias";
+        String MAILBOX_READ_ALIAS = "injectReadAlias";
+
+        String MAILBOX_INDEX = "mailboxIndex";
+        String MAILBOX_MAPPING = "mailboxMapping";
+
+        String MAILBOX = "mailbox";
+    }
+
     AliasName DEFAULT_MAILBOX_WRITE_ALIAS = new AliasName("mailboxWriteAlias");
     AliasName DEFAULT_MAILBOX_READ_ALIAS = new AliasName("mailboxReadAlias");
     IndexName DEFAULT_MAILBOX_INDEX = new IndexName("mailbox_v1");
     TypeName MESSAGE_TYPE = new TypeName("message");
-
-    String MAILBOX = "mailbox";
 }

@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.james.backends.es.AliasName;
-import org.apache.james.backends.es.ElasticSearchConstants;
 import org.apache.james.backends.es.Indexer;
 import org.apache.james.backends.es.IndexerSupplier;
 import org.apache.james.backends.es.TypeName;
@@ -36,8 +35,8 @@ public class MailboxIndexerSupplier implements IndexerSupplier {
     @Inject
     public MailboxIndexerSupplier(Client client,
                                   @Named("AsyncExecutor") ExecutorService executor,
-                                  @Named(ElasticSearchConstants.MAILBOX_WRITE_ALIAS) AliasName aliasName,
-                                  @Named(ElasticSearchConstants.MAILBOX_MAPPING) TypeName typeName) {
+                                  @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_WRITE_ALIAS) AliasName aliasName,
+                                  @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_MAPPING) TypeName typeName) {
         this.indexer = new Indexer(client, executor, aliasName, typeName);
     }
 

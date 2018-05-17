@@ -27,10 +27,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.james.backends.es.AliasName;
-import org.apache.james.backends.es.ElasticSearchConstants;
 import org.apache.james.backends.es.TypeName;
 import org.apache.james.backends.es.search.ScrollIterable;
 import org.apache.james.mailbox.MessageUid;
+import org.apache.james.mailbox.elasticsearch.MailboxElasticSearchConstants;
 import org.apache.james.mailbox.elasticsearch.json.JsonMessageConstants;
 import org.apache.james.mailbox.elasticsearch.query.QueryConverter;
 import org.apache.james.mailbox.elasticsearch.query.SortConverter;
@@ -66,8 +66,8 @@ public class ElasticSearchSearcher {
     @Inject
     public ElasticSearchSearcher(Client client, QueryConverter queryConverter,
                                  MailboxId.Factory mailboxIdFactory, MessageId.Factory messageIdFactory,
-                                 @Named(ElasticSearchConstants.MAILBOX_READ_ALIAS) AliasName aliasName,
-                                 @Named(ElasticSearchConstants.MAILBOX_MAPPING) TypeName typeName) {
+                                 @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_READ_ALIAS) AliasName aliasName,
+                                 @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_MAPPING) TypeName typeName) {
         this(client, queryConverter, DEFAULT_SIZE, mailboxIdFactory, messageIdFactory, aliasName, typeName);
     }
 
