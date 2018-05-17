@@ -69,7 +69,7 @@ public class ElasticSearchListeningMessageSearchIndex extends ListeningMessageSe
 
     @Inject
     public ElasticSearchListeningMessageSearchIndex(MessageMapperFactory factory,
-            @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_INDEX) IndexerSupplier indexer,
+            @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX) IndexerSupplier indexer,
             ElasticSearchSearcher searcher, MessageToElasticSearchJson messageToElasticSearchJson) {
         super(factory);
         this.indexer = indexer.getIndexer();

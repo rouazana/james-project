@@ -70,7 +70,7 @@ public class ElasticSearchMailboxModule extends AbstractModule {
         bind(MailboxIndexerSupplier.class).in(Scopes.SINGLETON);
 
         bind(IndexerSupplier.class)
-            .annotatedWith(Names.named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_INDEX))
+            .annotatedWith(Names.named(MailboxElasticSearchConstants.InjectionNames.MAILBOX))
             .to(MailboxIndexerSupplier.class);
         bind(TypeName.class)
             .annotatedWith(Names.named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_MAPPING))
