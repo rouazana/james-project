@@ -37,7 +37,7 @@ import com.google.common.base.Preconditions;
 
 public class Indexer {
     private static int DEBUG_MAX_LENGTH_CONTENT = 1000;
-    public static final int DEFAULT_BATCH_SIZE = 100;
+    private static final int DEFAULT_BATCH_SIZE = 100;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Indexer.class);
 
