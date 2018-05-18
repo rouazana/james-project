@@ -38,7 +38,7 @@ import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.acl.SimpleGroupMembershipResolver;
 import org.apache.james.mailbox.elasticsearch.IndexAttachments;
 import org.apache.james.mailbox.elasticsearch.MailboxElasticSearchConstants;
-import org.apache.james.mailbox.elasticsearch.MailboxIndexerSupplier;
+import org.apache.james.mailbox.elasticsearch.MailboxElasticSearchIndexerSupplier;
 import org.apache.james.mailbox.elasticsearch.MailboxMappingFactory;
 import org.apache.james.mailbox.elasticsearch.events.ElasticSearchListeningMessageSearchIndex;
 import org.apache.james.mailbox.elasticsearch.json.MessageToElasticSearchJson;
@@ -104,7 +104,7 @@ public class ElasticSearchHostSystem extends JamesImapHostSystem {
 
         ElasticSearchListeningMessageSearchIndex searchIndex = new ElasticSearchListeningMessageSearchIndex(
             factory,
-            new MailboxIndexerSupplier(client,
+            new MailboxElasticSearchIndexerSupplier(client,
                 Executors.newSingleThreadExecutor(),
                 MailboxElasticSearchConstants.DEFAULT_MAILBOX_WRITE_ALIAS,
                 MailboxElasticSearchConstants.MESSAGE_TYPE),

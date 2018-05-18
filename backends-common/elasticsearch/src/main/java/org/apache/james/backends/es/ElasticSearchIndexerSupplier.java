@@ -19,6 +19,6 @@
 
 package org.apache.james.backends.es;
 
-public interface IndexerSupplier {
-    Indexer getIndexer();
+public interface ElasticSearchIndexerSupplier {
+    ElasticSearchIndexer getElasticSearchIndexer();
 }

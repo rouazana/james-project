@@ -37,7 +37,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.common.collect.Lists;
 
-public class IndexerTest {
+public class ElasticSearchIndexerTest {
 
     private static final int MINIMUM_BATCH_SIZE = 1;
     private static final IndexName INDEX_NAME = new IndexName("index_name");
@@ -50,7 +50,7 @@ public class IndexerTest {
     public RuleChain ruleChain = RuleChain.outerRule(temporaryFolder).around(embeddedElasticSearch);
 
     private Node node;
-    private Indexer testee;
+    private ElasticSearchIndexer testee;
 
     @Before
     public void setup() {
@@ -60,7 +60,7 @@ public class IndexerTest {
             .useIndex(INDEX_NAME)
             .addAlias(ALIAS_NAME)
             .createIndexAndAliases(clientProvider.get());
-        testee = new Indexer(clientProvider.get(), Executors.newSingleThreadExecutor(), ALIAS_NAME, TYPE_NAME, MINIMUM_BATCH_SIZE);
+        testee = new ElasticSearchIndexer(clientProvider.get(), Executors.newSingleThreadExecutor(), ALIAS_NAME, TYPE_NAME, MINIMUM_BATCH_SIZE);
     }
     
     @Test

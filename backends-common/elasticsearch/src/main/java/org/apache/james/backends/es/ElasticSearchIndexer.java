@@ -35,28 +35,28 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
-public class Indexer {
+public class ElasticSearchIndexer {
     private static int DEBUG_MAX_LENGTH_CONTENT = 1000;
     private static final int DEFAULT_BATCH_SIZE = 100;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Indexer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchIndexer.class);
 
     private final Client client;
     private final DeleteByQueryPerformer deleteByQueryPerformer;
     private final AliasName aliasName;
     private final TypeName typeName;
 
-    public Indexer(Client client, ExecutorService executor,
-                   AliasName aliasName,
-                   TypeName typeName) {
+    public ElasticSearchIndexer(Client client, ExecutorService executor,
+                                AliasName aliasName,
+                                TypeName typeName) {
         this(client, executor, aliasName, typeName, DEFAULT_BATCH_SIZE);
     }
 
     @VisibleForTesting
-    public Indexer(Client client, ExecutorService executor,
-                   AliasName aliasName,
-                   TypeName typeName,
-                   int batchSize) {
+    public ElasticSearchIndexer(Client client, ExecutorService executor,
+                                AliasName aliasName,
+                                TypeName typeName,
+                                int batchSize) {
         this.client = client;
         this.deleteByQueryPerformer = new DeleteByQueryPerformer(client, executor, batchSize, aliasName, typeName);
         this.aliasName = aliasName;

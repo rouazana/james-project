@@ -24,32 +24,32 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.james.backends.es.AliasName;
-import org.apache.james.backends.es.Indexer;
-import org.apache.james.backends.es.IndexerSupplier;
+import org.apache.james.backends.es.ElasticSearchIndexer;
+import org.apache.james.backends.es.ElasticSearchIndexerSupplier;
 import org.apache.james.backends.es.TypeName;
 import org.elasticsearch.client.Client;
 
-public class MailboxIndexerSupplier implements IndexerSupplier {
-    private final Indexer indexer;
+public class MailboxElasticSearchIndexerSupplier implements ElasticSearchIndexerSupplier {
+    private final ElasticSearchIndexer elasticSearchIndexer;
 
     @Inject
-    public MailboxIndexerSupplier(Client client,
-                                  @Named("AsyncExecutor") ExecutorService executor,
-                                  @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_WRITE_ALIAS) AliasName aliasName,
-                                  @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_MAPPING) TypeName typeName) {
-        this.indexer = new Indexer(client, executor, aliasName, typeName);
+    public MailboxElasticSearchIndexerSupplier(Client client,
+                                               @Named("AsyncExecutor") ExecutorService executor,
+                                               @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_WRITE_ALIAS) AliasName aliasName,
+                                               @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_MAPPING) TypeName typeName) {
+        this.elasticSearchIndexer = new ElasticSearchIndexer(client, executor, aliasName, typeName);
     }
 
-    public MailboxIndexerSupplier(Client client,
-                                  ExecutorService executor,
-                                  AliasName aliasName,
-                                  TypeName typeName,
-                                  int batchSize) {
-        this.indexer = new Indexer(client, executor, aliasName, typeName, batchSize);
+    public MailboxElasticSearchIndexerSupplier(Client client,
+                                               ExecutorService executor,
+                                               AliasName aliasName,
+                                               TypeName typeName,
+                                               int batchSize) {
+        this.elasticSearchIndexer = new ElasticSearchIndexer(client, executor, aliasName, typeName, batchSize);
     }
 
     @Override
-    public Indexer getIndexer() {
-        return indexer;
+    public ElasticSearchIndexer getElasticSearchIndexer() {
+        return elasticSearchIndexer;
     }
 }
