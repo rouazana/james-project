@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.util.concurrent.Executors;
 
+import org.apache.james.backends.es.ElasticSearchIndexer;
 import org.apache.james.backends.es.EmbeddedElasticSearch;
 import org.apache.james.backends.es.IndexCreationFactory;
 import org.apache.james.backends.es.NodeMappingFactory;
@@ -108,7 +109,7 @@ public class ElasticSearchIntegrationTest extends AbstractMessageSearchIndexTest
 
         ElasticSearchListeningMessageSearchIndex elasticSearchListeningMessageSearchIndex = new ElasticSearchListeningMessageSearchIndex(
             storeMailboxManager.getMapperFactory(),
-            new MailboxElasticSearchIndexerSupplier(client,
+            new ElasticSearchIndexer(client,
                 Executors.newSingleThreadExecutor(),
                 MailboxElasticSearchConstants.DEFAULT_MAILBOX_WRITE_ALIAS,
                 MailboxElasticSearchConstants.MESSAGE_TYPE,

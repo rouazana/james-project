@@ -19,26 +19,30 @@
 
 package org.apache.james.modules.mailbox;
 
+import static org.apache.james.mailbox.elasticsearch.search.ElasticSearchSearcher.DEFAULT_SEARCH_SIZE;
+
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.james.backends.es.AliasName;
 import org.apache.james.backends.es.ClientProviderImpl;
-import org.apache.james.backends.es.ElasticSearchIndexerSupplier;
+import org.apache.james.backends.es.ElasticSearchIndexer;
 import org.apache.james.backends.es.IndexCreationFactory;
 import org.apache.james.backends.es.NodeMappingFactory;
-import org.apache.james.backends.es.TypeName;
 import org.apache.james.mailbox.elasticsearch.IndexAttachments;
 import org.apache.james.mailbox.elasticsearch.MailboxElasticSearchConstants;
-import org.apache.james.mailbox.elasticsearch.MailboxElasticSearchIndexerSupplier;
 import org.apache.james.mailbox.elasticsearch.MailboxMappingFactory;
 import org.apache.james.mailbox.elasticsearch.events.ElasticSearchListeningMessageSearchIndex;
+import org.apache.james.mailbox.elasticsearch.query.QueryConverter;
+import org.apache.james.mailbox.elasticsearch.search.ElasticSearchSearcher;
+import org.apache.james.mailbox.model.MailboxId;
+import org.apache.james.mailbox.model.MessageId;
 import org.apache.james.mailbox.store.search.ListeningMessageSearchIndex;
 import org.apache.james.mailbox.store.search.MessageSearchIndex;
 import org.apache.james.utils.PropertiesProvider;
@@ -51,7 +55,6 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
-import com.google.inject.name.Names;
 import com.nurkiewicz.asyncretry.AsyncRetryExecutor;
 
 public class ElasticSearchMailboxModule extends AbstractModule {
@@ -64,14 +67,36 @@ public class ElasticSearchMailboxModule extends AbstractModule {
         bind(ElasticSearchListeningMessageSearchIndex.class).in(Scopes.SINGLETON);
         bind(MessageSearchIndex.class).to(ElasticSearchListeningMessageSearchIndex.class);
         bind(ListeningMessageSearchIndex.class).to(ElasticSearchListeningMessageSearchIndex.class);
-        bind(MailboxElasticSearchIndexerSupplier.class).in(Scopes.SINGLETON);
+    }
 
-        bind(ElasticSearchIndexerSupplier.class)
-            .annotatedWith(Names.named(MailboxElasticSearchConstants.InjectionNames.MAILBOX))
-            .to(MailboxElasticSearchIndexerSupplier.class);
-        bind(TypeName.class)
-            .annotatedWith(Names.named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_MAPPING))
-            .toInstance(MailboxElasticSearchConstants.MESSAGE_TYPE);
+    @Provides
+    @Singleton
+    @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX)
+    private ElasticSearchIndexer createMailboxElasticSearchIndexer(Client client,
+                                               @Named("AsyncExecutor") ExecutorService executor,
+                                               ElasticSearchConfiguration configuration) {
+        return new ElasticSearchIndexer(
+            client,
+            executor,
+            configuration.getWriteAliasMailboxName(),
+            MailboxElasticSearchConstants.MESSAGE_TYPE);
+    }
+
+    @Provides
+    @Singleton
+    private ElasticSearchSearcher createMailboxElasticSearchSearcher(Client client,
+                                                                     QueryConverter queryConverter,
+                                                                     MailboxId.Factory mailboxIdFactory,
+                                                                     MessageId.Factory messageIdFactory,
+                                                                     ElasticSearchConfiguration configuration) {
+        return new ElasticSearchSearcher(
+            client,
+            queryConverter,
+            DEFAULT_SEARCH_SIZE,
+            mailboxIdFactory,
+            messageIdFactory,
+            configuration.getReadAliasMailboxName(),
+            MailboxElasticSearchConstants.MESSAGE_TYPE);
     }
 
     @Provides
@@ -84,18 +109,6 @@ public class ElasticSearchMailboxModule extends AbstractModule {
             LOGGER.warn("Could not find " + ELASTICSEARCH_CONFIGURATION_NAME + " configuration file. Using 127.0.0.1:9300 as contact point");
             return ElasticSearchConfiguration.DEFAULT_CONFIGURATION;
         }
-    }
-
-    @Provides
-    @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_READ_ALIAS)
-    protected AliasName provideReadAliasName(ElasticSearchConfiguration configuration) {
-        return configuration.getReadAliasMailboxName();
-    }
-
-    @Provides
-    @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_WRITE_ALIAS)
-    protected AliasName provideWriteAliasName(ElasticSearchConfiguration configuration) {
-        return configuration.getWriteAliasMailboxName();
     }
 
     @Provides

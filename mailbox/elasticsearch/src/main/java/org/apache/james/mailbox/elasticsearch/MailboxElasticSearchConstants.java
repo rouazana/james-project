@@ -26,12 +26,6 @@ import org.apache.james.backends.es.TypeName;
 public interface MailboxElasticSearchConstants {
 
     interface InjectionNames {
-        String MAILBOX_WRITE_ALIAS = "injectWriteAlias";
-        String MAILBOX_READ_ALIAS = "injectReadAlias";
-
-        String MAILBOX_INDEX = "mailboxIndex";
-        String MAILBOX_MAPPING = "mailboxMapping";
-
         String MAILBOX = "mailbox";
     }
 

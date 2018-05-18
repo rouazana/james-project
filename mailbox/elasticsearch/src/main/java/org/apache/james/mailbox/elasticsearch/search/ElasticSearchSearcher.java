@@ -51,9 +51,10 @@ import org.slf4j.LoggerFactory;
 
 public class ElasticSearchSearcher {
 
+    public static final int DEFAULT_SEARCH_SIZE = 100;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchSearcher.class);
     private static final TimeValue TIMEOUT = new TimeValue(60000);
-    private static final int DEFAULT_SIZE = 100;
 
     private final Client client;
     private final QueryConverter queryConverter;
@@ -62,14 +63,6 @@ public class ElasticSearchSearcher {
     private final MessageId.Factory messageIdFactory;
     private final AliasName aliasName;
     private final TypeName typeName;
-
-    @Inject
-    public ElasticSearchSearcher(Client client, QueryConverter queryConverter,
-                                 MailboxId.Factory mailboxIdFactory, MessageId.Factory messageIdFactory,
-                                 @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_READ_ALIAS) AliasName aliasName,
-                                 @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_MAPPING) TypeName typeName) {
-        this(client, queryConverter, DEFAULT_SIZE, mailboxIdFactory, messageIdFactory, aliasName, typeName);
-    }
 
     public ElasticSearchSearcher(Client client, QueryConverter queryConverter, int size,
                                  MailboxId.Factory mailboxIdFactory, MessageId.Factory messageIdFactory,
