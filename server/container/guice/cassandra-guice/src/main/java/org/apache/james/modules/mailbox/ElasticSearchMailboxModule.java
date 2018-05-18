@@ -21,7 +21,6 @@ package org.apache.james.modules.mailbox;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Named;
@@ -31,9 +30,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.james.backends.es.AliasName;
 import org.apache.james.backends.es.ClientProviderImpl;
-import org.apache.james.backends.es.IndexCreationFactory;
-import org.apache.james.backends.es.IndexName;
 import org.apache.james.backends.es.ElasticSearchIndexerSupplier;
+import org.apache.james.backends.es.IndexCreationFactory;
 import org.apache.james.backends.es.NodeMappingFactory;
 import org.apache.james.backends.es.TypeName;
 import org.apache.james.mailbox.elasticsearch.IndexAttachments;
@@ -50,7 +48,6 @@ import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
@@ -90,12 +87,6 @@ public class ElasticSearchMailboxModule extends AbstractModule {
     }
 
     @Provides
-    @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_INDEX)
-    protected IndexName provideIndexName(ElasticSearchConfiguration configuration) {
-        return configuration.getIndexMailboxName();
-    }
-
-    @Provides
     @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX_READ_ALIAS)
     protected AliasName provideReadAliasName(ElasticSearchConfiguration configuration) {
         return configuration.getReadAliasMailboxName();
@@ -109,33 +100,20 @@ public class ElasticSearchMailboxModule extends AbstractModule {
 
     @Provides
     @Singleton
-    @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX)
-    protected IndexCreationFactory provideIndexCreationFactory(ElasticSearchConfiguration configuration) {
-        return new IndexCreationFactory()
-            .useIndex(configuration.getIndexMailboxName())
-            .addAlias(configuration.getReadAliasMailboxName())
-            .addAlias(configuration.getWriteAliasMailboxName())
-            .nbShards(configuration.getNbShards())
-            .nbReplica(configuration.getNbReplica());
-    }
-
-    @Provides
-    @Singleton
     protected Client provideClient(ElasticSearchConfiguration configuration,
-                                   @Named(MailboxElasticSearchConstants.InjectionNames.MAILBOX) IndexCreationFactory mailboxIndexCreationFactory,
                                    AsyncRetryExecutor executor) throws ExecutionException, InterruptedException {
 
         return RetryExecutorUtil.retryOnExceptions(executor, configuration.getMaxRetries(), configuration.getMinDelay(), NoNodeAvailableException.class)
-            .getWithRetry(context -> connectToCluster(configuration, ImmutableList.of(mailboxIndexCreationFactory)))
+            .getWithRetry(context -> connectToCluster(configuration))
             .get();
     }
 
-    private Client connectToCluster(ElasticSearchConfiguration configuration, Collection<IndexCreationFactory> indexCreationFactories) {
+    private Client connectToCluster(ElasticSearchConfiguration configuration) {
         LOGGER.info("Trying to connect to ElasticSearch service at {}", LocalDateTime.now());
 
         Client client = ClientProviderImpl.fromHosts(configuration.getHosts()).get();
 
-        indexCreationFactories.forEach(factory -> factory.createIndexAndAliases(client));
+        createMailboxIndexCreationFactory(configuration).createIndexAndAliases(client);
 
         NodeMappingFactory.applyMapping(client,
             configuration.getIndexMailboxName(),
@@ -143,6 +121,15 @@ public class ElasticSearchMailboxModule extends AbstractModule {
             MailboxMappingFactory.getMappingContent());
 
         return client;
+    }
+
+    protected IndexCreationFactory createMailboxIndexCreationFactory(ElasticSearchConfiguration configuration) {
+        return new IndexCreationFactory()
+            .useIndex(configuration.getIndexMailboxName())
+            .addAlias(configuration.getReadAliasMailboxName())
+            .addAlias(configuration.getWriteAliasMailboxName())
+            .nbShards(configuration.getNbShards())
+            .nbReplica(configuration.getNbReplica());
     }
 
     @Provides
