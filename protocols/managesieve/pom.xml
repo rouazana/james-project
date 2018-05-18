@@ -52,11 +52,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.apache.james</groupId>
             <artifactId>apache-jsieve-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.apache.james</groupId>
             <artifactId>james-server-data-api</artifactId>
         </dependency>
         <dependency>
