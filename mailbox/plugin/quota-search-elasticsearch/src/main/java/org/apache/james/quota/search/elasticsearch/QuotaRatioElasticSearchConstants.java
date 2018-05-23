@@ -25,8 +25,12 @@ import org.apache.james.backends.es.TypeName;
 
 public interface QuotaRatioElasticSearchConstants {
 
+    interface InjectionNames {
+        String QUOTA_RATIO = "quotaRatio";
+    }
+
     AliasName DEFAULT_QUOTA_RATIO_WRITE_ALIAS = new AliasName("quotaRatioWriteAlias");
     AliasName DEFAULT_QUOTA_RATIO_READ_ALIAS = new AliasName("quotaRatioReadAlias");
-    IndexName DEFAULT_QUOTA_RATIO_INDEX = new IndexName("quotaRatio_v1");
+    IndexName DEFAULT_QUOTA_RATIO_INDEX = new IndexName("quota_ratio_v1");
     TypeName QUOTA_RATIO_TYPE = new TypeName("quotaRatio");
 }
