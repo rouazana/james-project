@@ -22,15 +22,28 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.james.mailbox.store.mail.model.MailboxMessage;
+
+import com.github.fge.lambdas.Throwing;
 
 public class Zipper implements Backup {
 
     @Override
     public void archive(List<MailboxMessage> messages, File destination) throws IOException {
         try (ZipArchiveOutputStream archiveOutputStream = new ZipArchiveOutputStream(destination)) {
+            messages.stream()
+                .forEach(Throwing.consumer((MailboxMessage message) -> storeInArchive(message, archiveOutputStream)).sneakyThrow());
             archiveOutputStream.finish();
         }
+    }
+
+    private void storeInArchive(MailboxMessage message, ZipArchiveOutputStream archiveOutputStream) throws IOException {
+        ArchiveEntry archiveEntry = archiveOutputStream.createArchiveEntry(new File(message.getMessageId().serialize()), message.getMessageId().serialize());
+        archiveOutputStream.putArchiveEntry(archiveEntry);
+        IOUtils.copy(message.getFullContent(), archiveOutputStream);
+        archiveOutputStream.closeArchiveEntry();
     }
 }

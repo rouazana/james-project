@@ -21,10 +21,24 @@ package org.apache.james.mailbox.backup;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.Enumeration;
 
+import javax.mail.Flags;
+import javax.mail.util.SharedByteArrayInputStream;
+
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.io.IOUtils;
 import org.apache.james.junit.TemporaryFolderExtension;
 import org.apache.james.junit.TemporaryFolderExtension.TemporaryFolder;
+import org.apache.james.mailbox.model.MessageId;
+import org.apache.james.mailbox.model.TestId;
+import org.apache.james.mailbox.model.TestMessageId;
+import org.apache.james.mailbox.store.mail.model.impl.PropertyBuilder;
+import org.apache.james.mailbox.store.mail.model.impl.SimpleMailboxMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,16 +47,49 @@ import com.google.common.collect.ImmutableList;
 
 @ExtendWith(TemporaryFolderExtension.class)
 public class ZipperTest {
+    private static final MessageId.Factory MESSAGE_ID_FACTORY = new TestMessageId.Factory();
+    private static final Charset MESSAGE_CHARSET = StandardCharsets.UTF_8;
+    private static final String MESSAGE_CONTENT_1 = "Simple message content";
+    private static final SharedByteArrayInputStream CONTENT_STREAM_1 = new SharedByteArrayInputStream(MESSAGE_CONTENT_1.getBytes(MESSAGE_CHARSET));
+    private static final String MESSAGE_CONTENT_2 = "Other message content";
+    private static final SharedByteArrayInputStream CONTENT_STREAM_2 = new SharedByteArrayInputStream(MESSAGE_CONTENT_2.getBytes(MESSAGE_CHARSET));
+    private static final Date SUN_SEP_9TH_2001 = new Date(1000000000000L);
+    private static final MessageId MESSAGE_ID_1 = MESSAGE_ID_FACTORY.generate();
+    private static final MessageId MESSAGE_ID_2 = MESSAGE_ID_FACTORY.generate();
+    private static final int SIZE_1 = 1000;
+    private static final int SIZE_2 = 2000;
+    private SimpleMailboxMessage MESSAGE_1 = SimpleMailboxMessage.builder()
+            .messageId(MESSAGE_ID_1)
+            .content(CONTENT_STREAM_1)
+            .size(SIZE_1)
+            .internalDate(SUN_SEP_9TH_2001)
+            .bodyStartOctet(0)
+            .flags(new Flags())
+            .propertyBuilder(new PropertyBuilder())
+            .mailboxId(TestId.of(1L))
+            .build();
+    private SimpleMailboxMessage MESSAGE_2 = SimpleMailboxMessage.builder()
+            .messageId(MESSAGE_ID_2)
+            .content(CONTENT_STREAM_2)
+            .size(SIZE_2)
+            .internalDate(SUN_SEP_9TH_2001)
+            .bodyStartOctet(0)
+            .flags(new Flags())
+            .propertyBuilder(new PropertyBuilder())
+            .mailboxId(TestId.of(1L))
+            .build();
+
     private Zipper testee;
+    private File destination;
 
     @BeforeEach
-    void beforeEach() {
+    void beforeEach(TemporaryFolder temporaryFolder) throws Exception {
         testee = new Zipper();
+        destination = File.createTempFile("backup-test", ".zip", temporaryFolder.getTempDir());
     }
 
     @Test
-    void archiveShouldWriteEmptyValidArchiveWhenNoMessage(TemporaryFolder temporaryFolder) throws Exception {
-        File destination = File.createTempFile("backup-test", ".zip", temporaryFolder.getTempDir());
+    void archiveShouldWriteEmptyValidArchiveWhenNoMessage() throws Exception {
         testee.archive(ImmutableList.of(), destination);
 
         try (ZipFile zipFile = new ZipFile(destination)) {
@@ -50,4 +97,35 @@ public class ZipperTest {
         }
     }
 
+    @Test
+    void archiveShouldWriteOneMessageWhenOne() throws Exception {
+        testee.archive(ImmutableList.of(MESSAGE_1), destination);
+
+        try (ZipFile zipFile = new ZipFile(destination)) {
+            Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+            assertThat(entries.hasMoreElements()).isTrue();
+            ZipArchiveEntry entry = entries.nextElement();
+            assertThat(entries.hasMoreElements()).isFalse();
+            assertThat(entry.getName()).isEqualTo(MESSAGE_ID_1.serialize());
+            assertThat(IOUtils.toString(zipFile.getInputStream(entry), MESSAGE_CHARSET)).isEqualTo(MESSAGE_CONTENT_1);
+        }
+    }
+
+    @Test
+    void archiveShouldWriteTwoMessagesWhenTwo() throws Exception {
+        testee.archive(ImmutableList.of(MESSAGE_1, MESSAGE_2), destination);
+
+        try (ZipFile zipFile = new ZipFile(destination)) {
+            Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+            assertThat(entries.hasMoreElements()).isTrue();
+            ZipArchiveEntry entry1 = entries.nextElement();
+            assertThat(entries.hasMoreElements()).isTrue();
+            ZipArchiveEntry entry2 = entries.nextElement();
+            assertThat(entries.hasMoreElements()).isFalse();
+            assertThat(entry1.getName()).isEqualTo(MESSAGE_ID_1.serialize());
+            assertThat(IOUtils.toString(zipFile.getInputStream(entry1), MESSAGE_CHARSET)).isEqualTo(MESSAGE_CONTENT_1);
+            assertThat(entry2.getName()).isEqualTo(MESSAGE_ID_2.serialize());
+            assertThat(IOUtils.toString(zipFile.getInputStream(entry2), MESSAGE_CHARSET)).isEqualTo(MESSAGE_CONTENT_2);
+        }
+    }
 }
