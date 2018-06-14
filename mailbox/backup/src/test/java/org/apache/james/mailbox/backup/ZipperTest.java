@@ -24,11 +24,15 @@ import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_CONT
 import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_CONTENT_2;
 import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_ID_1;
 import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_ID_2;
+import static org.apache.james.mailbox.backup.MailboxMessageFixture.SIZE_1;
 import static org.apache.james.mailbox.backup.ZipAssert.assertThatZip;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Enumeration;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.james.junit.TemporaryFolderExtension;
 import org.apache.james.junit.TemporaryFolderExtension.TemporaryFolder;
@@ -98,6 +102,19 @@ public class ZipperTest {
                     zipEntryAssert -> zipEntryAssert
                         .hasName(MESSAGE_ID_2.serialize())
                         .hasStringContent(MESSAGE_CONTENT_2));
+        }
+    }
+
+    @Test
+    void archiveShouldWriteSizeMetadata() throws Exception {
+        testee.archive(ImmutableList.of(MESSAGE_1), new FileOutputStream(destination));
+
+        try (ZipFile zipFile = new ZipFile(destination)) {
+            Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+            assertThat(entries.hasMoreElements()).isTrue();
+            ZipArchiveEntry entry = entries.nextElement();
+            SizeExtraField sizeExtraField = (SizeExtraField) entry.getExtraField(SizeExtraField.ID);
+            assertThat(sizeExtraField.getSize()).contains(SIZE_1);
         }
     }
 }
