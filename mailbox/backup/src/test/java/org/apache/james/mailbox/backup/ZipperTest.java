@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.mailbox.backup;
 
+import static org.apache.james.mailbox.backup.ZipArchiveEntryAssert.assertThatZipEntry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -31,7 +32,6 @@ import javax.mail.util.SharedByteArrayInputStream;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.io.IOUtils;
 import org.apache.james.junit.TemporaryFolderExtension;
 import org.apache.james.junit.TemporaryFolderExtension.TemporaryFolder;
 import org.apache.james.mailbox.model.MessageId;
@@ -106,8 +106,10 @@ public class ZipperTest {
             assertThat(entries.hasMoreElements()).isTrue();
             ZipArchiveEntry entry = entries.nextElement();
             assertThat(entries.hasMoreElements()).isFalse();
-            assertThat(entry.getName()).isEqualTo(MESSAGE_ID_1.serialize());
-            assertThat(IOUtils.toString(zipFile.getInputStream(entry), MESSAGE_CHARSET)).isEqualTo(MESSAGE_CONTENT_1);
+
+            assertThatZipEntry(zipFile, entry)
+                .hasName(MESSAGE_ID_1.serialize())
+                .hasStringContent(MESSAGE_CONTENT_1);
         }
     }
 
@@ -122,10 +124,15 @@ public class ZipperTest {
             assertThat(entries.hasMoreElements()).isTrue();
             ZipArchiveEntry entry2 = entries.nextElement();
             assertThat(entries.hasMoreElements()).isFalse();
-            assertThat(entry1.getName()).isEqualTo(MESSAGE_ID_1.serialize());
-            assertThat(IOUtils.toString(zipFile.getInputStream(entry1), MESSAGE_CHARSET)).isEqualTo(MESSAGE_CONTENT_1);
-            assertThat(entry2.getName()).isEqualTo(MESSAGE_ID_2.serialize());
-            assertThat(IOUtils.toString(zipFile.getInputStream(entry2), MESSAGE_CHARSET)).isEqualTo(MESSAGE_CONTENT_2);
+
+
+            assertThatZipEntry(zipFile, entry1)
+                .hasName(MESSAGE_ID_1.serialize())
+                .hasStringContent(MESSAGE_CONTENT_1);
+
+            assertThatZipEntry(zipFile, entry2)
+                .hasName(MESSAGE_ID_2.serialize())
+                .hasStringContent(MESSAGE_CONTENT_2);
         }
     }
 }
