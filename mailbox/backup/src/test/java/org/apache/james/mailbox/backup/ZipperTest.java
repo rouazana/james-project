@@ -124,4 +124,19 @@ public class ZipperTest {
                         .hasStringContent(MESSAGE_CONTENT_2));
         }
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void archiveShouldOverwriteContent() throws Exception {
+        testee.archive(ImmutableList.of(MESSAGE_1), destination);
+        testee.archive(ImmutableList.of(MESSAGE_2), destination);
+
+        try (ZipFile zipFile = new ZipFile(destination)) {
+            assertThatZip(zipFile)
+                .containsExactlyEntriesMatching(
+                    zipEntryAssert -> zipEntryAssert
+                        .hasName(MESSAGE_ID_2.serialize())
+                        .hasStringContent(MESSAGE_CONTENT_2));
+        }
+    }
 }
