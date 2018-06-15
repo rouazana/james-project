@@ -21,6 +21,7 @@ package org.apache.james.mailbox.backup;
 import static org.apache.james.mailbox.backup.ZipAssert.assertThatZip;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -87,7 +88,7 @@ public class ZipperTest {
 
     @Test
     void archiveShouldWriteEmptyValidArchiveWhenNoMessage() throws Exception {
-        testee.archive(ImmutableList.of(), destination);
+        testee.archive(ImmutableList.of(), new FileOutputStream(destination));
 
         try (ZipFile zipFile = new ZipFile(destination)) {
             assertThatZip(zipFile).hasNoEntry();
@@ -97,7 +98,7 @@ public class ZipperTest {
     @Test
     @SuppressWarnings("unchecked")
     void archiveShouldWriteOneMessageWhenOne() throws Exception {
-        testee.archive(ImmutableList.of(MESSAGE_1), destination);
+        testee.archive(ImmutableList.of(MESSAGE_1), new FileOutputStream(destination));
 
         try (ZipFile zipFile = new ZipFile(destination)) {
             assertThatZip(zipFile)
@@ -111,7 +112,7 @@ public class ZipperTest {
     @Test
     @SuppressWarnings("unchecked")
     void archiveShouldWriteTwoMessagesWhenTwo() throws Exception {
-        testee.archive(ImmutableList.of(MESSAGE_1, MESSAGE_2), destination);
+        testee.archive(ImmutableList.of(MESSAGE_1, MESSAGE_2), new FileOutputStream(destination));
 
         try (ZipFile zipFile = new ZipFile(destination)) {
             assertThatZip(zipFile)
@@ -128,8 +129,8 @@ public class ZipperTest {
     @Test
     @SuppressWarnings("unchecked")
     void archiveShouldOverwriteContent() throws Exception {
-        testee.archive(ImmutableList.of(MESSAGE_1), destination);
-        testee.archive(ImmutableList.of(MESSAGE_2), destination);
+        testee.archive(ImmutableList.of(MESSAGE_1), new FileOutputStream(destination));
+        testee.archive(ImmutableList.of(MESSAGE_2), new FileOutputStream(destination));
 
         try (ZipFile zipFile = new ZipFile(destination)) {
             assertThatZip(zipFile)
