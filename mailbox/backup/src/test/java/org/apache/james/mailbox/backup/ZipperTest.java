@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.james.mailbox.backup;
 
+import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_1;
+import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_2;
+import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_CONTENT_1;
+import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_CONTENT_2;
+import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_ID_1;
+import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_ID_2;
 import static org.apache.james.mailbox.backup.ZipAssert.assertThatZip;
 
 import java.io.File;
@@ -45,38 +51,6 @@ import com.google.common.collect.ImmutableList;
 
 @ExtendWith(TemporaryFolderExtension.class)
 public class ZipperTest {
-    private static final MessageId.Factory MESSAGE_ID_FACTORY = new TestMessageId.Factory();
-    private static final Charset MESSAGE_CHARSET = StandardCharsets.UTF_8;
-    private static final String MESSAGE_CONTENT_1 = "Simple message content";
-    private static final SharedByteArrayInputStream CONTENT_STREAM_1 = new SharedByteArrayInputStream(MESSAGE_CONTENT_1.getBytes(MESSAGE_CHARSET));
-    private static final String MESSAGE_CONTENT_2 = "Other message content";
-    private static final SharedByteArrayInputStream CONTENT_STREAM_2 = new SharedByteArrayInputStream(MESSAGE_CONTENT_2.getBytes(MESSAGE_CHARSET));
-    private static final Date SUN_SEP_9TH_2001 = new Date(1000000000000L);
-    private static final MessageId MESSAGE_ID_1 = MESSAGE_ID_FACTORY.generate();
-    private static final MessageId MESSAGE_ID_2 = MESSAGE_ID_FACTORY.generate();
-    private static final int SIZE_1 = 1000;
-    private static final int SIZE_2 = 2000;
-    private SimpleMailboxMessage MESSAGE_1 = SimpleMailboxMessage.builder()
-            .messageId(MESSAGE_ID_1)
-            .content(CONTENT_STREAM_1)
-            .size(SIZE_1)
-            .internalDate(SUN_SEP_9TH_2001)
-            .bodyStartOctet(0)
-            .flags(new Flags())
-            .propertyBuilder(new PropertyBuilder())
-            .mailboxId(TestId.of(1L))
-            .build();
-    private SimpleMailboxMessage MESSAGE_2 = SimpleMailboxMessage.builder()
-            .messageId(MESSAGE_ID_2)
-            .content(CONTENT_STREAM_2)
-            .size(SIZE_2)
-            .internalDate(SUN_SEP_9TH_2001)
-            .bodyStartOctet(0)
-            .flags(new Flags())
-            .propertyBuilder(new PropertyBuilder())
-            .mailboxId(TestId.of(1L))
-            .build();
-
     private Zipper testee;
     private File destination;
 
