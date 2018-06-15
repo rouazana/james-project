@@ -40,7 +40,8 @@ public class Zipper implements Backup {
     }
 
     private void storeInArchive(MailboxMessage message, ZipArchiveOutputStream archiveOutputStream) throws IOException {
-        ArchiveEntry archiveEntry = archiveOutputStream.createArchiveEntry(new File(message.getMessageId().serialize()), message.getMessageId().serialize());
+        String entryId = message.getMessageId().serialize();
+        ArchiveEntry archiveEntry = archiveOutputStream.createArchiveEntry(new File(entryId), entryId);
         archiveOutputStream.putArchiveEntry(archiveEntry);
         IOUtils.copy(message.getFullContent(), archiveOutputStream);
         archiveOutputStream.closeArchiveEntry();
