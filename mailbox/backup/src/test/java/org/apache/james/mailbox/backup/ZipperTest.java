@@ -18,19 +18,16 @@
  ****************************************************************/
 package org.apache.james.mailbox.backup;
 
-import static org.apache.james.mailbox.backup.ZipArchiveEntryAssert.assertThatZipEntry;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.apache.james.mailbox.backup.ZipAssert.assertThatZip;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.Enumeration;
 
 import javax.mail.Flags;
 import javax.mail.util.SharedByteArrayInputStream;
 
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.james.junit.TemporaryFolderExtension;
 import org.apache.james.junit.TemporaryFolderExtension.TemporaryFolder;
@@ -93,46 +90,38 @@ public class ZipperTest {
         testee.archive(ImmutableList.of(), destination);
 
         try (ZipFile zipFile = new ZipFile(destination)) {
-            assertThat(zipFile.getEntries().hasMoreElements()).isFalse();
+            assertThatZip(zipFile).hasNoEntry();
         }
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void archiveShouldWriteOneMessageWhenOne() throws Exception {
         testee.archive(ImmutableList.of(MESSAGE_1), destination);
 
         try (ZipFile zipFile = new ZipFile(destination)) {
-            Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
-            assertThat(entries.hasMoreElements()).isTrue();
-            ZipArchiveEntry entry = entries.nextElement();
-            assertThat(entries.hasMoreElements()).isFalse();
-
-            assertThatZipEntry(zipFile, entry)
-                .hasName(MESSAGE_ID_1.serialize())
-                .hasStringContent(MESSAGE_CONTENT_1);
+            assertThatZip(zipFile)
+                .containsExactlyEntriesMatching(
+                    zipEntryAssert -> zipEntryAssert
+                        .hasName(MESSAGE_ID_1.serialize())
+                        .hasStringContent(MESSAGE_CONTENT_1));
         }
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void archiveShouldWriteTwoMessagesWhenTwo() throws Exception {
         testee.archive(ImmutableList.of(MESSAGE_1, MESSAGE_2), destination);
 
         try (ZipFile zipFile = new ZipFile(destination)) {
-            Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
-            assertThat(entries.hasMoreElements()).isTrue();
-            ZipArchiveEntry entry1 = entries.nextElement();
-            assertThat(entries.hasMoreElements()).isTrue();
-            ZipArchiveEntry entry2 = entries.nextElement();
-            assertThat(entries.hasMoreElements()).isFalse();
-
-
-            assertThatZipEntry(zipFile, entry1)
-                .hasName(MESSAGE_ID_1.serialize())
-                .hasStringContent(MESSAGE_CONTENT_1);
-
-            assertThatZipEntry(zipFile, entry2)
-                .hasName(MESSAGE_ID_2.serialize())
-                .hasStringContent(MESSAGE_CONTENT_2);
+            assertThatZip(zipFile)
+                .containsExactlyEntriesMatching(
+                    zipEntryAssert -> zipEntryAssert
+                        .hasName(MESSAGE_ID_1.serialize())
+                        .hasStringContent(MESSAGE_CONTENT_1),
+                    zipEntryAssert -> zipEntryAssert
+                        .hasName(MESSAGE_ID_2.serialize())
+                        .hasStringContent(MESSAGE_CONTENT_2));
         }
     }
 }
