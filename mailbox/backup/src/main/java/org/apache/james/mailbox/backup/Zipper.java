@@ -27,15 +27,14 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mailbox.store.mail.model.MailboxMessage;
 
-import com.github.fge.lambdas.Throwing;
-
 public class Zipper implements Backup {
 
     @Override
     public void archive(List<MailboxMessage> messages, File destination) throws IOException {
         try (ZipArchiveOutputStream archiveOutputStream = new ZipArchiveOutputStream(destination)) {
-            messages.stream()
-                .forEach(Throwing.consumer((MailboxMessage message) -> storeInArchive(message, archiveOutputStream)).sneakyThrow());
+            for (MailboxMessage message: messages) {
+                storeInArchive(message, archiveOutputStream);
+            }
             archiveOutputStream.finish();
         }
     }
