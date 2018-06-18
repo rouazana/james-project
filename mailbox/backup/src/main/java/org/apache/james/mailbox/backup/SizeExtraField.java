@@ -20,6 +20,7 @@ package org.apache.james.mailbox.backup;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.ZipException;
 
@@ -92,4 +93,18 @@ public class SizeExtraField implements ZipExtraField {
         return size;
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (o instanceof SizeExtraField) {
+            SizeExtraField that = (SizeExtraField) o;
+
+            return Objects.equals(this.size, that.size);
+        }
+        return false;
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(size);
+    }
 }
