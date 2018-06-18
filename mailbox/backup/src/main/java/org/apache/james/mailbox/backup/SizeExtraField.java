@@ -29,14 +29,18 @@ import org.apache.commons.compress.archivers.zip.ZipShort;
 public class SizeExtraField implements ZipExtraField {
     public static final ZipShort ID = new ZipShort(0x6A61); // "aj" in little-endian
 
-    Optional<Long> size = Optional.empty();
+    private Optional<Long> size;
 
     public SizeExtraField() {
-        this.size = Optional.empty();
+        this(Optional.empty());
     }
 
     public SizeExtraField(long size) {
-        this.size = Optional.of(size);
+        this(Optional.of(size));
+    }
+
+    public SizeExtraField(Optional<Long> size) {
+        this.size = size;
     }
 
     @Override
