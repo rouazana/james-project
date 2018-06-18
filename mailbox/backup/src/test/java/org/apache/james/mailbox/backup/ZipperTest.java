@@ -28,26 +28,14 @@ import static org.apache.james.mailbox.backup.ZipAssert.assertThatZip;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-
-import javax.mail.Flags;
-import javax.mail.util.SharedByteArrayInputStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.james.junit.TemporaryFolderExtension;
 import org.apache.james.junit.TemporaryFolderExtension.TemporaryFolder;
-import org.apache.james.mailbox.model.MessageId;
-import org.apache.james.mailbox.model.TestId;
-import org.apache.james.mailbox.model.TestMessageId;
-import org.apache.james.mailbox.store.mail.model.impl.PropertyBuilder;
-import org.apache.james.mailbox.store.mail.model.impl.SimpleMailboxMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import com.google.common.collect.ImmutableList;
 
 @ExtendWith(TemporaryFolderExtension.class)
 public class ZipperTest {
@@ -62,7 +50,7 @@ public class ZipperTest {
 
     @Test
     void archiveShouldWriteEmptyValidArchiveWhenNoMessage() throws Exception {
-        testee.archive(ImmutableList.of(), new FileOutputStream(destination));
+        testee.archive(Stream.of(), new FileOutputStream(destination));
 
         try (ZipFile zipFile = new ZipFile(destination)) {
             assertThatZip(zipFile).hasNoEntry();
@@ -72,7 +60,7 @@ public class ZipperTest {
     @Test
     @SuppressWarnings("unchecked")
     void archiveShouldWriteOneMessageWhenOne() throws Exception {
-        testee.archive(ImmutableList.of(MESSAGE_1), new FileOutputStream(destination));
+        testee.archive(Stream.of(MESSAGE_1), new FileOutputStream(destination));
 
         try (ZipFile zipFile = new ZipFile(destination)) {
             assertThatZip(zipFile)
@@ -86,7 +74,7 @@ public class ZipperTest {
     @Test
     @SuppressWarnings("unchecked")
     void archiveShouldWriteTwoMessagesWhenTwo() throws Exception {
-        testee.archive(ImmutableList.of(MESSAGE_1, MESSAGE_2), new FileOutputStream(destination));
+        testee.archive(Stream.of(MESSAGE_1, MESSAGE_2), new FileOutputStream(destination));
 
         try (ZipFile zipFile = new ZipFile(destination)) {
             assertThatZip(zipFile)
@@ -103,8 +91,8 @@ public class ZipperTest {
     @Test
     @SuppressWarnings("unchecked")
     void archiveShouldOverwriteContent() throws Exception {
-        testee.archive(ImmutableList.of(MESSAGE_1), new FileOutputStream(destination));
-        testee.archive(ImmutableList.of(MESSAGE_2), new FileOutputStream(destination));
+        testee.archive(Stream.of(MESSAGE_1), new FileOutputStream(destination));
+        testee.archive(Stream.of(MESSAGE_2), new FileOutputStream(destination));
 
         try (ZipFile zipFile = new ZipFile(destination)) {
             assertThatZip(zipFile)
