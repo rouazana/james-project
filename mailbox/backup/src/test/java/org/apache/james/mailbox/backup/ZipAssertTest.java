@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.compress.archivers.zip.ExtraFieldUtils;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -53,6 +54,8 @@ public class ZipAssertTest {
     @BeforeEach
     void beforeEach(TemporaryFolderExtension.TemporaryFolder temporaryFolder) throws Exception {
         destination = File.createTempFile("backup-test", ".zip", temporaryFolder.getTempDir());
+
+        ExtraFieldUtils.register(SizeExtraField.class);
     }
 
     @Test
