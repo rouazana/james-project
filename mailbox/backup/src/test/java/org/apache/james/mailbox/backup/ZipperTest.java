@@ -26,43 +26,38 @@ import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_ID_1
 import static org.apache.james.mailbox.backup.MailboxMessageFixture.MESSAGE_ID_2;
 import static org.apache.james.mailbox.backup.ZipAssert.assertThatZip;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.james.junit.TemporaryFolderExtension;
-import org.apache.james.junit.TemporaryFolderExtension.TemporaryFolder;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(TemporaryFolderExtension.class)
-public class ZipperTest {
+class ZipperTest {
+
     private Zipper testee;
-    private File destination;
+    private ByteArrayOutputStream output;
 
     @BeforeEach
-    void beforeEach(TemporaryFolder temporaryFolder) throws Exception {
+    void beforeEach() {
         testee = new Zipper();
-        destination = File.createTempFile("backup-test", ".zip", temporaryFolder.getTempDir());
+        output = new ByteArrayOutputStream();
     }
 
     @Test
     void archiveShouldWriteEmptyValidArchiveWhenNoMessage() throws Exception {
-        testee.archive(Stream.of(), new FileOutputStream(destination));
-
-        try (ZipFile zipFile = new ZipFile(destination)) {
+        testee.archive(Stream.of(), output);
+        try (ZipFile zipFile = new ZipFile(toSeekableByteChannel(output))) {
             assertThatZip(zipFile).hasNoEntry();
         }
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void archiveShouldWriteOneMessageWhenOne() throws Exception {
-        testee.archive(Stream.of(MESSAGE_1), new FileOutputStream(destination));
+        testee.archive(Stream.of(MESSAGE_1), output);
 
-        try (ZipFile zipFile = new ZipFile(destination)) {
+        try (ZipFile zipFile = new ZipFile(toSeekableByteChannel(output))) {
             assertThatZip(zipFile)
                 .containsExactlyEntriesMatching(
                     zipEntryAssert -> zipEntryAssert
@@ -72,11 +67,10 @@ public class ZipperTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void archiveShouldWriteTwoMessagesWhenTwo() throws Exception {
-        testee.archive(Stream.of(MESSAGE_1, MESSAGE_2), new FileOutputStream(destination));
+        testee.archive(Stream.of(MESSAGE_1, MESSAGE_2), output);
 
-        try (ZipFile zipFile = new ZipFile(destination)) {
+        try (ZipFile zipFile = new ZipFile(toSeekableByteChannel(output))) {
             assertThatZip(zipFile)
                 .containsExactlyEntriesMatching(
                     zipEntryAssert -> zipEntryAssert
@@ -88,18 +82,8 @@ public class ZipperTest {
         }
     }
 
-    @Test
-    @SuppressWarnings("unchecked")
-    void archiveShouldOverwriteContent() throws Exception {
-        testee.archive(Stream.of(MESSAGE_1), new FileOutputStream(destination));
-        testee.archive(Stream.of(MESSAGE_2), new FileOutputStream(destination));
-
-        try (ZipFile zipFile = new ZipFile(destination)) {
-            assertThatZip(zipFile)
-                .containsExactlyEntriesMatching(
-                    zipEntryAssert -> zipEntryAssert
-                        .hasName(MESSAGE_ID_2.serialize())
-                        .hasStringContent(MESSAGE_CONTENT_2));
-        }
+    private SeekableInMemoryByteChannel toSeekableByteChannel(ByteArrayOutputStream output) {
+        return new SeekableInMemoryByteChannel(output.toByteArray());
     }
+
 }
