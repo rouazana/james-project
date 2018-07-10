@@ -20,7 +20,10 @@
 package org.apache.james.jmap.methods.integration;
 
 import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.with;
 import static org.apache.james.jmap.HttpJmapAuthentication.authenticateJamesUser;
+import static org.apache.james.jmap.JmapCommonRequests.getInboxId;
+import static org.apache.james.jmap.JmapCommonRequests.getOutboxId;
 import static org.apache.james.jmap.JmapURIBuilder.baseUri;
 import static org.apache.james.jmap.TestingConstants.ALICE;
 import static org.apache.james.jmap.TestingConstants.ALICE_PASSWORD;
@@ -32,6 +35,7 @@ import static org.apache.james.jmap.TestingConstants.DOMAIN;
 import static org.apache.james.jmap.TestingConstants.FIRST_MAILBOX;
 import static org.apache.james.jmap.TestingConstants.NAME;
 import static org.apache.james.jmap.TestingConstants.SECOND_MAILBOX;
+import static org.apache.james.jmap.TestingConstants.calmlyAwait;
 import static org.apache.james.jmap.TestingConstants.jmapRequestSpecBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -52,6 +56,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.james.GuiceJamesServer;
 import org.apache.james.core.quota.QuotaCount;
@@ -74,6 +79,7 @@ import org.apache.james.modules.ACLProbeImpl;
 import org.apache.james.modules.MailboxProbeImpl;
 import org.apache.james.modules.QuotaProbesImpl;
 import org.apache.james.probe.DataProbe;
+import org.apache.james.util.concurrency.ConcurrentTestRunner;
 import org.apache.james.utils.AllMatching;
 import org.apache.james.utils.DataProbeImpl;
 import org.apache.james.utils.JmapGuiceProbe;
@@ -884,4 +890,93 @@ public abstract class GetMailboxesMethodTest {
             .body(FIRST_MAILBOX + ".quotas['#private&alice@domain.tld']['STORAGE'].used", equalTo(85))
             .body(FIRST_MAILBOX + ".quotas['#private&alice@domain.tld']['MESSAGE'].used", equalTo(1));
     }
+
+    @Test
+    public void getMailboxesShouldReturnCoherentUpdatedQuotasForInboxWhenSeveralMailWrittenAtTheSameTime() throws Exception {
+        String mailboxId = mailboxProbe.createMailbox(MailboxConstants.USER_NAMESPACE, ALICE, DefaultMailboxes.INBOX).serialize();
+
+        new ConcurrentTestRunner(10, 10,
+                (i,j) -> mailboxProbe.appendMessage(ALICE, MailboxPath.forUser(ALICE, DefaultMailboxes.INBOX), AppendCommand.from(message)))
+            .run()
+            .assertNoException()
+            .awaitTermination(2, TimeUnit.MINUTES);
+
+        given()
+            .header("Authorization", accessToken.serialize())
+            .body("[[\"getMailboxes\", {\"ids\": [\"" + mailboxId + "\"]}, \"#0\"]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200)
+            .body(NAME, equalTo("mailboxes"))
+            .body(ARGUMENTS + ".list", hasSize(1))
+            .body(FIRST_MAILBOX + ".quotas['#private&alice@domain.tld']['STORAGE'].used", equalTo(8500))
+            .body(FIRST_MAILBOX + ".quotas['#private&alice@domain.tld']['MESSAGE'].used", equalTo(100));
+    }
+
+    @Test
+    public void getMailboxesShouldReturnCoherentUpdatedQuotasWhenSeveralMailReceivedAtTheSameTime() throws Exception {
+        String mailboxId = mailboxProbe.createMailbox(MailboxConstants.USER_NAMESPACE, ALICE, DefaultMailboxes.INBOX).serialize();
+
+        new ConcurrentTestRunner(10, 100,
+                (i,j) -> sendEmail())
+            .run()
+            .assertNoException()
+            .awaitTermination(2, TimeUnit.MINUTES);
+        
+        calmlyAwait.atMost(30, TimeUnit.SECONDS).until(() -> allMessagesAreReceived(1000));
+
+        given()
+            .header("Authorization", accessToken.serialize())
+            .body("[[\"getMailboxes\", {\"ids\": [\"" + mailboxId + "\"]}, \"#0\"]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200)
+            .body(NAME, equalTo("mailboxes"))
+            .body(ARGUMENTS + ".list", hasSize(1))
+            .body(FIRST_MAILBOX + ".quotas['#private&alice@domain.tld']['MESSAGE'].used", equalTo(2000));
+    }
+
+    private void sendEmail() {
+        String requestBody = "[" +
+            "  [" +
+            "    \"setMessages\"," +
+            "    {" +
+            "      \"create\": { \"creationId\" : {" +
+            "        \"from\": { \"email\": \"" + ALICE + "\"}," +
+            "        \"to\": [{ \"name\": \"Me\", \"email\": \"" + ALICE + "\"}]," +
+            "        \"subject\": \"Thank you for joining example.com!\"," +
+            "        \"textBody\": \"Hello someone, and thank you for joining example.com!\"," +
+            "        \"mailboxIds\": [\"" + getOutboxId(accessToken) + "\"]" +
+            "      }}" +
+            "    }," +
+            "    \"#0\"" +
+            "  ]" +
+            "]";
+
+        // Given
+        with()
+            .header("Authorization", this.accessToken.serialize())
+            .body(requestBody)
+        .post("/jmap");
+    }
+
+    private boolean allMessagesAreReceived(int numberOfMessages) {
+        try {
+          with()
+              .header("Authorization", accessToken.serialize())
+              .body("[[\"getMailboxes\", {\"ids\": [\"" + getInboxId(accessToken) + "\"]}, \"#0\"]]")
+          .when()
+              .post("/jmap")
+          .then()
+              .statusCode(200)
+              .body(FIRST_MAILBOX + ".totalMessages", equalTo(numberOfMessages));
+            return true;
+
+        } catch (AssertionError e) {
+            return false;
+        }
+    }
+
 }
