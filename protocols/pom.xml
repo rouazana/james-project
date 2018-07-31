@@ -38,7 +38,6 @@
     <modules>
         <module>api</module>
         <module>imap</module>
-        <module>imap-test</module>
         <module>lmtp</module>
         <module>managesieve</module>
         <module>netty</module>

@@ -2186,11 +2186,6 @@
             </dependency>
             <dependency>
                 <groupId>${james.protocols.groupId}</groupId>
-                <artifactId>protocols-imap-test</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${james.protocols.groupId}</groupId>
                 <artifactId>protocols-lmtp</artifactId>
                 <version>${project.version}</version>
             </dependency>
