@@ -22,8 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.base.Strings;
@@ -44,7 +46,7 @@ public interface ObjectStoreContract {
     default void saveShouldSaveEmptyData() throws Exception {
         BlobId blobId = testee().save(new byte[]{}).join();
 
-        byte[] bytes = testee().read(blobId).join();
+        byte[] bytes = testee().readBytes(blobId).join();
 
         assertThat(new String(bytes, StandardCharsets.UTF_8)).isEmpty();
     }
@@ -58,16 +60,23 @@ public interface ObjectStoreContract {
 
     @Test
     default void readShouldBeEmptyWhenNoExisting() throws IOException {
-        byte[] bytes = testee().read(blobIdFactory().from("unknown")).join();
+        byte[] bytes = testee().readBytes(blobIdFactory().from("unknown")).join();
 
         assertThat(bytes).isEmpty();
+    }
+
+    @Test
+    default void readShouldBeEmptyWhenNoExistingStream() throws IOException {
+        InputStream stream = testee().read(blobIdFactory().from("unknown"));
+
+        assertThat(stream.read()).isEqualTo(IOUtils.EOF);
     }
 
     @Test
     default void readShouldReturnSavedData() throws IOException {
         BlobId blobId = testee().save("toto".getBytes(StandardCharsets.UTF_8)).join();
 
-        byte[] bytes = testee().read(blobId).join();
+        byte[] bytes = testee().readBytes(blobId).join();
 
         assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo("toto");
     }
@@ -77,7 +86,7 @@ public interface ObjectStoreContract {
         String longString = Strings.repeat("0123456789\n", 1000);
         BlobId blobId = testee().save(longString.getBytes(StandardCharsets.UTF_8)).join();
 
-        byte[] bytes = testee().read(blobId).join();
+        byte[] bytes = testee().readBytes(blobId).join();
 
         assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo(longString);
     }
@@ -88,7 +97,7 @@ public interface ObjectStoreContract {
         String bigString = Strings.repeat("0123456789\r\n", 1024 * 1024);
         BlobId blobId = testee().save(bigString.getBytes(StandardCharsets.UTF_8)).join();
 
-        byte[] bytes = testee().read(blobId).join();
+        byte[] bytes = testee().readBytes(blobId).join();
 
         assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo(bigString);
     }
