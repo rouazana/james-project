@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.james.backends.cassandra.init.configuration.CassandraConfiguration;
 import org.apache.james.backends.cassandra.utils.CassandraAsyncExecutor;
@@ -235,5 +236,13 @@ public class CassandraBlobsDAO implements ObjectStore {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    @Override
+    public CompletableFuture<BlobId> save(InputStream data) {
+        Preconditions.checkNotNull(data);
+        return CompletableFuture
+                .supplyAsync(Throwing.supplier(() -> IOUtils.toByteArray(data)).sneakyThrow())
+                .thenCompose(this::save);
     }
 }
