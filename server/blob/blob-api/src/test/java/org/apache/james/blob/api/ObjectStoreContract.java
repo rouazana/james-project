@@ -83,10 +83,40 @@ public interface ObjectStoreContract {
     }
 
     @Test
-    default void readShouldBeEmptyWhenNoExisting() throws IOException {
+    default void readBytesShouldBeEmptyWhenNoExisting() throws IOException {
         byte[] bytes = testee().readBytes(blobIdFactory().from("unknown")).join();
 
         assertThat(bytes).isEmpty();
+    }
+
+    @Test
+    default void readBytesShouldReturnSavedData() throws IOException {
+        BlobId blobId = testee().save("toto".getBytes(StandardCharsets.UTF_8)).join();
+
+        byte[] bytes = testee().readBytes(blobId).join();
+
+        assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo("toto");
+    }
+
+    @Test
+    default void readBytesShouldReturnLongSavedData() throws IOException {
+        String longString = Strings.repeat("0123456789\n", 1000);
+        BlobId blobId = testee().save(longString.getBytes(StandardCharsets.UTF_8)).join();
+
+        byte[] bytes = testee().readBytes(blobId).join();
+
+        assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo(longString);
+    }
+
+    @Test
+    default void readBytesShouldReturnBigSavedData() throws IOException {
+        // 12 MB of text
+        String bigString = Strings.repeat("0123456789\r\n", 1024 * 1024);
+        BlobId blobId = testee().save(bigString.getBytes(StandardCharsets.UTF_8)).join();
+
+        byte[] bytes = testee().readBytes(blobId).join();
+
+        assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo(bigString);
     }
 
     @Test
@@ -98,31 +128,34 @@ public interface ObjectStoreContract {
 
     @Test
     default void readShouldReturnSavedData() throws IOException {
-        BlobId blobId = testee().save("toto".getBytes(StandardCharsets.UTF_8)).join();
+        byte[] bytes = "toto".getBytes(StandardCharsets.UTF_8);
+        BlobId blobId = testee().save(bytes).join();
 
-        byte[] bytes = testee().readBytes(blobId).join();
+        InputStream read = testee().read(blobId);
 
-        assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo("toto");
+        assertThat(read).hasSameContentAs(new ByteArrayInputStream(bytes));
     }
 
     @Test
     default void readShouldReturnLongSavedData() throws IOException {
         String longString = Strings.repeat("0123456789\n", 1000);
-        BlobId blobId = testee().save(longString.getBytes(StandardCharsets.UTF_8)).join();
+        byte[] bytes = longString.getBytes(StandardCharsets.UTF_8);
+        BlobId blobId = testee().save(bytes).join();
 
-        byte[] bytes = testee().readBytes(blobId).join();
+        InputStream read = testee().read(blobId);
 
-        assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo(longString);
+        assertThat(read).hasSameContentAs(new ByteArrayInputStream(bytes));
     }
 
     @Test
     default void readShouldReturnBigSavedData() throws IOException {
         // 12 MB of text
         String bigString = Strings.repeat("0123456789\r\n", 1024 * 1024);
-        BlobId blobId = testee().save(bigString.getBytes(StandardCharsets.UTF_8)).join();
+        byte[] bytes = bigString.getBytes(StandardCharsets.UTF_8);
+        BlobId blobId = testee().save(bytes).join();
 
-        byte[] bytes = testee().readBytes(blobId).join();
+        InputStream read = testee().read(blobId);
 
-        assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo(bigString);
+        assertThat(read).hasSameContentAs(new ByteArrayInputStream(bytes));
     }
 }

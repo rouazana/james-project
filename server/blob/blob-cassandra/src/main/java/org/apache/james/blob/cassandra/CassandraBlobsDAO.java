@@ -42,6 +42,7 @@ import org.apache.james.backends.cassandra.init.configuration.CassandraConfigura
 import org.apache.james.backends.cassandra.utils.CassandraAsyncExecutor;
 import org.apache.james.blob.api.BlobId;
 import org.apache.james.blob.api.ObjectStore;
+import org.apache.james.blob.api.ObjectStoreException;
 import org.apache.james.blob.cassandra.BlobTable.BlobParts;
 import org.apache.james.blob.cassandra.utils.DataChunker;
 import org.apache.james.util.FluentFutureStream;
@@ -223,18 +224,20 @@ public class CassandraBlobsDAO implements ObjectStore {
             Pipe pipe = Pipe.open();
             ConsumerChainer<ByteBuffer> consumer = Throwing.consumer(
                     bytes -> {
-                        pipe.sink().write(bytes);
-                        pipe.sink().close();
+                        try (Pipe.SinkChannel sink = pipe.sink()) {
+                            sink.write(bytes);
+                        }
                     }
             );
             readBytes(blobId)
                     .thenApply(ByteBuffer::wrap)
-                    .thenAccept(
-                            consumer.sneakyThrow()
-                    );
+                    .thenAccept(consumer.sneakyThrow());
             return Channels.newInputStream(pipe.source());
-        } catch (IOException e) {
-            return null;
+        } catch (IOException cause) {
+            LOGGER.error("Failed to convert CompletableFuture<byte[]> to InputStream", cause);
+            throw new ObjectStoreException(
+                    "Failed to convert CompletableFuture<byte[]> to InputStream",
+                    cause);
         }
     }
 
