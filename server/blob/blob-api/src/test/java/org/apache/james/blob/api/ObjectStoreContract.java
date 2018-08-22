@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+
 package org.apache.james.blob.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +47,7 @@ public interface ObjectStoreContract {
     @Test
     default void saveShouldReturnEmptyWhenNullInputStream() throws Exception {
         assertThatThrownBy(() -> testee().save((InputStream) null))
-                .isInstanceOf(NullPointerException.class);
+            .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -77,7 +78,7 @@ public interface ObjectStoreContract {
     @Test
     default void saveShouldReturnBlobIdOfInputStream() throws Exception {
         BlobId blobId =
-                testee().save(new ByteArrayInputStream("toto".getBytes(StandardCharsets.UTF_8))).join();
+            testee().save(new ByteArrayInputStream("toto".getBytes(StandardCharsets.UTF_8))).join();
 
         assertThat(blobId).isEqualTo(blobIdFactory().from("31f7a65e315586ac198bd798b6629ce4903d0899476d5741a9f32e2e521b6a66"));
     }

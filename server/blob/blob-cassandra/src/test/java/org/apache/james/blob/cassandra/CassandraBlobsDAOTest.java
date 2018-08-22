@@ -21,9 +21,7 @@ package org.apache.james.blob.cassandra;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.james.backends.cassandra.CassandraCluster;
@@ -93,17 +91,6 @@ public class CassandraBlobsDAOTest implements ObjectStoreContract {
         byte[] bytes = testee.readBytes(blobId).join();
 
         assertThat(new String(bytes, StandardCharsets.UTF_8)).isEqualTo(longString);
-    }
-
-    @Test
-    public void readBytesShouldEventuallyReturnSameDataAsRead() throws IOException {
-        String longString = Strings.repeat("0123456789\n", MULTIPLE_CHUNK_SIZE);
-        BlobId blobId = testee.save(longString.getBytes(StandardCharsets.UTF_8)).join();
-
-        byte[] bytes = testee.readBytes(blobId).join();
-
-        InputStream byteStream = testee.read(blobId);
-        assertThat(byteStream).hasSameContentAs(new ByteArrayInputStream(bytes));
     }
 
 }
