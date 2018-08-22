@@ -223,21 +223,21 @@ public class CassandraBlobsDAO implements ObjectStore {
         try {
             Pipe pipe = Pipe.open();
             ConsumerChainer<ByteBuffer> consumer = Throwing.consumer(
-                    bytes -> {
-                        try (Pipe.SinkChannel sink = pipe.sink()) {
-                            sink.write(bytes);
-                        }
+                bytes -> {
+                    try (Pipe.SinkChannel sink = pipe.sink()) {
+                        sink.write(bytes);
                     }
+                }
             );
             readBytes(blobId)
-                    .thenApply(ByteBuffer::wrap)
-                    .thenAccept(consumer.sneakyThrow());
+                .thenApply(ByteBuffer::wrap)
+                .thenAccept(consumer.sneakyThrow());
             return Channels.newInputStream(pipe.source());
         } catch (IOException cause) {
             LOGGER.error("Failed to convert CompletableFuture<byte[]> to InputStream", cause);
             throw new ObjectStoreException(
-                    "Failed to convert CompletableFuture<byte[]> to InputStream",
-                    cause);
+                "Failed to convert CompletableFuture<byte[]> to InputStream",
+                cause);
         }
     }
 
@@ -245,7 +245,7 @@ public class CassandraBlobsDAO implements ObjectStore {
     public CompletableFuture<BlobId> save(InputStream data) {
         Preconditions.checkNotNull(data);
         return CompletableFuture
-                .supplyAsync(Throwing.supplier(() -> IOUtils.toByteArray(data)).sneakyThrow())
-                .thenCompose(this::save);
+            .supplyAsync(Throwing.supplier(() -> IOUtils.toByteArray(data)).sneakyThrow())
+            .thenCompose(this::save);
     }
 }
