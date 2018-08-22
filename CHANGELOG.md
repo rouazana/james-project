@@ -6,8 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Changed
 - Multiple libraries updates
+- Migration from Cassandra 2 to Cassandra 3
 
-## [3.1.0] - date?
+## [3.1.0] - 2018-07-31
 ### Added
 - Delegating folders
 - Introduce an object store
