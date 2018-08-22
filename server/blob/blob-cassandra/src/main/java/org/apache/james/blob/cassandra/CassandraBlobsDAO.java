@@ -234,7 +234,6 @@ public class CassandraBlobsDAO implements ObjectStore {
                 .thenAccept(consumer.sneakyThrow());
             return Channels.newInputStream(pipe.source());
         } catch (IOException cause) {
-            LOGGER.error("Failed to convert CompletableFuture<byte[]> to InputStream", cause);
             throw new ObjectStoreException(
                 "Failed to convert CompletableFuture<byte[]> to InputStream",
                 cause);
