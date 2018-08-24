@@ -35,7 +35,7 @@
     <modules>
         <module>blob-api</module>
         <module>blob-cassandra</module>
-        <module>blob-cloud</module>
+        <module>blob-objectstorage</module>
     </modules>
 
 </project>

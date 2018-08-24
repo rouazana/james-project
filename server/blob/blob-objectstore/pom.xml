@@ -30,10 +30,10 @@
     <artifactId>blob-objectstorage</artifactId>
     <packaging>jar</packaging>
 
-    <name>Apache James :: Server :: Blob :: Objet storage</name>
+    <name>Apache James :: Server :: Blob :: Object storage</name>
 
     <properties>
-        <jcloud.version>2.1.1</jcloud.version>
+        <jclouds.version>2.1.1</jclouds.version>
     </properties>
 
     <dependencies>
@@ -68,12 +68,12 @@
         <dependency>
             <groupId>org.apache.jclouds.api</groupId>
             <artifactId>openstack-swift</artifactId>
-            <version>${jcloud.version}</version>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.driver</groupId>
             <artifactId>jclouds-slf4j</artifactId>
-            <version>${jcloud.version}</version>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
