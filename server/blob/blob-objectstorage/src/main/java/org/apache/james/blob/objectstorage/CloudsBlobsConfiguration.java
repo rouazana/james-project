@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.blob.cloud;
+package org.apache.james.blob.objectstorage;
 
 import java.net.URI;
 import java.util.Optional;
@@ -25,70 +25,78 @@ import java.util.Properties;
 
 import org.jclouds.openstack.keystone.config.KeystoneProperties;
 import org.jclouds.openstack.swift.v1.reference.TempAuthHeaders;
+import org.testcontainers.shaded.com.google.common.base.Preconditions;
 
 public class CloudsBlobsConfiguration {
-    private final URI endpoint;
-    private final Optional<Region> region;
-    private final Identity identity;
-    private final Properties overrides;
-    private final Credentials credentials;
-
     public static class Builder {
         private URI endpoint;
         private Identity identity;
         private Credentials credentials;
         private Optional<Region> region;
-        private final Properties overrides;
+        private Optional<UserHeaderName> userHeaderName;
+        private Optional<PassHeaderName> passHeaderName;
 
         public Builder() {
             region = Optional.empty();
-            this.overrides = new Properties();
+            userHeaderName = Optional.empty();
+            passHeaderName = Optional.empty();
         }
 
-        public CloudsBlobsConfiguration.Builder withEndpoint(URI endpoint) {
+        public CloudsBlobsConfiguration.Builder endpoint(URI endpoint) {
             this.endpoint = endpoint;
             return this;
         }
 
-        public CloudsBlobsConfiguration.Builder withIdentity(Identity identity) {
+        public CloudsBlobsConfiguration.Builder identity(Identity identity) {
             this.identity = identity;
             return this;
         }
 
-        public CloudsBlobsConfiguration.Builder withCredentials(Credentials credentials) {
+        public CloudsBlobsConfiguration.Builder credentials(Credentials credentials) {
             this.credentials = credentials;
             return this;
         }
 
-        public CloudsBlobsConfiguration.Builder withRegion(Region region) {
+        public CloudsBlobsConfiguration.Builder region(Region region) {
             this.region = Optional.of(region);
             return this;
         }
 
-        public CloudsBlobsConfiguration.Builder withTempAuthHeaderUserName(String tmpAuthHeaderUser) {
-            this.overrides.setProperty(TempAuthHeaders.TEMP_AUTH_HEADER_USER, tmpAuthHeaderUser);
+        public CloudsBlobsConfiguration.Builder tempAuthHeaderUserName(UserHeaderName tmpAuthHeaderUser) {
+            userHeaderName = Optional.of(tmpAuthHeaderUser);
             return this;
         }
 
-        public CloudsBlobsConfiguration.Builder withTempAuthHeaderPassName(String tmpAuthHeaderUser) {
-            this.overrides.setProperty(TempAuthHeaders.TEMP_AUTH_HEADER_PASS, tmpAuthHeaderUser);
+        public CloudsBlobsConfiguration.Builder tempAuthHeaderPassName(PassHeaderName tmpAuthHeaderPass) {
+            passHeaderName = Optional.of(tmpAuthHeaderPass);
             return this;
         }
 
         public CloudsBlobsConfiguration build() {
-            overrides.setProperty(KeystoneProperties.CREDENTIAL_TYPE, "tempAuthCredentials");
-            return new CloudsBlobsConfiguration(endpoint, identity, credentials, region, overrides);
+            Preconditions.checkState(endpoint != null);
+            Preconditions.checkState(identity != null);
+            Preconditions.checkState(credentials != null);
+            return new CloudsBlobsConfiguration(endpoint, identity, credentials, region, userHeaderName, passHeaderName);
         }
     }
+
+    private final URI endpoint;
+    private final Optional<Region> region;
+    private final Identity identity;
+    private final Credentials credentials;
+    private final Optional<UserHeaderName> userHeaderName;
+    private final Optional<PassHeaderName> passHeaderName;
 
     CloudsBlobsConfiguration(URI endpoint,
                              Identity identity,
                              Credentials credentials,
                              Optional<Region> region,
-                             Properties overrides) {
+                             Optional<UserHeaderName> userHeaderName,
+                             Optional<PassHeaderName> passHeaderName) {
         this.endpoint = endpoint;
         this.region = region;
-        this.overrides = overrides;
+        this.userHeaderName = userHeaderName;
+        this.passHeaderName = passHeaderName;
         this.identity = identity;
         this.credentials = credentials;
     }
@@ -106,7 +114,15 @@ public class CloudsBlobsConfiguration {
     }
 
     public Properties getOverrides() {
-        return overrides;
+        Properties properties = new Properties();
+        properties.setProperty(KeystoneProperties.CREDENTIAL_TYPE, "tempAuthCredentials");
+        userHeaderName.ifPresent(tmpAuthHeaderUser ->
+            properties.setProperty(TempAuthHeaders.TEMP_AUTH_HEADER_USER, tmpAuthHeaderUser.value())
+        );
+        passHeaderName.ifPresent(tmpAuthHeaderPass ->
+            properties.setProperty(TempAuthHeaders.TEMP_AUTH_HEADER_PASS, tmpAuthHeaderPass.value())
+        );
+        return properties;
     }
 
     public Optional<Region> getRegion() {

@@ -17,20 +17,15 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.blob.cloud;
+package org.apache.james.blob.objectstorage;
 
-public class Identity {
-    private String identity;
+import org.junit.jupiter.api.Test;
 
-    private Identity(String value) {
-        this.identity = value;
-    }
+import nl.jqno.equalsverifier.EqualsVerifier;
 
-    public String getValue() {
-        return identity;
-    }
-
-    public static Identity of(String value) {
-        return new Identity(value);
+class CredentialsTest {
+    @Test
+    public void credentialsShouldRespectBeanContract() {
+        EqualsVerifier.forClass(Credentials.class).verify();
     }
 }

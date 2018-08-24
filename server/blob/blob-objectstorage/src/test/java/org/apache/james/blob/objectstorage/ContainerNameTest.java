@@ -17,20 +17,15 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.blob.cloud;
+package org.apache.james.blob.objectstorage;
 
-public class ContainerName {
-    private String container;
+import org.junit.jupiter.api.Test;
 
-    private ContainerName(String value) {
-        this.container = value;
-    }
+import nl.jqno.equalsverifier.EqualsVerifier;
 
-    public String getValue() {
-        return container;
-    }
-
-    public static ContainerName of(String value) {
-        return new ContainerName(value);
+class ContainerNameTest {
+    @Test
+    public void credentialsShouldRespectBeanContract() {
+        EqualsVerifier.forClass(ContainerName.class).verify();
     }
 }

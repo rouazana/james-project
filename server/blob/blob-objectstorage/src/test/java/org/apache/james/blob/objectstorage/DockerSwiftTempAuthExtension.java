@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.blob.cloud;
+package org.apache.james.blob.objectstorage;
 
 import java.net.URI;
 

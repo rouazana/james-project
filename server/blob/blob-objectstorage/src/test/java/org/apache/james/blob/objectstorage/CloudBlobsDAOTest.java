@@ -17,7 +17,7 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.blob.cloud;
+package org.apache.james.blob.objectstorage;
 
 import java.net.URI;
 import java.util.Properties;
@@ -56,17 +56,17 @@ public class CloudBlobsDAOTest implements ObjectStoreContract {
         swiftEndpoint = dockerSwift.getEndpoint();
         BlobStoreContext blobStoreContext = ContextBuilder.newBuilder("openstack-swift")
             .endpoint(swiftEndpoint.toString())
-            .credentials(IDENTITY.getValue(), PASSWORD.getValue())
+            .credentials(IDENTITY.value(), PASSWORD.value())
             .overrides(overrides)
             .buildView(BlobStoreContext.class);
         blobStore = blobStoreContext.getBlobStore();
         containerName = ContainerName.of(UUID.randomUUID().toString());
-        blobStore.createContainerInLocation(null, containerName.getValue());
+        blobStore.createContainerInLocation(null, containerName.value());
     }
 
     @AfterEach
     void tearDown() throws Exception {
-        blobStore.deleteContainer(containerName.getValue());
+        blobStore.deleteContainer(containerName.value());
         blobStore.getContext().close();
     }
 
@@ -74,11 +74,11 @@ public class CloudBlobsDAOTest implements ObjectStoreContract {
     public ObjectStore testee() {
         CloudsBlobsConfiguration testConfig =
             new CloudsBlobsConfiguration.Builder()
-                .withEndpoint(swiftEndpoint)
-                .withIdentity(IDENTITY)
-                .withCredentials(PASSWORD)
-                .withTempAuthHeaderUserName("X-Storage-User")
-                .withTempAuthHeaderPassName("X-Storage-Pass")
+                .endpoint(swiftEndpoint)
+                .identity(IDENTITY)
+                .credentials(PASSWORD)
+                .tempAuthHeaderUserName(UserHeaderName.of("X-Storage-User"))
+                .tempAuthHeaderPassName(PassHeaderName.of("X-Storage-Pass"))
                 .build();
         return new CloudBlobsDAO(containerName, new HashBlobId.Factory(), testConfig);
     }

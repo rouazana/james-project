@@ -17,12 +17,11 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.blob.cloud;
+package org.apache.james.blob.objectstorage;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.io.IOUtils;
@@ -62,15 +61,15 @@ class CloudBlobsDAO implements ObjectStore {
         RegionScopedBlobStoreContext blobStoreContext = ContextBuilder.newBuilder("openstack-swift")
             .endpoint(cloudsBlobsConfiguration.getEndpoint().toString())
             .credentials(
-                cloudsBlobsConfiguration.getIdentity().getValue(),
-                cloudsBlobsConfiguration.getCredentials().getValue())
+                cloudsBlobsConfiguration.getIdentity().value(),
+                cloudsBlobsConfiguration.getCredentials().value())
             .overrides(cloudsBlobsConfiguration.getOverrides())
             .modules(JCLOUDS_MODULES)
             .buildView(RegionScopedBlobStoreContext.class);
 
         blobStore = cloudsBlobsConfiguration
             .getRegion()
-            .map(region -> blobStoreContext.getBlobStore(region.getValue()))
+            .map(region -> blobStoreContext.getBlobStore(region.value()))
             .orElse(blobStoreContext.getBlobStore());
     }
 
@@ -82,17 +81,26 @@ class CloudBlobsDAO implements ObjectStore {
     @Override
     public CompletableFuture<BlobId> save(InputStream data) {
         Preconditions.checkNotNull(data);
-        HashingInputStream hashingInputStream = new HashingInputStream(Hashing.sha256(), data);
-        String tmpId = UUID.randomUUID().toString();
-        String containerName = this.containerName.getValue();
 
-        Blob blob = blobStore.blobBuilder(tmpId).payload(hashingInputStream).build();
-        blobStore.putBlob(containerName, blob);
-        BlobId id = blobIdFactory.from(hashingInputStream.hash().toString());
-        blobStore.copyBlob(containerName, tmpId, containerName, id.asString(), CopyOptions.NONE);
-        blobStore.removeBlob(containerName, tmpId);
+        BlobId tmpId = blobIdFactory.randomId();
+        BlobId id = save(data, tmpId);
+        updateBlobId(tmpId, id);
 
         return CompletableFuture.completedFuture(id);
+    }
+
+    private void updateBlobId(BlobId from, BlobId to) {
+        String containerName = this.containerName.value();
+        blobStore.copyBlob(containerName, from.asString(), containerName, to.asString(), CopyOptions.NONE);
+        blobStore.removeBlob(containerName, from.asString());
+    }
+
+    private BlobId save(InputStream data, BlobId id) {
+        String containerName = this.containerName.value();
+        HashingInputStream hashingInputStream = new HashingInputStream(Hashing.sha256(), data);
+        Blob blob = blobStore.blobBuilder(id.asString()).payload(hashingInputStream).build();
+        blobStore.putBlob(containerName, blob);
+        return blobIdFactory.from(hashingInputStream.hash().toString());
     }
 
     @Override
@@ -103,18 +111,19 @@ class CloudBlobsDAO implements ObjectStore {
 
     @Override
     public InputStream read(BlobId blobId) {
-        Blob blob = blobStore.getBlob(containerName.getValue(), blobId.asString());
+        Blob blob = blobStore.getBlob(containerName.value(), blobId.asString());
 
-        InputStream is = EMPTY_STREAM;
         try {
             if (blob != null) {
-                is = blob.getPayload().openStream();
+                return blob.getPayload().openStream();
+            } else {
+                return EMPTY_STREAM;
             }
         } catch (IOException cause) {
             throw new ObjectStoreException(
                 "Failed to read blob " + blobId.asString(),
                 cause);
         }
-        return is;
+
     }
 }

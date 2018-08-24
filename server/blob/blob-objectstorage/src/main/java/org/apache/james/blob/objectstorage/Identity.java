@@ -17,20 +17,43 @@
  * under the License.                                           *
  ****************************************************************/
 
-package org.apache.james.blob.cloud;
+package org.apache.james.blob.objectstorage;
 
-public class Region {
-    private String region;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
-    private Region(String value) {
-        this.region = value;
+public final class Identity {
+    public static Identity of(String value) {
+        return new Identity(value);
     }
 
-    public String getValue() {
-        return region;
+    private final String identity;
+
+    private Identity(String value) {
+        this.identity = value;
     }
 
-    public static Region of(String value) {
-        return new Region(value);
+    public String value() {
+        return identity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Identity identity1 = (Identity) o;
+        return Objects.equal(identity, identity1.identity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(identity);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("identity", identity)
+            .toString();
     }
 }
