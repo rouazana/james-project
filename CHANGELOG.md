@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Multiple libraries updates
 - Migration from Cassandra 2 to Cassandra 3
 
+### Removed
+- Drop partially implemented Kafka distributed events
+
 ## [3.1.0] - 2018-07-31
 ### Added
 - Delegating folders
