@@ -110,7 +110,7 @@ class CloudBlobsDAO implements ObjectStore {
     }
 
     @Override
-    public InputStream read(BlobId blobId) {
+    public InputStream read(BlobId blobId) throws ObjectStoreException {
         Blob blob = blobStore.getBlob(containerName.value(), blobId.asString());
 
         try {

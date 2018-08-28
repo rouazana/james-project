@@ -19,7 +19,7 @@
 
 package org.apache.james.blob.objectstorage;
 
-public final class UserHeaderName extends HeaderName{
+public final class UserHeaderName extends HeaderName {
     public static UserHeaderName of(String value) {
         return new UserHeaderName(value);
     }

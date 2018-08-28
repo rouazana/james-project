@@ -39,8 +39,12 @@ public final class Identity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Identity identity1 = (Identity) o;
         return Objects.equal(identity, identity1.identity);
     }

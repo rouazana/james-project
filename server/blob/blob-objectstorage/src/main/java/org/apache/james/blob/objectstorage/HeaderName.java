@@ -35,8 +35,12 @@ public class HeaderName {
 
     @Override
     public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof HeaderName)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof HeaderName)) {
+            return false;
+        }
         HeaderName that = (HeaderName) o;
         return Objects.equal(value, that.value);
     }

@@ -87,7 +87,7 @@ public class CloudsBlobsConfiguration {
     private final Optional<UserHeaderName> userHeaderName;
     private final Optional<PassHeaderName> passHeaderName;
 
-    CloudsBlobsConfiguration(URI endpoint,
+    private CloudsBlobsConfiguration(URI endpoint,
                              Identity identity,
                              Credentials credentials,
                              Optional<Region> region,
