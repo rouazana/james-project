@@ -90,7 +90,7 @@ public class JmapCommonRequests {
         try {
             with()
                 .header("Authorization", recipientToken.serialize())
-                    .body("[[\"getMessageList\", {\"filter\":{\"inMailboxes\":[\"" + mailboxId.serialize() + "\"]}}, \"#0\"]]")
+                .body("[[\"getMessageList\", {\"filter\":{\"inMailboxes\":[\"" + mailboxId.serialize() + "\"]}}, \"#0\"]]")
             .when()
                 .post("/jmap")
             .then()

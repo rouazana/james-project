@@ -616,7 +616,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+            .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -666,7 +668,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -685,7 +689,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -716,7 +722,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -736,7 +744,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -767,7 +777,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -787,7 +799,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -818,7 +832,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -838,7 +854,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -869,7 +887,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -888,7 +908,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -919,7 +941,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -938,7 +962,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
@@ -969,7 +995,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -988,7 +1016,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
@@ -1019,7 +1049,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1039,7 +1071,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
@@ -1070,7 +1104,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1090,7 +1126,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
@@ -1121,7 +1159,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1140,7 +1180,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
@@ -1171,7 +1213,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1190,7 +1234,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -1221,7 +1267,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1240,7 +1288,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
@@ -1271,7 +1321,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1290,7 +1342,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -1321,7 +1375,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1340,7 +1396,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -1371,7 +1429,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1390,7 +1450,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -1421,7 +1483,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1440,7 +1504,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
@@ -1471,7 +1537,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1490,7 +1558,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -1521,7 +1591,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1540,7 +1612,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
@@ -1571,7 +1645,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1590,7 +1666,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
@@ -1621,7 +1699,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1640,7 +1720,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
@@ -1671,7 +1753,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1690,7 +1774,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
@@ -1721,7 +1807,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         String messageCreationId = "creationId1337";
         String requestBody = "[[" +
@@ -1740,7 +1828,9 @@ public abstract class FilterTest {
         with()
             .header("Authorization", bobAccessToken.serialize())
             .body(requestBody)
-            .post("/jmap");
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         calmlyAwait.until(
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
