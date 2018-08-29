@@ -8,7 +8,12 @@ Note: this section is in progress. It will be updated during all the development
 
 Changes to apply between 3.1.x and 3.2.x will be reported here.
 
-## JMAPFiltering mailet is required for JMAP capable servers
+Changelist:
+
+ - [JMAPFiltering mailet is required for JMAP capable servers](#jmapfiltering-mailet-is-required-for-jmap-capable-servers)
+ - [Cassandra 3.11.3 upgrade](#cassandra-3113-upgrade)
+
+### JMAPFiltering mailet is required for JMAP capable servers
 
 Date: XXXX
 
@@ -22,7 +27,7 @@ Concerned products: Cassandra Guice products
 
 This mailet allow users filtering rules to be applied for incoming emails.
 
-### Upgrade procedure
+#### Upgrade procedure
 
 Add this line before the `LocalDelivery` mailet of your `transport` processor:
 
@@ -30,7 +35,7 @@ Add this line before the `LocalDelivery` mailet of your `transport` processor:
 <mailet match="RecipientIsLocal" class="org.apache.james.jmap.mailet.filter.JMAPFiltering"/>
 ```
 
-## Cassandra 3.11.3 upgrade
+### Cassandra 3.11.3 upgrade
 
 Date: 03/08/2018
 
@@ -46,7 +51,7 @@ James Cassandra Guice now officially uses Cassandra 3.11.3 as a storage backend.
 did not perform breaking changes. But James Cassandra Guice products are no more tested against Cassandra 2.2.x. Thus we strongly
 advise our user to upgrade.
 
-### Upgrade procedure
+#### Upgrade procedure
 
 We will assume you installed that Cassandra had been installed with a debian package. Upgrade procedure stays similar in other cases.
 
@@ -69,16 +74,16 @@ $ apt-get install cassandra=3.11.3
 
 Edit /etc/cassandra/cassandra.yaml and ensure to REALLY specify the interface cassandra is listening on (conf PB on OP.LNG)
 
-4.ReStart Cassandra
+4. ReStart Cassandra
 
-4.1 Drain data & stop
+4.1. Drain data & stop
 
 ```
 $ nodetool drain
 $ nodetool stop
 ```
 
-4.2 start Cassandra
+4.2. start Cassandra
 
 5. Upgrade SSTable (live update, performance degradation to expect)
 
