@@ -35,6 +35,7 @@ import static org.apache.james.jmap.TestingConstants.NAME;
 import static org.apache.james.jmap.TestingConstants.calmlyAwait;
 import static org.apache.james.jmap.TestingConstants.jmapRequestSpecBuilder;
 import static org.apache.james.mailbox.model.MailboxConstants.INBOX;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
@@ -119,7 +120,7 @@ public abstract class FilterTest {
         MailboxId mailbox1 = randomMailboxId();
         MailboxId mailbox2 = randomMailboxId();
 
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                   "  \"setFilter\", " +
@@ -142,7 +143,11 @@ public abstract class FilterTest {
                   "  ]}, " +
                   "\"#0\"" +
                   "]]")
-            .post("/jmap");
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200);
+
         with()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
@@ -166,7 +171,10 @@ public abstract class FilterTest {
                   "  ]}, " +
                   "\"#0\"" +
                   "]]")
-            .post("/jmap");
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         given()
             .header("Authorization", accessToken.serialize())
@@ -355,7 +363,7 @@ public abstract class FilterTest {
         MailboxId mailbox1 = randomMailboxId();
         MailboxId mailbox2 = randomMailboxId();
 
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                   "  \"setFilter\", " +
@@ -392,7 +400,10 @@ public abstract class FilterTest {
                   "  ]}, " +
                   "\"#0\"" +
                   "]]")
-            .post("/jmap");
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         given()
             .header("Authorization", accessToken.serialize())
@@ -425,7 +436,7 @@ public abstract class FilterTest {
     public void setFilterShouldClearPreviouslyStoredRulesWhenEmptyBody() {
         MailboxId mailbox = randomMailboxId();
 
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                   "  \"setFilter\", " +
@@ -448,7 +459,10 @@ public abstract class FilterTest {
                   "  ]}, " +
                   "\"#0\"" +
                   "]]")
-            .post("/jmap");
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         with()
             .header("Authorization", accessToken.serialize())
@@ -459,7 +473,10 @@ public abstract class FilterTest {
                   "  }, " +
                   "\"#0\"" +
                   "]]")
-            .post("/jmap");
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         given()
             .header("Authorization", accessToken.serialize())
@@ -480,7 +497,7 @@ public abstract class FilterTest {
     public void allFieldsAndComparatorsShouldBeSupported() {
         MailboxId mailbox = randomMailboxId();
 
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                   "  \"setFilter\", " +
@@ -559,7 +576,10 @@ public abstract class FilterTest {
                   "  ]}, " +
                   "\"#0\"" +
                   "]]")
-            .post("/jmap");
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200);
 
         given()
             .header("Authorization", accessToken.serialize())
@@ -593,7 +613,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenFromRuleMatches() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -616,8 +636,9 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
-            .then()
+        .then()
             .statusCode(200);
 
         String messageCreationId = "creationId1337";
@@ -645,7 +666,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenToRuleMatches() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -668,6 +689,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -699,7 +721,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenCcRuleMatches() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -722,6 +744,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -754,7 +777,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenRecipientRuleMatchesCc() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -777,6 +800,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -809,7 +833,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenRecipientRuleMatchesTo() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -832,6 +856,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -864,7 +889,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenSubjectRuleMatches() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -887,6 +912,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -918,7 +944,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenFromDoesNotMatchRule() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -941,6 +967,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -972,7 +999,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenToDoesNotMatchRule() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -995,6 +1022,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1026,7 +1054,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenCcDoesNotMatchRule() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1049,6 +1077,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1081,7 +1110,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenRecipientDoesNotMatchRule() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1104,6 +1133,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1136,7 +1166,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenSubjectRuleDoesNotMatchRule() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1159,6 +1189,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1190,7 +1221,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenContainsComparatorMatches() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1213,6 +1244,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1244,7 +1276,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenContainsComparatorDoesNotMatch() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1267,6 +1299,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1298,7 +1331,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenExactlyEqualsMatchesName() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1321,6 +1354,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1352,7 +1386,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenExactlyEqualsMatchesAddress() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1375,6 +1409,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1406,7 +1441,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenExactlyEqualsMatchesFullHeader() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1429,6 +1464,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1460,7 +1496,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenExactlyEqualsComparatorDoesNotMatch() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1483,6 +1519,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1514,7 +1551,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenNotContainsComparatorMatches() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1537,6 +1574,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1568,7 +1606,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenNotContainsComparatorDoesNotMatch() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1591,6 +1629,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1622,7 +1661,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInSpecificMailboxWhenContainsNotExactlyEqualsMatches() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1645,6 +1684,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1676,7 +1716,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenNotExactlyEqualsMatchesAddress() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1699,6 +1739,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1730,7 +1771,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenNotExactlyEqualsMatchesFullHeader() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1753,6 +1794,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1784,7 +1826,7 @@ public abstract class FilterTest {
 
     @Test
     public void messageShouldBeAppendedInInboxWhenNotExactlyEqualsComparatorMatchesName() {
-        with()
+        given()
             .header("Authorization", accessToken.serialize())
             .body("[[" +
                 "  \"setFilter\", " +
@@ -1807,6 +1849,7 @@ public abstract class FilterTest {
                 "  ]}, " +
                 "\"#0\"" +
                 "]]")
+        .when()
             .post("/jmap")
         .then()
             .statusCode(200);
@@ -1836,4 +1879,245 @@ public abstract class FilterTest {
             () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
     }
 
+    @Test
+    public void messageShouldBeAppendedInSpecificMailboxWhenFirstRuleMatches() {
+        given()
+            .header("Authorization", accessToken.serialize())
+            .body("[[" +
+                "  \"setFilter\", " +
+                "  {" +
+                "    \"singleton\": [" +
+                "    {" +
+                "      \"id\": \"3000-345\"," +
+                "      \"name\": \"Emails from bob\"," +
+                "      \"condition\": {" +
+                "        \"field\": \"from\"," +
+                "        \"comparator\": \"contains\"," +
+                "        \"value\": \"" + BOB + "\"" +
+                "      }," +
+                "      \"action\": {" +
+                "        \"appendIn\": {" +
+                "          \"mailboxIds\": [\"" + matchedMailbox.serialize() + "\"]" +
+                "        }" +
+                "      }" +
+                "    }," +
+                "    {" +
+                "      \"id\": \"3000-346\"," +
+                "      \"name\": \"Emails to alice\"," +
+                "      \"condition\": {" +
+                "        \"field\": \"to\"," +
+                "        \"comparator\": \"contains\"," +
+                "        \"value\": \"" + ALICE + "\"" +
+                "      }," +
+                "      \"action\": {" +
+                "        \"appendIn\": {" +
+                "          \"mailboxIds\": [\"" + matchedMailbox.serialize() + "\"]" +
+                "        }" +
+                "      }" +
+                "    }" +
+                "  ]}, " +
+                "\"#0\"" +
+                "]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200);
+
+        String messageCreationId = "creationId1337";
+        String requestBody = "[[" +
+            "  \"setMessages\"," +
+            "  {" +
+            "    \"create\": { \"" + messageCreationId  + "\" : {" +
+            "      \"from\": { \"name\": \"Me\", \"email\": \"" + BOB + "\"}," +
+            "      \"to\": [{ \"name\": \"Alice\", \"email\": \"" + ALICE + "\"}]," +
+            "      \"subject\": \"subject\"," +
+            "      \"mailboxIds\": [\"" + getOutboxId(bobAccessToken) + "\"]" +
+            "    }}" +
+            "  }," +
+            "  \"#0\"" +
+            "]]";
+
+        with()
+            .header("Authorization", bobAccessToken.serialize())
+            .body(requestBody)
+            .post("/jmap");
+
+        calmlyAwait.until(
+            () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
+    }
+
+    @Test
+    public void messageShouldBeAppendedInSpecificMailboxWhenSecondRuleMatches() {
+        given()
+            .header("Authorization", accessToken.serialize())
+            .body("[[" +
+                "  \"setFilter\", " +
+                "  {" +
+                "    \"singleton\": [" +
+                "    {" +
+                "      \"id\": \"3000-345\"," +
+                "      \"name\": \"Emails from bob\"," +
+                "      \"condition\": {" +
+                "        \"field\": \"from\"," +
+                "        \"comparator\": \"contains\"," +
+                "        \"value\": \"unknown@james.org\"" +
+                "      }," +
+                "      \"action\": {" +
+                "        \"appendIn\": {" +
+                "          \"mailboxIds\": [\"" + matchedMailbox.serialize() + "\"]" +
+                "        }" +
+                "      }" +
+                "    }," +
+                "    {" +
+                "      \"id\": \"3000-346\"," +
+                "      \"name\": \"Emails to alice\"," +
+                "      \"condition\": {" +
+                "        \"field\": \"to\"," +
+                "        \"comparator\": \"contains\"," +
+                "        \"value\": \"" + ALICE + "\"" +
+                "      }," +
+                "      \"action\": {" +
+                "        \"appendIn\": {" +
+                "          \"mailboxIds\": [\"" + matchedMailbox.serialize() + "\"]" +
+                "        }" +
+                "      }" +
+                "    }" +
+                "  ]}, " +
+                "\"#0\"" +
+                "]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200);
+
+        String messageCreationId = "creationId1337";
+        String requestBody = "[[" +
+            "  \"setMessages\"," +
+            "  {" +
+            "    \"create\": { \"" + messageCreationId  + "\" : {" +
+            "      \"from\": { \"name\": \"Me\", \"email\": \"" + BOB + "\"}," +
+            "      \"to\": [{ \"name\": \"Alice\", \"email\": \"" + ALICE + "\"}]," +
+            "      \"subject\": \"subject\"," +
+            "      \"mailboxIds\": [\"" + getOutboxId(bobAccessToken) + "\"]" +
+            "    }}" +
+            "  }," +
+            "  \"#0\"" +
+            "]]";
+
+        with()
+            .header("Authorization", bobAccessToken.serialize())
+            .body(requestBody)
+            .post("/jmap");
+
+        calmlyAwait.until(
+            () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
+    }
+
+    @Test
+    public void inboxShouldBeEmptyWhenFromRuleMatchesInSpecificMailbox() {
+        given()
+            .header("Authorization", accessToken.serialize())
+            .body("[[" +
+                "  \"setFilter\", " +
+                "  {" +
+                "    \"singleton\": [" +
+                "    {" +
+                "      \"id\": \"3000-345\"," +
+                "      \"name\": \"Emails from bob\"," +
+                "      \"condition\": {" +
+                "        \"field\": \"from\"," +
+                "        \"comparator\": \"contains\"," +
+                "        \"value\": \"" + BOB + "\"" +
+                "      }," +
+                "      \"action\": {" +
+                "        \"appendIn\": {" +
+                "          \"mailboxIds\": [\"" + matchedMailbox.serialize() + "\"]" +
+                "        }" +
+                "      }" +
+                "    }" +
+                "  ]}, " +
+                "\"#0\"" +
+                "]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200);
+
+        String messageCreationId = "creationId1337";
+        String requestBody = "[[" +
+            "  \"setMessages\"," +
+            "  {" +
+            "    \"create\": { \"" + messageCreationId  + "\" : {" +
+            "      \"from\": { \"name\": \"Me\", \"email\": \"" + BOB + "\"}," +
+            "      \"to\": [{ \"name\": \"Alice\", \"email\": \"" + ALICE + "\"}]," +
+            "      \"subject\": \"subject\"," +
+            "      \"mailboxIds\": [\"" + getOutboxId(bobAccessToken) + "\"]" +
+            "    }}" +
+            "  }," +
+            "  \"#0\"" +
+            "]]";
+
+        with()
+            .header("Authorization", bobAccessToken.serialize())
+            .body(requestBody)
+            .post("/jmap");
+
+        calmlyAwait.until(
+            () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox));
+        assertThat(JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox)).isFalse();
+    }
+
+    @Test
+    public void matchedMailboxShouldBeEmptyWhenFromRuleDoesntMatch() {
+        given()
+            .header("Authorization", accessToken.serialize())
+            .body("[[" +
+                "  \"setFilter\", " +
+                "  {" +
+                "    \"singleton\": [" +
+                "    {" +
+                "      \"id\": \"3000-345\"," +
+                "      \"name\": \"Emails from bob\"," +
+                "      \"condition\": {" +
+                "        \"field\": \"from\"," +
+                "        \"comparator\": \"contains\"," +
+                "        \"value\": \"unknown@james.org\"" +
+                "      }," +
+                "      \"action\": {" +
+                "        \"appendIn\": {" +
+                "          \"mailboxIds\": [\"" + matchedMailbox.serialize() + "\"]" +
+                "        }" +
+                "      }" +
+                "    }" +
+                "  ]}, " +
+                "\"#0\"" +
+                "]]")
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200);
+
+        String messageCreationId = "creationId1337";
+        String requestBody = "[[" +
+            "  \"setMessages\"," +
+            "  {" +
+            "    \"create\": { \"" + messageCreationId  + "\" : {" +
+            "      \"from\": { \"name\": \"Me\", \"email\": \"" + BOB + "\"}," +
+            "      \"to\": [{ \"name\": \"Alice\", \"email\": \"" + ALICE + "\"}]," +
+            "      \"subject\": \"subject\"," +
+            "      \"mailboxIds\": [\"" + getOutboxId(bobAccessToken) + "\"]" +
+            "    }}" +
+            "  }," +
+            "  \"#0\"" +
+            "]]";
+
+        with()
+            .header("Authorization", bobAccessToken.serialize())
+            .body(requestBody)
+            .post("/jmap");
+
+        calmlyAwait.until(
+            () -> JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, inbox));
+        assertThat(JmapCommonRequests.isAnyMessageFoundInRecipientsMailbox(accessToken, matchedMailbox)).isFalse();
+    }
 }
