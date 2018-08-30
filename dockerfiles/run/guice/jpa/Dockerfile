@@ -2,7 +2,7 @@
 #
 # VERSION	1.0
 
-FROM openjdk:8u181-jre
+FROM openjdk:9.0.4-jre
 
 # Ports that are used
 #
