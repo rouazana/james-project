@@ -79,7 +79,6 @@ public abstract class FilterTest {
         RestAssured.requestSpecification = jmapRequestSpecBuilder
             .setPort(jmapServer.getProbe(JmapGuiceProbe.class).getJmapPort())
             .build();
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 
         DataProbe dataProbe = jmapServer.getProbe(DataProbeImpl.class);
         dataProbe.addDomain(DOMAIN);
