@@ -79,6 +79,7 @@ public abstract class FilterTest {
         RestAssured.requestSpecification = jmapRequestSpecBuilder
             .setPort(jmapServer.getProbe(JmapGuiceProbe.class).getJmapPort())
             .build();
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 
         DataProbe dataProbe = jmapServer.getProbe(DataProbeImpl.class);
         dataProbe.addDomain(DOMAIN);
@@ -114,6 +115,45 @@ public abstract class FilterTest {
             .statusCode(200)
             .body(NAME, equalTo("filter"))
             .body(ARGUMENTS + ".singleton", hasSize(0));
+    }
+
+    @Test
+    public void getFilterShouldReturnEmptyWhenExplicitNullAccountId() {
+        String body = "[[" +
+                "  \"getFilter\", " +
+                "  {\"accountId\": null}, " +
+                "\"#0\"" +
+                "]]";
+
+        given()
+            .header("Authorization", accessToken.serialize())
+            .body(body)
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200)
+            .body(NAME, equalTo("filter"))
+            .body(ARGUMENTS + ".singleton", hasSize(0));
+    }
+
+    @Test
+    public void getFilterShouldReturnErrorWhenUnsupportedAccountId() {
+        String body = "[[" +
+                "  \"getFilter\", " +
+                "  {\"accountId\": \"any\"}, " +
+                "\"#0\"" +
+                "]]";
+
+        given()
+            .header("Authorization", accessToken.serialize())
+            .body(body)
+        .when()
+            .post("/jmap")
+        .then()
+            .statusCode(200)
+            .body(NAME, equalTo("error"))
+            .body(ARGUMENTS + ".type", equalTo("invalidArguments"))
+            .body(ARGUMENTS + ".description", equalTo("The field 'accountId' of 'GetFilterRequest' is not supported"));
     }
 
     @Test
