@@ -52,10 +52,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.google.common.collect.ImmutableList;
+
 public class GatewayRemoteDeliveryIntegrationTest {
     private static final String JAMES_ANOTHER_DOMAIN = "james.com";
 
     private static final String FROM = "from@" + DEFAULT_DOMAIN;
+    private static final String LOCAL_TO = "to@" + DEFAULT_DOMAIN;
     private static final String RECIPIENT = "touser@" + JAMES_ANOTHER_DOMAIN;
 
     @ClassRule
@@ -109,6 +112,39 @@ public class GatewayRemoteDeliveryIntegrationTest {
         awaitAtMostOneMinute
             .pollDelay(Duration.FIVE_HUNDRED_MILLISECONDS)
             .until(this::messageIsReceivedByTheSmtpServer);
+    }
+
+    @Test
+    public void outgoingMailShouldTransitThroughGatewayWhenLocalRecipientInBcc() throws Exception {
+        String gatewayProperty = fakeSmtp.getContainer().getContainerIp();
+
+        jamesServer = TemporaryJamesServer.builder()
+            .withBase(SMTP_AND_IMAP_MODULE)
+            .withMailetContainer(generateMailetContainerConfiguration(gatewayProperty))
+            .build(temporaryFolder);
+
+        dataProbe = jamesServer.getProbe(DataProbeImpl.class);
+        dataProbe.addDomain(DEFAULT_DOMAIN);
+        dataProbe.addUser(FROM, PASSWORD);
+        dataProbe.addUser(LOCAL_TO, PASSWORD);
+
+        messageSender.connect(LOCALHOST_IP, jamesServer.getProbe(SmtpGuiceProbe.class).getSmtpPort())
+            .sendMessageWithBcc(FROM, RECIPIENT, FROM, LOCAL_TO);
+
+        imapMessageReader.connect(LOCALHOST_IP, jamesServer.getProbe(ImapGuiceProbe.class).getImapPort())
+            .login(FROM, PASSWORD)
+            .select(IMAPMessageReader.INBOX)
+            .awaitMessage(awaitAtMostOneMinute);
+
+        awaitAtMostOneMinute
+            .pollDelay(Duration.FIVE_HUNDRED_MILLISECONDS)
+            .until(this::messageIsReceivedByTheSmtpServer);
+
+        imapMessageReader.connect(LOCALHOST_IP, jamesServer.getProbe(ImapGuiceProbe.class).getImapPort())
+            .login(LOCAL_TO, PASSWORD)
+            .select(IMAPMessageReader.INBOX)
+            .awaitMessage(awaitAtMostOneMinute);
+
     }
 
     @Test

@@ -92,6 +92,36 @@ public class SMTPMessageSender extends ExternalResource implements Closeable {
         return this;
     }
 
+    public SMTPMessageSender sendMessageWithBcc(String from, String recipient, String bcc) throws IOException {
+        doHelo();
+        doSetSender(from);
+        doRCPT("<" + recipient + ">");
+        doRCPT("<" + bcc + ">");
+        doData("FROM: " + from + "\r\n" +
+            "bcc: " + bcc + "\r\n" +
+            "subject: test\r\n" +
+            "\r\n" +
+            "content\r\n" +
+            ".\r\n");
+        return this;
+    }
+
+    public SMTPMessageSender sendMessageWithBcc(String from, String recipient, String bcc, String bcc2) throws IOException {
+        doHelo();
+        doSetSender(from);
+        doRCPT("<" + recipient + ">");
+        doRCPT("<" + bcc + ">");
+        doRCPT("<" + bcc2 + ">");
+        doData("FROM: " + from + "\r\n" +
+            "bcc: " + bcc + "\r\n" +
+            "bcc: " + bcc2 + "\r\n" +
+            "subject: test\r\n" +
+            "\r\n" +
+            "content\r\n" +
+            ".\r\n");
+        return this;
+    }
+
     public SMTPMessageSender sendMessageNoBracket(String from, String recipient) throws IOException {
         doHelo();
         doSetSender(from);
