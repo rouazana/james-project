@@ -48,6 +48,17 @@ public class SerializationUtil {
     }
 
     /**
+     * Serialize the input object not relying on standard (and soon deprecated) @Serializable mechanism
+     *
+     * @param obj The object that needs to be serialized, must implement @Jsonable interface
+     *
+     * @return The JSon representation of {@code object}.
+     */
+    public static <T> String serializeToJson(Jsonable<T> object) {
+        return "";
+    }
+
+    /**
      * Decodes the input base64 string and deserialize it.
      *
      * @param <T>    The resulting type after deserialization.
@@ -60,5 +71,22 @@ public class SerializationUtil {
                 .map(Base64.getDecoder()::decode)
                 .<T>map(SerializationUtils::deserialize)
                 .orElse(null);
+    }
+
+    public static <T> Jsonable<T> deserializeFromJSon(String object) {
+        return new Jsonable<T>() {
+
+            @Override
+            public String toJson() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public T fromJson(String serialized) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
     }
 }
