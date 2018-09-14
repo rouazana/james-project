@@ -19,43 +19,50 @@
 
 package org.apache.mailet;
 
+import java.util.Collection;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.google.common.collect.ImmutableList;
+
 /** 
- * Serializer and Deserializer
+ * Serializer
  * 
  * @since Mailet API v3.2
  */
-public interface SerDes<T> {
-    String serialize(T object);
+public interface Serializer<T> {
+    JsonNode serialize(T object);
 
-    T deserialize(String json);
-
-    class StringSerDes implements SerDes<String> {
-
+    class StringSerializer implements Serializer<String> {
         @Override
-        public String serialize(String object) {
-            return object;
-        }
-
-        @Override
-        public String deserialize(String json) {
-            return json;
+        public JsonNode serialize(String object) {
+            return TextNode.valueOf(object);
         }
     }
 
-    SerDes<String> STRING_SER_DES = new StringSerDes();
+    Serializer<String> STRING_SERIALIZER = new StringSerializer();
 
-    class IntSerDes implements SerDes<Integer> {
-
+    class IntSerializer implements Serializer<Integer> {
         @Override
-        public String serialize(Integer object) {
-            return String.valueOf(object);
-        }
-
-        @Override
-        public Integer deserialize(String json) {
-            return Integer.valueOf(json);
+        public JsonNode serialize(Integer object) {
+            return IntNode.valueOf(object);
         }
     }
 
-    SerDes<Integer> INT_SER_DES = new IntSerDes();
+    Serializer<Integer> INT_SERIALIZER = new IntSerializer();
+
+    class CollectionSerializer<U> implements Serializer<Collection<U>> {
+        @Override
+        public JsonNode serialize(Collection<U> object) {
+            List<JsonNode> jsons = object.stream()
+                .map(AttributeValue::of)
+                .map(AttributeValue::toJson)
+                .collect(ImmutableList.toImmutableList());
+            return new ArrayNode(JsonNodeFactory.instance, jsons);
+        }
+    }
 }
