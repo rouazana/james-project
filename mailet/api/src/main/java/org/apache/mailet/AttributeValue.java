@@ -22,40 +22,43 @@ package org.apache.mailet;
 import java.util.Objects;
 
 /** 
- * Attribute
+ * Strong typing for attribute value, which represent the value of an attribute stored in a mail.
  * 
  * @since Mailet API v3.2
  */
-public class Attribute {
-    private final AttributeName name;
-    private final AttributeValue value;
+public class AttributeValue<T> {
+    private final T value;
+    private final SerDes<T> serDes;
 
-    public Attribute(AttributeName name, AttributeValue value) {
-        this.name = name;
+    public static AttributeValue<String> of(String value) {
+        return new AttributeValue<>(value, SerDes.STRING_SER_DES);
+    }
+
+    public static AttributeValue<Integer> of(Integer value) {
+        return new AttributeValue<>(value, SerDes.INT_SER_DES);
+    }
+
+    private AttributeValue(T value, SerDes<T> serDes) {
         this.value = value;
+        this.serDes = serDes;
     }
 
-    public AttributeName getName() {
-        return name;
-    }
-
-    public AttributeValue getValue() {
-        return value;
+    public String toJson() {
+        return serDes.serialize(value);
     }
 
     @Override
     public final boolean equals(Object o) {
-        if (o instanceof Attribute) {
-            Attribute that = (Attribute) o;
+        if (o instanceof AttributeValue) {
+            AttributeValue<?> that = (AttributeValue<?>) o;
 
-            return Objects.equals(this.name, that.name)
-                && Objects.equals(this.value, that.value);
+            return Objects.equals(this.value, that.value);
         }
         return false;
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(name, value);
+        return Objects.hash(value);
     }
 }

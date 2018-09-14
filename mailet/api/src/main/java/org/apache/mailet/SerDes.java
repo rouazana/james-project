@@ -19,43 +19,43 @@
 
 package org.apache.mailet;
 
-import java.util.Objects;
-
 /** 
- * Attribute
+ * Serializer and Deserializer
  * 
  * @since Mailet API v3.2
  */
-public class Attribute {
-    private final AttributeName name;
-    private final AttributeValue value;
+public interface SerDes<T> {
+    String serialize(T object);
 
-    public Attribute(AttributeName name, AttributeValue value) {
-        this.name = name;
-        this.value = value;
-    }
+    T deserialize(String json);
 
-    public AttributeName getName() {
-        return name;
-    }
+    class StringSerDes implements SerDes<String> {
 
-    public AttributeValue getValue() {
-        return value;
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (o instanceof Attribute) {
-            Attribute that = (Attribute) o;
-
-            return Objects.equals(this.name, that.name)
-                && Objects.equals(this.value, that.value);
+        @Override
+        public String serialize(String object) {
+            return object;
         }
-        return false;
+
+        @Override
+        public String deserialize(String json) {
+            return json;
+        }
     }
 
-    @Override
-    public final int hashCode() {
-        return Objects.hash(name, value);
+    SerDes<String> STRING_SER_DES = new StringSerDes();
+
+    class IntSerDes implements SerDes<Integer> {
+
+        @Override
+        public String serialize(Integer object) {
+            return String.valueOf(object);
+        }
+
+        @Override
+        public Integer deserialize(String json) {
+            return Integer.valueOf(json);
+        }
     }
+
+    SerDes<Integer> INT_SER_DES = new IntSerDes();
 }
