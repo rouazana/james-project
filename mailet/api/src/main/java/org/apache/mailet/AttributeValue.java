@@ -48,11 +48,20 @@ public class AttributeValue<T> {
         return new AttributeValue<>(value, Serializer.INT_SERIALIZER);
     }
 
-    public static <A, B extends Collection<A>> AttributeValue<B> of(B value) {
-        return new AttributeValue(value, new Serializer.CollectionSerializer<A>());
+    public static AttributeValue<Collection<AttributeValue<?>>> of(Collection<AttributeValue<?>> value) {
+        return new AttributeValue<>(value, new Serializer.CollectionSerializer());
     }
 
-    public static <V> AttributeValue<V> of(V otherValue) {
+    public static AttributeValue<?> of(Object otherValue) {
+        if (otherValue instanceof String) {
+            return of((String) otherValue);
+        }
+        if (otherValue instanceof Integer) {
+            return of((Integer) otherValue);
+        }
+        if (otherValue instanceof Collection<?>) {
+            return of(((Collection<AttributeValue<?>>) otherValue));
+        }
         throw new NotImplementedException("comming soon?");
     }
 

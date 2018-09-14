@@ -20,8 +20,6 @@ package org.apache.mailet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Collection;
-
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,7 +57,7 @@ public class AttributeValueTest {
 
     @Test
     void emptyStringListShouldBeSerializedAndBack() {
-        AttributeValue<Collection<String>> expected = AttributeValue.of(ImmutableList.<String>of());
+        AttributeValue<?> expected = AttributeValue.of(ImmutableList.<String>of());
         
         JsonNode json = expected.toJson();
         System.out.println(json);
@@ -70,7 +68,7 @@ public class AttributeValueTest {
 
     @Test
     void listShouldBeSerializedAndBack() {
-        AttributeValue<?> expected = AttributeValue.of(ImmutableList.of("first", "second"));
+        AttributeValue<?> expected = AttributeValue.of(ImmutableList.of(AttributeValue.of("first"), AttributeValue.of("second")));
         
         JsonNode json = expected.toJson();
         System.out.println(json);

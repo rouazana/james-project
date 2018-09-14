@@ -42,6 +42,11 @@ public interface Serializer<T> {
         public JsonNode serialize(String object) {
             return TextNode.valueOf(object);
         }
+
+        @Override
+        public boolean equals(Object other) {
+            return this.getClass() == other.getClass();
+        }
     }
 
     Serializer<String> STRING_SERIALIZER = new StringSerializer();
@@ -51,18 +56,27 @@ public interface Serializer<T> {
         public JsonNode serialize(Integer object) {
             return IntNode.valueOf(object);
         }
+
+        @Override
+        public boolean equals(Object other) {
+            return this.getClass() == other.getClass();
+        }
     }
 
     Serializer<Integer> INT_SERIALIZER = new IntSerializer();
 
-    class CollectionSerializer<U> implements Serializer<Collection<U>> {
+    class CollectionSerializer<U> implements Serializer<Collection<AttributeValue<U>>> {
         @Override
-        public JsonNode serialize(Collection<U> object) {
+        public JsonNode serialize(Collection<AttributeValue<U>> object) {
             List<JsonNode> jsons = object.stream()
-                .map(AttributeValue::of)
                 .map(AttributeValue::toJson)
                 .collect(ImmutableList.toImmutableList());
             return new ArrayNode(JsonNodeFactory.instance, jsons);
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return this.getClass() == other.getClass();
         }
     }
 }
