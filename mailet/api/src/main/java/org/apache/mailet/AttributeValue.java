@@ -48,8 +48,8 @@ public class AttributeValue<T> {
         return new AttributeValue<>(value, Serializer.INT_SERIALIZER);
     }
 
-    public static <U> AttributeValue<Collection<U>> of(Collection<U> value) {
-        return new AttributeValue<>(value, new Serializer.CollectionSerializer<U>());
+    public static <A, B extends Collection<A>> AttributeValue<B> of(B value) {
+        return new AttributeValue(value, new Serializer.CollectionSerializer<A>());
     }
 
     public static <V> AttributeValue<V> of(V otherValue) {
@@ -73,14 +73,23 @@ public class AttributeValue<T> {
         return AttributeValue.of(intAsJson.asInt());
     }
 
-    public static AttributeValue<Collection<Object>> fromJson(ArrayNode arrayAsJson) {
+    public static AttributeValue<? extends Collection<?>> fromJson(ArrayNode arrayAsJson) {
         return AttributeValue.of(
             Iterators.toStream(arrayAsJson.elements())
                 .map(AttributeValue::fromJson)
                 .collect(ImmutableList.toImmutableList()));
     }
 
-    public static <X> AttributeValue<X> fromJson(JsonNode otherJson) {
+    public static AttributeValue<?> fromJson(JsonNode otherJson) {
+        if (otherJson instanceof TextNode) {
+            return fromJson((TextNode) otherJson);
+        }
+        if (otherJson instanceof IntNode) {
+            return fromJson((IntNode) otherJson);
+        }
+        if (otherJson instanceof ArrayNode) {
+            return fromJson((ArrayNode) otherJson);
+        }
         throw new NotImplementedException("comming soon?");
     }
 
@@ -89,13 +98,14 @@ public class AttributeValue<T> {
         if (o instanceof AttributeValue) {
             AttributeValue<?> that = (AttributeValue<?>) o;
 
-            return Objects.equals(this.value, that.value);
+            return Objects.equals(this.value, that.value)
+                && Objects.equals(this.serializer, that.serializer);
         }
         return false;
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(value, serializer);
     }
 }
