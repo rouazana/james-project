@@ -21,13 +21,17 @@ package org.apache.mailet;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 /** 
  * Serializer
@@ -72,6 +76,20 @@ public interface Serializer<T> {
                 .map(AttributeValue::toJson)
                 .collect(ImmutableList.toImmutableList());
             return new ArrayNode(JsonNodeFactory.instance, jsons);
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return this.getClass() == other.getClass();
+        }
+    }
+
+    class MapSerializer<U> implements Serializer<Map<String, AttributeValue<U>>> {
+        @Override
+        public JsonNode serialize(Map<String, AttributeValue<U>> object) {
+            Map<String, JsonNode> jsonMap = object.entrySet().stream()
+                .collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> entry.getValue().toJson()));
+            return new ObjectNode(JsonNodeFactory.instance, jsonMap);
         }
 
         @Override

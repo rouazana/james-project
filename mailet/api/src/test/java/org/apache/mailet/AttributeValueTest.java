@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -70,6 +71,16 @@ public class AttributeValueTest {
     void listShouldBeSerializedAndBack() {
         AttributeValue<?> expected = AttributeValue.of(ImmutableList.of(AttributeValue.of("first"), AttributeValue.of("second")));
         
+        JsonNode json = expected.toJson();
+        System.out.println(json);
+        AttributeValue<?> actual = AttributeValue.fromJson(json);
+        
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void emptyMapShouldBeSerializedAndBack() {
+        AttributeValue<?> expected = AttributeValue.of(ImmutableMap.of());
         JsonNode json = expected.toJson();
         System.out.println(json);
         AttributeValue<?> actual = AttributeValue.fromJson(json);

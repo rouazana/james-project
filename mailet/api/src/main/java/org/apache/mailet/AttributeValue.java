@@ -21,6 +21,7 @@ package org.apache.mailet;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -55,6 +56,10 @@ public class AttributeValue<T> {
         return new AttributeValue<>(value, new Serializer.CollectionSerializer());
     }
 
+    public static AttributeValue<Map<String, AttributeValue<?>>> of(Map<String, AttributeValue<?>> value) {
+        return new AttributeValue<>(value, new Serializer.MapSerializer());
+    }
+
     @SuppressWarnings("unchecked")
     public static AttributeValue<?> of(Object otherValue) {
         if (otherValue instanceof String) {
@@ -65,6 +70,9 @@ public class AttributeValue<T> {
         }
         if (otherValue instanceof Collection<?>) {
             return of(((Collection<AttributeValue<?>>) otherValue));
+        }
+        if (otherValue instanceof Map<?,?>) {
+            return of(((Map<String, AttributeValue<?>>) otherValue));
         }
         throw new NotImplementedException("comming soon?");
     }
