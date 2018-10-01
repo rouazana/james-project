@@ -50,10 +50,12 @@ public class AttributeValue<T> {
         return new AttributeValue<>(value, Serializer.INT_SERIALIZER);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static AttributeValue<Collection<AttributeValue<?>>> of(Collection<AttributeValue<?>> value) {
         return new AttributeValue<>(value, new Serializer.CollectionSerializer());
     }
 
+    @SuppressWarnings("unchecked")
     public static AttributeValue<?> of(Object otherValue) {
         if (otherValue instanceof String) {
             return of((String) otherValue);

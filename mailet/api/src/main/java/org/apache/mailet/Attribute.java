@@ -28,9 +28,9 @@ import java.util.Objects;
  */
 public class Attribute {
     private final AttributeName name;
-    private final AttributeValue value;
+    private final AttributeValue<?> value;
 
-    public Attribute(AttributeName name, AttributeValue value) {
+    public Attribute(AttributeName name, AttributeValue<?> value) {
         this.name = name;
         this.value = value;
     }
@@ -39,7 +39,7 @@ public class Attribute {
         return name;
     }
 
-    public AttributeValue getValue() {
+    public AttributeValue<?> getValue() {
         return value;
     }
 
