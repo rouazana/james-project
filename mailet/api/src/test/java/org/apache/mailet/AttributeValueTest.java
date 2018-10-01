@@ -76,4 +76,31 @@ public class AttributeValueTest {
         
         assertThat(actual).isEqualTo(expected);
     }
+
+    @Test
+    void fromJsonStringShouldReturnStringAttributeValueWhenString() throws Exception {
+        AttributeValue<String> expected = AttributeValue.of("value");
+
+        AttributeValue<?> actual = AttributeValue.fromJsonString("\"value\"");
+        
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void fromJsonStringShouldReturnIntAttributeValueWhenInt() throws Exception {
+        AttributeValue<Integer> expected = AttributeValue.of(42);
+
+        AttributeValue<?> actual = AttributeValue.fromJsonString("42");
+        
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void fromJsonStringShouldReturnEmptyListAttributeValueWhenEmptyArray() throws Exception {
+        AttributeValue<?> expected = AttributeValue.of(ImmutableList.of(AttributeValue.of("first"), AttributeValue.of("second")));
+
+        AttributeValue<?> actual = AttributeValue.fromJsonString("[\"first\",\"second\"]");
+        
+        assertThat(actual).isEqualTo(expected);
+    }
 }

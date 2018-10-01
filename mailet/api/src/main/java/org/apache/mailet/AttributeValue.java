@@ -19,6 +19,7 @@
 
 package org.apache.mailet;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -26,6 +27,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.james.util.streams.Iterators;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -100,6 +102,12 @@ public class AttributeValue<T> {
             return fromJson((ArrayNode) otherJson);
         }
         throw new NotImplementedException("comming soon?");
+    }
+
+    public static AttributeValue<?> fromJsonString(String json) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode tree = objectMapper.readTree(json);
+        return fromJson(tree);
     }
 
     @Override
