@@ -97,6 +97,15 @@ public class AttributeValueTest {
 
     @Test
     void fromJsonStringShouldReturnEmptyListAttributeValueWhenEmptyArray() throws Exception {
+        AttributeValue<?> expected = AttributeValue.of(ImmutableList.of());
+
+        AttributeValue<?> actual = AttributeValue.fromJsonString("[]");
+        
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void fromJsonStringShouldReturnListAttributeValueWhenArray() throws Exception {
         AttributeValue<?> expected = AttributeValue.of(ImmutableList.of(AttributeValue.of("first"), AttributeValue.of("second")));
 
         AttributeValue<?> actual = AttributeValue.fromJsonString("[\"first\",\"second\"]");
