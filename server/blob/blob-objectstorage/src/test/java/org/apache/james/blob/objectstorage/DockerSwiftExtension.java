@@ -48,7 +48,8 @@ public class DockerSwiftExtension implements ParameterResolver, BeforeAllCallbac
     private DockerSwift dockerSwift;
 
     public DockerSwiftExtension() {
-        swiftContainer = new GenericContainer<>(SWIFT_DOCKER_IMAGE)
+        swiftContainer = new GenericContainer<>(SWIFT_DOCKER_IMAGE);
+        swiftContainer
             .withExposedPorts(KEYSTONE_ADMIN_PORT)
             .withExposedPorts(SWIFT_PORT)
             .waitingFor(
