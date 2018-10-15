@@ -1,11 +1,4 @@
 Return-Path: <test@linagora.com>
-Received: from alderaan.linagora.com (smtp.linagora.dc1 [172.16.18.53])
-	 by imap (Cyrus v2.2.13-Debian-2.2.13-19+squeeze3) with LMTPA;
-	 Thu, 30 Jun 2016 11:26:28 +0200
-X-Sieve: CMU Sieve 2.2
-Received: from extranet.linagora.com (ldap.linagora.com [172.16.18.50])
-	by alderaan.linagora.com (Postfix) with ESMTP id D9D01743
-	for <test@linagora.com>; Thu, 30 Jun 2016 11:26:28 +0200 (CEST)
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
  boundary="=_78be9b39405e216b14ea426a30eef65c"
