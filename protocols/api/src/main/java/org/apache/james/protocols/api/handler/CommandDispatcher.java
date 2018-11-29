@@ -156,7 +156,7 @@ public class CommandDispatcher<SessionT extends ProtocolSession> implements Exte
         try {
             return dispatchCommandHandlers(session, request);
         } catch (Exception e) {
-            LOGGER.error("Error dispatching command for request {}", request, e);
+            LOGGER.error("Error dispatching command for request {}", request.getCommand(), e);
             return session.newFatalErrorResponse();
         }
     }
