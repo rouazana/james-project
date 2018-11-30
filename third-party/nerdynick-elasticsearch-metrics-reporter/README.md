@@ -1,5 +1,11 @@
 # Metrics Elasticsearch Reporter
 
+## Why is this project here
+
+This project is unmaintained, but some interesting modifications have been done by [nerdynick](https://github.com/nerdynick/elasticsearch-metrics-reporter-java).
+
+The library has so been imported into James to be able to use the last modifications, without waiting for any release.
+
 ## Introduction
 
 This is a reporter for the excellent [Metrics library](http://metrics.dropwizard.io/), similar to the [Graphite](http://metrics.dropwizard.io/3.1.0/manual/graphite/) or [Ganglia](http://metrics.dropwizard.io/3.1.0/manual/ganglia/) reporters, except that it reports to an Elasticsearch server.
@@ -17,10 +23,6 @@ If you want to see this in action, go to the `samples/` directory and read the r
 | 2.2.0                             | 2.2.0  -> 2.2.x     |  2016-02-10  |
 | 2.0                               | 1.0.0  -> 1.7.x     |  2014-02-16  |
 | 1.0                               | 0.90.7 -> 0.90.x    |  2014-02-05  |
-
-## Travis CI build status
-
-[![Build status](https://travis-ci.org/nerdynick/elasticsearch-metrics-reporter-java.svg?branch=master)](https://travis-ci.org/nerdynick/elasticsearch-metrics-reporter-java)
 
 ## Installation
 
