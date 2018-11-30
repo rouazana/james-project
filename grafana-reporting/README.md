@@ -8,7 +8,7 @@ docker run -i -p 3000:3000 grafana/grafana
 
 Once running, you need to set up an ElasticSearch data-source :
  - select proxy mode
- - Select version 2.x of ElasticSearch
+ - Select version of ElasticSearch match your installation
  - make the URL point your ES node
  - Specify the index name. By default, it should be :
 
