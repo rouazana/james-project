@@ -50,6 +50,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
+
 public class GetMailboxesMethod implements Method {
 
     private static final Method.Request.Name METHOD_NAME = Method.Request.name("getMailboxes");
@@ -137,15 +140,17 @@ public class GetMailboxesMethod implements Method {
                 .matchesAllMailboxNames()
                 .build(),
             mailboxSession);
-        return userMailboxes
-            .stream()
-            .map(MailboxMetaData::getId)
-            .map(mailboxId -> mailboxFactory.builder()
-                .id(mailboxId)
-                .session(mailboxSession)
-                .usingPreloadedMailboxesMetadata(userMailboxes)
-                .build())
-            .flatMap(OptionalUtils::toStream);
+        return Flux.fromIterable(userMailboxes)
+                .publishOn(Schedulers.elastic())
+                .map(MailboxMetaData::getId)
+                .map(mailboxId -> mailboxFactory.builder()
+                    .id(mailboxId)
+                    .session(mailboxSession)
+                    .usingPreloadedMailboxesMetadata(userMailboxes)
+                    .build())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toStream();
     }
 
 }
