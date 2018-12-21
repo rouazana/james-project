@@ -20,7 +20,6 @@ package org.apache.james.jmap.model;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.james.jmap.methods.Method;
@@ -38,11 +37,11 @@ public class GetMailboxesResponse implements Method.Response {
 
         private String accountId;
         private String state;
-        private final ConcurrentLinkedDeque<Mailbox> mailboxes;
+        private final ImmutableList.Builder<Mailbox> mailboxes;
         private final ImmutableList.Builder<String> notFoundBuilder;
 
         private Builder() {
-            mailboxes = new ConcurrentLinkedDeque<>();
+            mailboxes = ImmutableList.builder();
             notFoundBuilder = ImmutableList.builder();
         }
 
@@ -79,7 +78,7 @@ public class GetMailboxesResponse implements Method.Response {
 
         public GetMailboxesResponse build() {
             ImmutableList<String> notFound = notFoundBuilder.build();
-            return new GetMailboxesResponse(accountId, state, ImmutableList.copyOf(mailboxes),
+            return new GetMailboxesResponse(accountId, state, mailboxes.build(), 
                     notFound.isEmpty() ? Optional.empty() : Optional.of(notFound));
         }
     }
