@@ -28,6 +28,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.Flags;
 
@@ -61,6 +62,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
+import com.jayway.awaitility.Awaitility;
+import com.jayway.awaitility.Duration;
 
 public abstract class AbstractMessageSearchIndexTest {
 
@@ -1464,8 +1468,15 @@ public abstract class AbstractMessageSearchIndexTest {
         SearchQuery searchQuery = new SearchQuery();
 
         StoreMessageManager newBox = (StoreMessageManager) storeMailboxManager.getMailbox(newBoxId, session);
-        assertThat(messageSearchIndex.search(session, newBox.getMailboxEntity(), searchQuery))
-            .hasSize(9);
+
+        Awaitility.with()
+            .pollInterval(Duration.ONE_HUNDRED_MILLISECONDS)
+            .and().with()
+            .pollDelay(new Duration(1, TimeUnit.MILLISECONDS))
+            .await()
+            .atMost(30, TimeUnit.SECONDS)
+            .until(
+                () -> Iterators.size(messageSearchIndex.search(session, newBox.getMailboxEntity(), searchQuery)) == 9);
     }
 
     @Test
