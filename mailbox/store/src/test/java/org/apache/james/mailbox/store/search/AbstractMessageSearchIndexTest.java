@@ -37,8 +37,10 @@ import org.apache.james.mailbox.MessageIdManager;
 import org.apache.james.mailbox.MessageManager;
 import org.apache.james.mailbox.exception.MailboxException;
 import org.apache.james.mailbox.model.ComposedMessageId;
+import org.apache.james.mailbox.model.MailboxId;
 import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.model.MessageId;
+import org.apache.james.mailbox.model.MessageRange;
 import org.apache.james.mailbox.model.SearchQuery;
 import org.apache.james.mailbox.model.SearchQuery.AddressType;
 import org.apache.james.mailbox.model.SearchQuery.DateResolution;
@@ -1450,6 +1452,20 @@ public abstract class AbstractMessageSearchIndexTest {
 
         assertThat(messageSearchIndex.search(session, mailbox, searchQuery))
             .containsOnly(m3.getUid());
+    }
+
+    @Test
+    public void copiedMessageShouldAllBeIndexed() throws Exception {
+        MailboxPath newBoxPath = MailboxPath.forUser(USERNAME, "newBox");
+        MailboxId newBoxId = storeMailboxManager.createMailbox(newBoxPath, session).get();
+
+        storeMailboxManager.copyMessages(MessageRange.all(), inboxMessageManager.getId(), newBoxId, session);
+
+        SearchQuery searchQuery = new SearchQuery();
+
+        StoreMessageManager newBox = (StoreMessageManager) storeMailboxManager.getMailbox(newBoxId, session);
+        assertThat(messageSearchIndex.search(session, newBox.getMailboxEntity(), searchQuery))
+            .hasSize(9);
     }
 
     @Test
