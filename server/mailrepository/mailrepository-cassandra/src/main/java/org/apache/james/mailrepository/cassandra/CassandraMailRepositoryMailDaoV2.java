@@ -167,9 +167,7 @@ public class CassandraMailRepositoryMailDaoV2 implements CassandraMailRepository
     }
 
     private MailDTO toMail(Row row) {
-        MaybeSender sender = Optional.ofNullable(row.getString(SENDER))
-            .map(MaybeSender::getMailSender)
-            .orElse(null);
+        MaybeSender sender = MaybeSender.getMailSender(row.getString(SENDER));
         List<MailAddress> recipients = row.getList(RECIPIENTS, String.class)
             .stream()
             .map(Throwing.function(MailAddress::new))
