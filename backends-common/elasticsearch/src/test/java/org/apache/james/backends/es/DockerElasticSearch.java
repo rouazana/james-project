@@ -20,6 +20,7 @@
 package org.apache.james.backends.es;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Optional;
 
 import org.apache.http.HttpStatus;
 import org.apache.james.util.Host;
