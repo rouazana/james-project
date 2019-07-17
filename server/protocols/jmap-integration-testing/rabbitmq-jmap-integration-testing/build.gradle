@@ -12,14 +12,21 @@ dependencies {
     testCompile project(path: ':third-party:apache-james-spamassassin', configuration: 'tests')
     testCompile project(path: ':james-server:james-server-blob:blob-objectstorage', configuration: 'tests')
     testCompile project(path: ':james-server:james-server-guice:blob-objectstorage-guice', configuration: 'tests')
+    testCompile project(':james-server:james-server-guice:blob-objectstorage-guice')
     testCompile project(path: ':james-server:james-server-dnsservice-test', configuration: 'tests')
+    testCompile project(':james-server:james-server-dnsservice-test')
     testCompile project(path: ':james-server:james-server-guice:james-server-cassandra-guice', configuration: 'tests')
+    testCompile project(':james-server:james-server-guice:james-server-cassandra-guice')
     testCompile project(path: ':james-server:james-server-guice:james-server-cassandra-rabbitmq-guice', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-guice:james-server-cassandra-rabbitmq-guice', configuration: 'tests')
+    testCompile project(':james-server:james-server-guice:james-server-cassandra-rabbitmq-guice')
     testCompile project(path: ':james-server:jmap-integration-testing:james-server-jmap-integration-testing', configuration: 'tests')
+    testCompile project(':james-server:jmap-integration-testing:james-server-jmap-integration-testing')
     testCompile project(path: ':james-server:james-server-guice:james-server-guice-common', configuration: 'tests')
+    testCompile project(':james-server:james-server-guice:james-server-guice-common')
     testCompile project(path: ':james-server:james-server-guice:james-server-guice-jmap', configuration: 'tests')
     testCompile project(':james-server:james-server-testing')
+    testCompile project(path: ':james-server:james-server-webadmin-core', configuration: 'tests')
+    testCompile project(':james-server:james-server-webadmin-core')
     testCompile 'io.cucumber:cucumber-guice:2.4.0'
     testCompile 'io.cucumber:cucumber-java:2.4.0'
     testCompile 'io.cucumber:cucumber-junit:2.4.0'

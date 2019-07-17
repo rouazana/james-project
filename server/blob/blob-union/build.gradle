@@ -6,7 +6,7 @@ dependencies {
     compile project(':james-server:james-server-blob:blob-api')
     compile project(':james-server:james-server-util')
     testCompile project(path: ':james-server:james-server-blob:blob-api', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-blob:blob-memory', configuration: 'tests')
+    testCompile project(':james-server:james-server-blob:blob-memory')
     testCompile project(':james-server:james-server-testing')
     testCompile 'org.assertj:assertj-core:3.10.0'
     testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'

@@ -8,7 +8,7 @@ dependencies {
     compile project(':james-server:james-server-dnsservice-api')
     compile project(':james-server:james-server-filesystem-api')
     testCompile project(path: ':apache-mailet:apache-mailet-test')
-    testCompile project(path: ':james-server:james-server-blob:blob-memory', configuration: 'tests')
+    testCompile project(path: ':james-server:james-server-blob:blob-memory')
     testCompile 'nl.jqno.equalsverifier:equalsverifier:2.5.1'
     testCompile 'org.assertj:assertj-core:3.10.0'
     testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
