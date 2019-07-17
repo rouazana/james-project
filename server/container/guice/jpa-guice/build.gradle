@@ -36,6 +36,10 @@ dependencies {
     testCompile 'io.rest-assured:rest-assured:3.1.0'
     testCompile 'org.assertj:assertj-core:3.10.0'
     testCompile 'org.mockito:mockito-core:2.21.0'
+    testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
+    testCompile 'org.junit.platform:junit-platform-launcher:1.4.1'
+    testCompile 'org.junit.vintage:junit-vintage-engine:5.2.0'
+
 }
 
 description = 'Apache James :: Server :: JPA - guice injection'
