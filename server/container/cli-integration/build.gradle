@@ -6,10 +6,11 @@ dependencies {
     compile 'com.github.fge:throwing-lambdas:0.5.0'
     compile 'org.mockito:mockito-core:2.21.0'
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-scanning-search', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-cli', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-guice:james-server-guice-common', configuration: 'tests')
+    testCompile project(':james-server:james-server-cli')
+    testCompile project(path: ':james-server:james-server-dnsservice-test', configuration: 'tests')
+    testCompile project(':james-server:james-server-guice:james-server-guice-common')
     testCompile project(path: ':james-server:james-server-guice:james-server-guice-jmap', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-guice:james-server-memory-guice', configuration: 'tests')
+    testCompile project(':james-server:james-server-guice:james-server-memory-guice')
     testCompile project(path: ':james-server:james-server-guice:james-server-memory-guice', configuration: 'tests')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'junit:junit:4.12'

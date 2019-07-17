@@ -10,7 +10,7 @@ dependencies {
     testCompile project(':james-server:james-server-core')
     testCompile project(path: ':james-server:james-server-data-api', configuration: 'tests')
     testCompile project(path: ':james-server:james-server-data-library', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-dnsservice-test', configuration: 'tests')
+    testCompile project(':james-server:james-server-dnsservice-test')
     testCompile project(':james-server:james-server-mailrepository-memory')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'io.cucumber:cucumber-java:2.4.0'

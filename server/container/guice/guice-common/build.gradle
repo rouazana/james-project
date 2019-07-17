@@ -29,10 +29,10 @@ dependencies {
     compile 'org.awaitility:awaitility:3.1.2'
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile project(path: ':apache-mailet:apache-mailet-test')
-    testCompile project(path: ':james-server:james-server-guice:james-server-guice-imap', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-guice:james-server-guice-lmtp', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-guice:james-server-guice-pop', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-guice:james-server-guice-smtp', configuration: 'tests')
+    testCompile project(':james-server:james-server-guice:james-server-guice-imap')
+    testCompile project(':james-server:james-server-guice:james-server-guice-lmtp')
+    testCompile project(':james-server:james-server-guice:james-server-guice-pop')
+    testCompile project(':james-server:james-server-guice:james-server-guice-smtp')
     testCompile project(path: ':james-server:james-server-guice:james-server-guice-webadmin', configuration: 'tests')
     testCompile project(path: ':james-server:james-server-mailrepository-memory', configuration: 'tests')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'

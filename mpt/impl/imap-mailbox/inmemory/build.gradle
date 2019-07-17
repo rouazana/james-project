@@ -4,9 +4,9 @@
 
 dependencies {
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
-    testCompile project(path: ':apache-james-mpt:apache-james-mpt-imapmailbox:apache-james-mpt-imapmailbox-core', configuration: 'tests')
+    testCompile project(path: ':apache-james-mpt:apache-james-mpt-imapmailbox:apache-james-mpt-imapmailbox-core')
 }
 
 description = 'Apache James MPT Imap Mailbox - InMemory'

@@ -8,7 +8,7 @@ dependencies {
     compile project(':james-server:james-server-core')
     compile project(':james-server:james-server-mailrepository-api')
     testCompile project(path: ':james-backends-common:apache-james-backends-cassandra', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-blob:blob-cassandra', configuration: 'tests')
+    testCompile project(':james-server:james-server-blob:blob-cassandra')
     testCompile project(path: ':james-server:james-server-blob:blob-api', configuration: 'tests')
     testCompile project(path: ':james-server:james-server-mailrepository-api', configuration: 'tests')
     testCompile project(':james-server:james-server-testing')

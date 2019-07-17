@@ -81,6 +81,8 @@ public class DomainMappingTest {
             .putProcessor(CommonProcessors.rrtErrorEnabledTransport())
             .putProcessor(CommonProcessors.rrtErrorProcessor());
 
+        System.out.println(mailetContainer.build().serializeAsXml());
+
         jamesServer = TemporaryJamesServer.builder()
             .withMailetContainer(mailetContainer)
             .build(temporaryFolder);

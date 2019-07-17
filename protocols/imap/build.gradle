@@ -15,7 +15,7 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.7'
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-store', configuration: 'tests')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-store')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'junit:junit:4.12'
     testCompile 'nl.jqno.equalsverifier:equalsverifier:2.5.1'

@@ -6,7 +6,7 @@ dependencies {
     compile 'org.awaitility:awaitility:3.1.2'
     compile 'com.spotify:docker-client:8.11.7'
     compile 'com.google.guava:guava:20.0'
-    testCompile project(path: ':apache-james-mpt:apache-james-mpt-imapmailbox:apache-james-mpt-imapmailbox-core', configuration: 'tests')
+    testCompile project(path: ':apache-james-mpt:apache-james-mpt-imapmailbox:apache-james-mpt-imapmailbox-core')
 }
 
 description = 'Apache James MPT Imap Mailbox - Cyrus'

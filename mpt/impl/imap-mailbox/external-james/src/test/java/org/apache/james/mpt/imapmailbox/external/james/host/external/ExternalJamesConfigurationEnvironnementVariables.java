@@ -19,8 +19,7 @@
 package org.apache.james.mpt.imapmailbox.external.james.host.external;
 
 import org.apache.james.util.Port;
-
-import com.google.common.base.Preconditions;
+import org.junit.AssumptionViolatedException;
 
 public class ExternalJamesConfigurationEnvironnementVariables implements ExternalJamesConfiguration {
 
@@ -33,9 +32,15 @@ public class ExternalJamesConfigurationEnvironnementVariables implements Externa
     private final Port smtpPort;
 
     public ExternalJamesConfigurationEnvironnementVariables() {
-        Preconditions.checkState(System.getenv(ENV_JAMES_ADDRESS) != null, "You must have exported an environment variable called JAMES_ADDRESS in order to run these tests. For instance export JAMES_ADDRESS=127.0.0.1");
-        Preconditions.checkState(System.getenv(ENV_JAMES_IMAP_PORT) != null, "You must have exported an environment variable called JAMES_IMAP_PORT in order to run these tests. For instance export JAMES_IMAP_PORT=143");
-        Preconditions.checkState(System.getenv(ENV_JAMES_SMTP_PORT) != null, "You must have exported an environment variable called JAMES_SMTP_PORT in order to run these tests. For instance export JAMES_IMAP_PORT=587");
+        if (System.getenv(ENV_JAMES_ADDRESS) == null) {
+            throw new AssumptionViolatedException("You must have exported an environment variable called JAMES_ADDRESS in order to run these tests. For instance export JAMES_ADDRESS=127.0.0.1");
+        }
+        if (System.getenv(ENV_JAMES_IMAP_PORT) == null) {
+            throw new AssumptionViolatedException("You must have exported an environment variable called JAMES_IMAP_PORT in order to run these tests. For instance export JAMES_IMAP_PORT=143");
+        }
+        if (System.getenv(ENV_JAMES_SMTP_PORT) == null) {
+            throw new AssumptionViolatedException("You must have exported an environment variable called JAMES_SMTP_PORT in order to run these tests. For instance export JAMES_IMAP_PORT=587");
+        }
         this.address = System.getenv(ENV_JAMES_ADDRESS);
         this.imapPort = Port.of(Integer.parseInt(System.getenv(ENV_JAMES_IMAP_PORT)));
         this.smtpPort = Port.of(Integer.parseInt(System.getenv(ENV_JAMES_SMTP_PORT)));

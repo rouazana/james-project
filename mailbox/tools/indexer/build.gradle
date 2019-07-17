@@ -7,12 +7,12 @@ dependencies {
     compile project(':apache-james-mailbox:apache-james-mailbox-store')
     compile 'javax.inject:javax.inject:1'
     compile 'org.slf4j:slf4j-api:1.7.25'
-    testCompile project(path: ':james-backends-common:apache-james-backends-cassandra', configuration: 'tests')
+    testCompile project(':james-backends-common:apache-james-backends-cassandra')
     testCompile project(path: ':james-backends-common:apache-james-backends-cassandra', configuration: 'tests')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-cassandra')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-cassandra', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-cassandra', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-store', configuration: 'tests')
     testCompile project(path: ':james-server:james-server-blob:blob-cassandra', configuration: 'tests')

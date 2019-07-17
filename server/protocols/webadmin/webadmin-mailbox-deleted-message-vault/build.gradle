@@ -13,12 +13,12 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-deleted-messages-vault', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
     testCompile project(path: ':apache-mailet:apache-mailet-test')
-    testCompile project(path: ':james-server:james-server-blob:blob-memory', configuration: 'tests')
+    testCompile project(path: ':james-server:james-server-blob:blob-memory')
     testCompile project(path: ':james-core', configuration: 'tests')
-    testCompile project(':james-server:james-server-data-memory')
+    testCompile project(path: ':james-server:james-server-data-memory')
     testCompile project(path: ':james-server:james-server-webadmin-core', configuration: 'tests')
     testCompile project(path: ':metrics:metrics-logger', configuration: 'tests')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'

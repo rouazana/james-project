@@ -7,7 +7,7 @@ dependencies {
     compile project(':apache-james-mailbox:apache-james-mailbox-store')
     compile project(':third-party:apache-james-spamassassin')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
     testCompile project(path: ':third-party:apache-james-spamassassin', configuration: 'tests')
     testCompile 'junit:junit:4.12'

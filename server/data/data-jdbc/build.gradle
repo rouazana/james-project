@@ -23,10 +23,12 @@ dependencies {
     testCompile project(path: ':james-server:james-server-filesystem-api', configuration: 'tests')
     testCompile project(path: ':james-server:james-server-mailrepository-api', configuration: 'tests')
     testCompile project(':james-server:james-server-testing')
+    testCompile 'commons-dbcp:commons-dbcp:1.4'
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'io.cucumber:cucumber-java:2.4.0'
     testCompile 'io.cucumber:cucumber-junit:2.4.0'
     testCompile 'io.cucumber:cucumber-picocontainer:2.4.0'
+    testCompile 'org.apache.derby:derby:10.14.2.0'
     testCompile 'org.assertj:assertj-core:3.10.0'
     testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
     testCompile 'org.junit.platform:junit-platform-launcher:1.4.1'

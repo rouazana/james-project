@@ -14,8 +14,8 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile project(path: ':apache-mailet:apache-mailet-test')
     testCompile project(':james-server:james-server-data-memory')
-    testCompile project(path: ':james-server:james-server-mailrepository-memory', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-queue-memory', configuration: 'tests')
+    testCompile project(path: ':james-server:james-server-mailrepository-memory')
+    testCompile project(path: ':james-server:james-server-queue-memory')
     testCompile project(path: ':james-server:james-server-webadmin-core', configuration: 'tests')
     testCompile project(path: ':javax-mail-extension', configuration: 'tests')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'

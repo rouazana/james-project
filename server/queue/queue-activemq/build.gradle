@@ -21,7 +21,7 @@ dependencies {
     testCompile project(path: ':james-server:james-server-queue-jms', configuration: 'tests')
     testCompile project(':james-server:james-server-testing')
     testCompile project(path: ':javax-mail-extension', configuration: 'tests')
-    testCompile project(path: ':metrics:metrics-tests', configuration: 'tests')
+    testCompile project(':metrics:metrics-tests')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'com.jayway.awaitility:awaitility:1.6.5'
     testCompile 'org.apache.commons:commons-text:1.4'

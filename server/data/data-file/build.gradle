@@ -17,7 +17,7 @@ dependencies {
     compile 'org.slf4j:jcl-over-slf4j:1.7.25'
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile project(path: ':james-server:james-server-data-library', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-dnsservice-test', configuration: 'tests')
+    testCompile project(':james-server:james-server-dnsservice-test')
     testCompile project(path: ':james-server:james-server-filesystem-api', configuration: 'tests')
     testCompile project(path: ':james-server:james-server-mailrepository-api', configuration: 'tests')
     testCompile project(':james-server:james-server-testing')

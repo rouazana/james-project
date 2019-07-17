@@ -3,15 +3,15 @@
  */
 
 dependencies {
-    compile project(':james-backends-common:apache-james-backends-rabbitmq')
+    testCompile project(path: ':james-backends-common:apache-james-backends-rabbitmq')
     testCompile project(path: ':james-backends-common:apache-james-backends-rabbitmq', configuration: 'tests')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-event-rabbitmq', configuration: 'tests')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-event-rabbitmq')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
-    testCompile project(path: ':apache-james-mpt:apache-james-mpt-imapmailbox:apache-james-mpt-imapmailbox-core', configuration: 'tests')
-    testCompile project(':james-server:james-server-testing')
+    testCompile project(path: ':apache-james-mpt:apache-james-mpt-imapmailbox:apache-james-mpt-imapmailbox-core')
+    testCompile project(path: ':james-server:james-server-testing')
     testCompile 'org.testcontainers:testcontainers:1.11.1'
 }
 

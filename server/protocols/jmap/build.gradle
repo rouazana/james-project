@@ -36,23 +36,24 @@ dependencies {
     compile 'org.zalando:logbook-core:1.9.0'
     compile 'org.zalando:logbook-servlet:1.9.0'
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-tika', configuration: 'tests')
     testCompile project(path: ':apache-mailet:apache-mailet-test')
-    testCompile project(path: ':event-sourcing:event-sourcing-event-store-memory', configuration: 'tests')
+    testCompile project(':event-sourcing:event-sourcing-event-store-memory')
     testCompile project(path: ':james-server:james-server-data-library', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-data-library', configuration: 'tests')
+    testCompile project(':james-server:james-server-data-library')
     testCompile project(':james-server:james-server-data-memory')
     testCompile project(path: ':james-server:james-server-filesystem-api', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-queue-memory', configuration: 'tests')
+    testCompile project(':james-server:james-server-queue-memory')
     testCompile project(path: ':james-server:james-server-util', configuration: 'tests')
     testCompile project(path: ':javax-mail-extension', configuration: 'tests')
-    testCompile project(path: ':metrics:metrics-logger', configuration: 'tests')
+    testCompile project(':metrics:metrics-logger')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'com.github.dpaukov:combinatoricslib3:3.3.0'
     testCompile 'com.jayway.jsonpath:json-path:2.4.0'
     testCompile 'io.rest-assured:rest-assured:3.1.0'
+    testCompile 'junit:junit:4.12'
     testCompile 'net.javacrumbs.json-unit:json-unit-assertj:2.0.0.RC1'
     testCompile 'nl.jqno.equalsverifier:equalsverifier:2.5.1'
     testCompile 'org.assertj:assertj-core:3.10.0'

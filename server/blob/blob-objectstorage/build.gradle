@@ -15,8 +15,8 @@ dependencies {
     compile 'org.slf4j:jcl-over-slf4j:1.7.25'
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile project(path: ':james-server:james-server-blob:blob-api', configuration: 'tests')
-    testCompile project(path: ':metrics:metrics-tests', configuration: 'tests')
-    testCompile project(':james-server:james-server-testing')
+    testCompile project(path: ':metrics:metrics-tests')
+    testCompile project(path: ':james-server:james-server-testing')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'nl.jqno.equalsverifier:equalsverifier:2.5.1'
     testCompile 'org.assertj:assertj-core:3.10.0'

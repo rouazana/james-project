@@ -4,3 +4,6 @@ dockerfiles/run/**/*.lib
 dockerfiles/run/**/*.jar
 dockerfiles/run/**/keystore
 .m2
+build
+out
+*~

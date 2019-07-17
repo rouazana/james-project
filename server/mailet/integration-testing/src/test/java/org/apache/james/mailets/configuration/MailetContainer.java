@@ -28,40 +28,45 @@ import java.util.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 public class MailetContainer implements SerializableAsXml {
 
     public static Builder builder() {
-        return new Builder();
+        return new Builder(ImmutableMap.of(), Optional.empty(), Optional.empty());
     }
 
     public static class Builder {
 
         public static final int DEFAULT_THREAD_COUNT = 5;
         public static final String DEFAULT_POSTMASTER = "postmaster@localhost";
-        private Optional<String> postmaster;
-        private Optional<Integer> threads;
-        private Map<String, ProcessorConfiguration> processors;
+        private final Optional<String> postmaster;
+        private final Optional<Integer> threads;
+        private final Map<String, ProcessorConfiguration> processors;
 
-        private Builder() {
-            processors = new HashMap<>();
-            threads = Optional.empty();
-            postmaster = Optional.empty();
+        private Builder(Map<String, ProcessorConfiguration> processors, Optional<Integer> threads, Optional<String> postmaster) {
+            this.processors = processors;
+            this.threads = threads;
+            this.postmaster = postmaster;
         }
 
         public Builder postmaster(String postmaster) {
-            this.postmaster = Optional.of(postmaster);
-            return this;
+            return new Builder(processors, threads, Optional.of(postmaster));
         }
 
         public Builder threads(int threads) {
-            this.threads = Optional.of(threads);
-            return this;
+            return new Builder(processors, Optional.of(threads), postmaster);
         }
 
         public Builder putProcessor(ProcessorConfiguration processorConfiguration) {
-            this.processors.put(processorConfiguration.getState(), processorConfiguration);
-            return this;
+            return new Builder(appendProcessorConfiguration(processorConfiguration), threads, postmaster);
+        }
+
+        private ImmutableMap<String, ProcessorConfiguration> appendProcessorConfiguration(ProcessorConfiguration processorConfiguration) {
+            HashMap<String, ProcessorConfiguration> configurationHashMap = Maps.newHashMap(processors);
+            configurationHashMap.put(processorConfiguration.getState(), processorConfiguration);
+            return ImmutableMap.copyOf(configurationHashMap);
         }
 
         public Builder putProcessor(ProcessorConfiguration.Builder processorConfiguration) {

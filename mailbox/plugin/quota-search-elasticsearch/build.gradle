@@ -11,7 +11,7 @@ dependencies {
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.6'
     testCompile project(path: ':james-backends-common:apache-james-backends-es', configuration: 'tests')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-quota-search', configuration: 'tests')
     testCompile project(path: ':james-core', configuration: 'tests')

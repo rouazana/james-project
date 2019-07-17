@@ -13,16 +13,17 @@ dependencies {
     compile 'com.google.guava:guava:25.1-jre'
     compile 'javax.inject:javax.inject:1'
     compile 'org.slf4j:slf4j-api:1.7.25'
-    testCompile project(path: ':james-server:james-server-dnsservice-test', configuration: 'tests')
+    testCompile project(':james-server:james-server-dnsservice-test')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
     testCompile project(':apache-james-mailbox:apache-james-mailbox-event-memory')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-tools-indexer', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-tools-indexer')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-quota-search', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-quota-search-scanning', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-quota-search-scanning')
+    testCompile project(':james-backends-common:apache-james-backends-es')
     testCompile project(path: ':james-backends-common:apache-james-backends-es', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-quota-search-elasticsearch', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-quota-search-elasticsearch')
     testCompile project(path: ':james-core', configuration: 'tests')
     testCompile project(':james-server:james-server-data-memory')
     testCompile project(':james-server:james-server-testing')

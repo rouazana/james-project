@@ -31,6 +31,7 @@ dependencies {
     testCompile project(path: ':james-server:james-server-mailetcontainer-api', configuration: 'tests')
     testCompile project(path: ':javax-mail-extension', configuration: 'tests')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
+    testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.10.0'
     testCompile 'org.awaitility:awaitility:3.1.2'
     testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'

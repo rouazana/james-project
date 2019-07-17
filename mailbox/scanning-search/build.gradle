@@ -8,7 +8,7 @@ dependencies {
     compile 'org.slf4j:jcl-over-slf4j:1.7.25'
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-store', configuration: 'tests')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'

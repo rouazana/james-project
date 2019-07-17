@@ -13,7 +13,7 @@ dependencies {
     testCompile project(':james-server:james-server-testing')
     testCompile project(path: ':javax-mail-extension', configuration: 'tests')
     testCompile project(path: ':metrics:metrics-api', configuration: 'tests')
-    testCompile project(path: ':metrics:metrics-tests', configuration: 'tests')
+    testCompile project(':metrics:metrics-tests')
     testCompile 'org.assertj:assertj-core:3.10.0'
     testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
     testCompile 'org.junit.vintage:junit-vintage-engine:5.2.0'

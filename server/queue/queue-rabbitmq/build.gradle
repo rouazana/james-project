@@ -28,12 +28,12 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile project(path: ':james-backends-common:apache-james-backends-rabbitmq', configuration: 'tests')
     testCompile project(path: ':james-backends-common:apache-james-backends-cassandra', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-blob:blob-cassandra', configuration: 'tests')
+    testCompile project(':james-server:james-server-blob:blob-cassandra')
     testCompile project(path: ':james-server:james-server-blob:blob-memory', configuration: 'tests')
     testCompile project(path: ':event-sourcing:event-sourcing-event-store-cassandra', configuration: 'tests')
     testCompile project(path: ':james-server:james-server-queue-api', configuration: 'tests')
     testCompile project(':james-server:james-server-testing')
-    testCompile project(path: ':metrics:metrics-tests', configuration: 'tests')
+    testCompile project(':metrics:metrics-tests')
     testCompile 'com.jayway.awaitility:awaitility:1.6.5'
     testCompile 'io.projectreactor:reactor-test:3.2.10.RELEASE'
     testCompile 'net.javacrumbs.json-unit:json-unit-assertj:2.0.0.RC1'

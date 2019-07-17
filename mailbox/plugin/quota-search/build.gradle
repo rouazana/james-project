@@ -5,10 +5,9 @@
 dependencies {
     compile project(':apache-james-mailbox:apache-james-mailbox-api')
     compile project(':james-core')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':james-core', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-data-api', configuration: 'tests')
+    testCompile project(':james-server:james-server-data-api')
     testCompile 'nl.jqno.equalsverifier:equalsverifier:2.5.1'
     testCompile 'org.assertj:assertj-core:3.10.0'
     testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'

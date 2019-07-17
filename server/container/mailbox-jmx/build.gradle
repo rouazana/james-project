@@ -7,7 +7,7 @@ dependencies {
     compile project(':james-server:james-server-util')
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
     testCompile 'org.assertj:assertj-core:3.10.0'
     testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'

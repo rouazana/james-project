@@ -3,16 +3,16 @@
  */
 
 dependencies {
-    compile project(':apache-james-mailbox:apache-james-mailbox-api')
-    compile project(':apache-james-mailbox:apache-james-mailbox-api')
-    compile project(':apache-james-mailbox:apache-james-mailbox-event-memory')
-    compile project(':apache-james-mailbox:apache-james-mailbox-memory')
-    compile project(':apache-james-mailbox:apache-james-mailbox-memory')
-    compile project(':apache-james-mailbox:apache-james-mailbox-lucene')
-    compile project(':apache-james-mailbox:apache-james-mailbox-lucene')
-    compile project(':apache-james-mailbox:apache-james-mailbox-store')
-    compile 'junit:junit:4.12'
-    testCompile project(path: ':apache-james-mpt:apache-james-mpt-imapmailbox:apache-james-mpt-imapmailbox-core', configuration: 'tests')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-event-memory')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-lucene')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-lucene', configuration: 'tests')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-store')
+    testCompile project(path: ':apache-james-mpt:apache-james-mpt-imapmailbox:apache-james-mpt-imapmailbox-core')
+    testCompile 'junit:junit:4.12'
 }
 
 description = 'Apache James MPT Imap Mailbox - LuceneSearch'

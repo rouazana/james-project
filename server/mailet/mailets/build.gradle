@@ -32,18 +32,17 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.25'
     compile 'com.jakewharton.byteunits:byteunits:0.9.1'
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-api', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-store', configuration: 'tests')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-store', configuration: 'tests')
     testCompile project(path: ':third-party:apache-james-spamassassin', configuration: 'tests')
     testCompile project(path: ':apache-mailet:apache-mailet-base', configuration: 'tests')
-    testCompile project(path: ':metrics:metrics-tests', configuration: 'tests')
+    testCompile project(':metrics:metrics-tests')
     testCompile project(path: ':james-server:james-server-data-library', configuration: 'tests')
     testCompile project(':james-server:james-server-data-memory')
-    testCompile project(path: ':james-server:james-server-dnsservice-test', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-mailrepository-memory', configuration: 'tests')
-    testCompile project(path: ':james-server:james-server-queue-memory', configuration: 'tests')
+    testCompile project(':james-server:james-server-dnsservice-test')
+    testCompile project(':james-server:james-server-mailrepository-memory')
+    testCompile project(':james-server:james-server-queue-memory')
     testCompile project(':james-server:james-server-testing')
     testCompile project(path: ':javax-mail-extension', configuration: 'tests')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'

@@ -3,10 +3,10 @@
  */
 
 dependencies {
-    compile project(':james-backends-common:apache-james-backends-cassandra')
-    compile project(':james-backends-common:apache-james-backends-cassandra')
-    compile project(':apache-james-mpt:apache-james-mpt-managesieve:apache-james-mpt-managesieve-core')
-    compile project(':james-server:james-server-data-cassandra')
+    testCompile project(path: ':james-backends-common:apache-james-backends-cassandra')
+    testCompile project(path: ':james-backends-common:apache-james-backends-cassandra', configuration: 'tests')
+    testCompile project(path: ':apache-james-mpt:apache-james-mpt-managesieve:apache-james-mpt-managesieve-core')
+    testCompile project(path: ':james-server:james-server-data-cassandra')
     testCompile 'org.junit.platform:junit-platform-launcher:1.4.1'
 }
 

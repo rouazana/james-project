@@ -17,6 +17,7 @@ dependencies {
     testCompile project(path: ':javax-mail-extension', configuration: 'tests')
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'commons-io:commons-io:2.6'
+    testCompile 'junit:junit:4.12'
     testCompile 'net.javacrumbs.json-unit:json-unit-assertj:2.0.0.RC1'
     testCompile 'nl.jqno.equalsverifier:equalsverifier:2.5.1'
     testCompile 'org.assertj:assertj-core:3.10.0'

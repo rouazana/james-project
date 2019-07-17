@@ -8,7 +8,7 @@ dependencies {
     compile 'com.google.guava:guava:25.1-jre'
     compile 'com.sun.mail:javax.mail:1.6.1'
     compile 'org.slf4j:slf4j-api:1.7.25'
-    testCompile project(path: ':james-server:james-server-dnsservice-test', configuration: 'tests')
+    testCompile project(':james-server:james-server-dnsservice-test')
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.10.0'
 }

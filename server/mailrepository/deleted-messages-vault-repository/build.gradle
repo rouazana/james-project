@@ -8,10 +8,10 @@ dependencies {
     compile project(':james-server:james-server-data-api')
     compile project(':james-server:james-server-mailrepository-api')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-deleted-messages-vault', configuration: 'tests')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-memory', configuration: 'tests')
+    testCompile project(':apache-james-mailbox:apache-james-mailbox-memory')
     testCompile project(path: ':apache-mailet:apache-mailet-test')
     testCompile project(':james-server:james-server-data-memory')
-    testCompile project(path: ':james-server:james-server-mailrepository-memory', configuration: 'tests')
+    testCompile project(':james-server:james-server-mailrepository-memory')
     testCompile 'org.assertj:assertj-core:3.10.0'
     testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
     testCompile 'org.junit.platform:junit-platform-launcher:1.4.1'

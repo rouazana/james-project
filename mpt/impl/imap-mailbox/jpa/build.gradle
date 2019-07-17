@@ -4,11 +4,11 @@
 
 dependencies {
     testCompile project(path: ':james-backends-common:apache-james-backends-jpa', configuration: 'tests')
-    testCompile project(':apache-james-mailbox:apache-james-mailbox-event-memory')
-    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-jpa', configuration: 'tests')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-event-memory')
+    testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-jpa')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-jpa', configuration: 'tests')
     testCompile project(path: ':apache-james-mailbox:apache-james-mailbox-store', configuration: 'tests')
-    testCompile project(path: ':apache-james-mpt:apache-james-mpt-imapmailbox:apache-james-mpt-imapmailbox-core', configuration: 'tests')
+    testCompile project(path: ':apache-james-mpt:apache-james-mpt-imapmailbox:apache-james-mpt-imapmailbox-core')
     testCompile 'org.apache.derby:derby:10.14.2.0'
 }
 

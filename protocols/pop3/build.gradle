@@ -6,8 +6,9 @@ dependencies {
     compile project(':protocols:protocols-api')
     compile 'ch.qos.logback:logback-core:1.2.3'
     testCompile project(path: ':protocols:protocols-api', configuration: 'tests')
-    testCompile project(path: ':protocols:protocols-netty', configuration: 'tests')
+    testCompile project(path: ':protocols:protocols-netty')
     testCompile 'commons-net:commons-net:3.6'
+    testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.10.0'
     testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
     testCompile 'org.junit.jupiter:junit-jupiter-params:5.2.0'
