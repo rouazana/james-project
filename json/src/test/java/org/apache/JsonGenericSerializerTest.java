@@ -80,8 +80,8 @@ class JsonGenericSerializerTest {
     @ParameterizedTest
     @MethodSource
     void deserializeShouldHandleAllKnownTypes(BaseType domainObject, String serializedJson) throws Exception {
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        JsonGenericSerializer serializer = JsonGenericSerializer.of(
+        @SuppressWarnings("unchecked")
+        JsonGenericSerializer<BaseType, DTO<BaseType>> serializer = JsonGenericSerializer.of(
                 TestModules.FIRST_TYPE,
                 TestModules.SECOND_TYPE);
 
