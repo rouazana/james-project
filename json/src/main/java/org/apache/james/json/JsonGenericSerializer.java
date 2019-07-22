@@ -47,7 +47,7 @@ public class JsonGenericSerializer<T, U extends DTO<T>> {
     private final ObjectMapper objectMapper;
 
     @SafeVarargs
-    public static <T, U extends DTO<T>> JsonGenericSerializer of(DTOModule<T, U>... modules) {
+    public static <T, U extends DTO<T>> JsonGenericSerializer<T, U> of(DTOModule<T, U>... modules) {
         return new JsonGenericSerializer<>(ImmutableSet.copyOf(modules));
     }
 

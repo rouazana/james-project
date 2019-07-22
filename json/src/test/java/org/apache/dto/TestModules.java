@@ -23,6 +23,7 @@ import org.apache.james.json.DTOModule;
 
 public interface TestModules {
 
+    @SuppressWarnings("rawtypes")
     TestModule FIRST_TYPE = DTOModule
             .forDomainObject(FirstDomainObject.class)
             .convertToDTO(FirstDTO.class)
@@ -34,6 +35,7 @@ public interface TestModules {
             .typeName("first")
             .withFactory(TestModule::new);
 
+    @SuppressWarnings("rawtypes")
     TestModule SECOND_TYPE = DTOModule
             .forDomainObject(SecondDomainObject.class)
             .convertToDTO(SecondDTO.class)
