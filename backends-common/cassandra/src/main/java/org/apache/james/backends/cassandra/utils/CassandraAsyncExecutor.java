@@ -23,10 +23,12 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.Statement;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.cql.Statement;
+
 import net.javacrumbs.futureconverter.java8guava.FutureConverter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -34,22 +36,21 @@ import reactor.core.scheduler.Schedulers;
 
 public class CassandraAsyncExecutor {
 
-    private final Session session;
+    private final CqlSession session;
 
     @Inject
-    public CassandraAsyncExecutor(Session session) {
+    public CassandraAsyncExecutor(CqlSession session) {
         this.session = session;
     }
 
-    public Mono<ResultSet> execute(Statement statement) {
-        return Mono.defer(() -> Mono.fromFuture(FutureConverter
-                .toCompletableFuture(session.executeAsync(statement)))
+    public Mono<AsyncResultSet> execute(Statement statement) {
+        return Mono.defer(() -> Mono.fromCompletionStage(session.executeAsync(statement))
                 .publishOn(Schedulers.elastic()));
     }
 
     public Mono<Boolean> executeReturnApplied(Statement statement) {
         return executeSingleRow(statement)
-                .map(row -> row.getBool(CassandraConstants.LIGHTWEIGHT_TRANSACTION_APPLIED));
+                .map(row -> row.getBoolean(CassandraConstants.LIGHTWEIGHT_TRANSACTION_APPLIED));
     }
 
     public Mono<Void> executeVoid(Statement statement) {

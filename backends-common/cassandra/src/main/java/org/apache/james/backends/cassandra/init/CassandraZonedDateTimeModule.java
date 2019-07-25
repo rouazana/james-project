@@ -19,10 +19,9 @@
 
 package org.apache.james.backends.cassandra.init;
 
-import static com.datastax.driver.core.DataType.text;
-import static com.datastax.driver.core.DataType.timestamp;
-
 import org.apache.james.backends.cassandra.components.CassandraModule;
+
+import com.datastax.oss.driver.api.core.type.DataTypes;
 
 public interface CassandraZonedDateTimeModule {
     String ZONED_DATE_TIME = "zonedDateTime";
@@ -31,7 +30,7 @@ public interface CassandraZonedDateTimeModule {
 
     CassandraModule MODULE = CassandraModule.type(ZONED_DATE_TIME)
         .statement(statement -> statement
-            .addColumn(DATE, timestamp())
-            .addColumn(TIME_ZONE, text()))
+            .withField(DATE, DataTypes.TIMESTAMP)
+            .withField(TIME_ZONE, DataTypes.TEXT))
         .build();
 }

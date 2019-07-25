@@ -38,11 +38,11 @@ import org.apache.james.eventsourcing.AggregateId;
 import org.apache.james.eventsourcing.Event;
 import org.apache.james.eventsourcing.eventstore.History;
 
-import com.datastax.driver.core.BatchStatement;
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.cql.BatchStatement;
+import com.datastax.oss.driver.api.core.cql.BoundStatement;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.session.Session;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import reactor.core.publisher.Mono;
@@ -76,7 +76,7 @@ public class EventStoreDao {
     }
 
     public Mono<Boolean> appendAll(List<Event> events) {
-        BatchStatement batch = new BatchStatement();
+        BatchStatement batch = BatchStatement.newInstance(batchType);
         events.forEach(event -> batch.add(insertEvent(event)));
         return cassandraAsyncExecutor.executeReturnApplied(batch);
     }

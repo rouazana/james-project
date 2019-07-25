@@ -19,12 +19,12 @@
 
 package org.apache.james.mailbox.cassandra.mail;
 
-import static com.datastax.driver.core.querybuilder.QueryBuilder.bindMarker;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.decr;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.incr;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.select;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.update;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.bindMarker;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.decr;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.eq;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.incr;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.select;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.update;
 
 import javax.inject.Inject;
 
@@ -35,10 +35,11 @@ import org.apache.james.mailbox.exception.MailboxException;
 import org.apache.james.mailbox.model.Mailbox;
 import org.apache.james.mailbox.model.MailboxCounters;
 
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.querybuilder.Assignment;
+import com.datastax.oss.driver.api.core.cql.BoundStatement;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.session.Session;
+import com.datastax.oss.driver.api.querybuilder.update.Assignment;
+
 import reactor.core.publisher.Mono;
 
 public class CassandraMailboxCounterDAO {

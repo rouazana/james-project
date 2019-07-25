@@ -18,25 +18,24 @@
  ****************************************************************/
 package org.apache.james.backends.cassandra;
 
+import java.net.InetSocketAddress;
+
 import org.apache.james.backends.cassandra.components.CassandraModule;
 import org.apache.james.backends.cassandra.init.CassandraTableManager;
 import org.apache.james.backends.cassandra.init.CassandraTypesProvider;
-import org.apache.james.backends.cassandra.init.ClusterBuilder;
-import org.apache.james.backends.cassandra.init.ClusterWithKeyspaceCreatedFactory;
-import org.apache.james.backends.cassandra.init.SessionWithInitializedTablesFactory;
-import org.apache.james.backends.cassandra.init.configuration.ClusterConfiguration;
 import org.apache.james.util.Host;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.querybuilder.SchemaBuilder;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
 
 public final class CassandraCluster implements AutoCloseable {
-    public static final String KEYSPACE = "testing";
+    public static final CqlIdentifier KEYSPACE = CqlIdentifier.fromCql("testing");
 
     private final CassandraModule module;
-    private Session session;
+    private CqlSession session;
     private CassandraTypesProvider typesProvider;
-    private Cluster cluster;
 
     public static CassandraCluster create(CassandraModule module, Host host) {
         return new CassandraCluster(module, host);
@@ -45,30 +44,29 @@ public final class CassandraCluster implements AutoCloseable {
     private CassandraCluster(CassandraModule module, Host host) throws RuntimeException {
         this.module = module;
         try {
-            cluster = ClusterBuilder.builder()
-                .host(host.getHostName())
-                .port(host.getPort())
+            CqlSession.builder()
+                    .addContactPoint(new InetSocketAddress(host.getHostName(), host.getPort()))
+                    .withLocalDatacenter("datacenter1") // be careful I don't know wky but it seems mandatory
+                    .build()
+                    .execute(SchemaBuilder.createKeyspace(KEYSPACE)
+                .withSimpleStrategy(1)
+                .withDurableWrites(false).build());
+            CqlSession session = CqlSession.builder()
+                .addContactPoint(new InetSocketAddress(host.getHostName(), host.getPort()))
+                .withKeyspace(KEYSPACE)
+                .withLocalDatacenter("datacenter1") // be careful I don't know wky but it seems mandatory
                 .build();
-            session = new SessionWithInitializedTablesFactory(
-                ClusterConfiguration.builder()
-                    .host(host)
-                    .keyspace(KEYSPACE)
-                    .replicationFactor(1)
-                    .build(),
-                ClusterWithKeyspaceCreatedFactory
-                    .config(cluster, KEYSPACE)
-                    .replicationFactor(1)
-                    .disableDurableWrites()
-                    .clusterWithInitializedKeyspace(),
-                module)
-                .get();
+//            CreateKeyspace createKeyspace = SchemaBuilder.createKeyspace(KEYSPACE)
+//                .withSimpleStrategy(1)
+//                .withDurableWrites(false);
+//            session.execute(createKeyspace.build());
             typesProvider = new CassandraTypesProvider(module, session);
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
     }
 
-    public Session getConf() {
+    public CqlSession getConf() {
         return session;
     }
 
@@ -78,14 +76,14 @@ public final class CassandraCluster implements AutoCloseable {
 
     @Override
     public void close() {
-        if (!cluster.isClosed()) {
+        if (!session.isClosed()) {
             clearTables();
             closeCluster();
         }
     }
 
     public void closeCluster() {
-        cluster.closeAsync();
+        session.closeAsync();
     }
 
     public void clearTables() {

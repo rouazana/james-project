@@ -19,6 +19,7 @@
 
 package org.apache.james.backends.cassandra.init;
 
+import java.net.SocketOptions;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -28,10 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.PoolingOptions;
-import com.datastax.driver.core.QueryOptions;
-import com.datastax.driver.core.SocketOptions;
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
+import com.datastax.oss.protocol.internal.request.query.QueryOptions;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 

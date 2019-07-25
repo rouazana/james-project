@@ -26,7 +26,7 @@ import org.apache.james.backends.cassandra.components.CassandraModule;
 import org.apache.james.backends.cassandra.utils.CassandraConstants;
 import org.apache.james.jmap.cassandra.access.table.CassandraAccessTokenTable;
 
-import com.datastax.driver.core.schemabuilder.SchemaBuilder;
+import com.datastax.oss.driver.api.querybuilder.SchemaBuilder;
 
 public interface CassandraAccessModule {
     CassandraModule MODULE = CassandraModule.table(CassandraAccessTokenTable.TABLE_NAME)

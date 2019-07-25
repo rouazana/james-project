@@ -26,8 +26,9 @@ import javax.inject.Inject;
 
 import org.apache.james.backends.cassandra.init.configuration.CassandraConfiguration;
 
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.Row;
+
 import reactor.core.publisher.Flux;
 
 public class CassandraUtils {

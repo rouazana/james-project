@@ -19,11 +19,11 @@
 
 package org.apache.james.mailbox.cassandra.mail;
 
-import static com.datastax.driver.core.querybuilder.QueryBuilder.add;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.bindMarker;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.select;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.update;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.add;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.bindMarker;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.eq;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.select;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.update;
 import static org.apache.james.mailbox.cassandra.table.CassandraApplicableFlagTable.FIELDS;
 import static org.apache.james.mailbox.cassandra.table.CassandraApplicableFlagTable.MAILBOX_ID;
 import static org.apache.james.mailbox.cassandra.table.CassandraApplicableFlagTable.TABLE_NAME;
@@ -37,10 +37,11 @@ import javax.mail.Flags;
 import org.apache.james.backends.cassandra.utils.CassandraAsyncExecutor;
 import org.apache.james.mailbox.cassandra.ids.CassandraId;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.querybuilder.Update;
-import com.datastax.driver.core.querybuilder.Update.Assignments;
+import com.datastax.oss.driver.api.querybuilder.Update.Assignments;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.session.Session;
+import com.datastax.oss.driver.api.querybuilder.update.Update;
+
 import reactor.core.publisher.Mono;
 
 public class CassandraApplicableFlagDAO {

@@ -27,6 +27,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.james.backends.cassandra.components.CassandraType.InitializationStatus;
@@ -35,50 +36,53 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.datastax.driver.core.KeyspaceMetadata;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.UserType;
-import com.datastax.driver.core.schemabuilder.CreateType;
-import com.datastax.driver.core.schemabuilder.SchemaBuilder;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.metadata.schema.KeyspaceMetadata;
+import com.datastax.oss.driver.api.core.type.DataTypes;
+import com.datastax.oss.driver.api.core.type.UserDefinedType;
+import com.datastax.oss.driver.api.querybuilder.SchemaBuilder;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateType;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 class CassandraTypeTest {
     private static final String NAME = "typeName";
-    private static final CreateType STATEMENT = SchemaBuilder.createType(NAME);
+    private static final CreateType STATEMENT = SchemaBuilder.createType(NAME).withField("type", DataTypes.BOOLEAN);
     private static final CassandraType TYPE = new CassandraType(NAME, STATEMENT);
 
     @Test
     void shouldRespectBeanContract() {
         EqualsVerifier.forClass(CassandraType.class)
-                .withPrefabValues(CreateType.class, SchemaBuilder.createType("name1"), SchemaBuilder.createType("name2"))
+                .withPrefabValues(CreateType.class,
+                    SchemaBuilder.createType("name1").withField("type1", DataTypes.BOOLEAN),
+                    SchemaBuilder.createType("name2").withField("type2", DataTypes.BOOLEAN))
                 .verify();
     }
 
     @Test
     void initializeShouldExecuteCreateStatementAndReturnFullWhenTypeDoesNotExist() {
         KeyspaceMetadata keyspace = mock(KeyspaceMetadata.class);
-        when(keyspace.getUserType(NAME)).thenReturn(null);
-        Session session = mock(Session.class);
+        when(keyspace.getUserDefinedType(NAME)).thenReturn(null);
+        CqlSession session = mock(CqlSession.class);
 
         assertThat(TYPE.initialize(keyspace, session))
                 .isEqualByComparingTo(FULL);
 
-        verify(keyspace).getUserType(NAME);
-        verify(session).execute(STATEMENT);
+        verify(keyspace).getUserDefinedType(NAME);
+        verify(session).execute(STATEMENT.build());
     }
 
     @Test
     void initializeShouldReturnAlreadyDoneWhenTypeExists() {
         KeyspaceMetadata keyspace = mock(KeyspaceMetadata.class);
-        when(keyspace.getUserType(NAME)).thenReturn(mock(UserType.class));
-        Session session = mock(Session.class);
+        when(keyspace.getUserDefinedType(NAME)).thenReturn(Optional.of(mock(UserDefinedType.class)));
+        CqlSession session = mock(CqlSession.class);
 
         assertThat(TYPE.initialize(keyspace, session))
                 .isEqualByComparingTo(ALREADY_DONE);
 
-        verify(keyspace).getUserType(NAME);
-        verify(session, never()).execute(STATEMENT);
+        verify(keyspace).getUserDefinedType(NAME);
+        verify(session, never()).execute(STATEMENT.build());
     }
 
     @ParameterizedTest

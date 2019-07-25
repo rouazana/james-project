@@ -26,29 +26,28 @@ import javax.inject.Inject;
 import org.apache.james.backends.cassandra.components.CassandraModule;
 import org.apache.james.backends.cassandra.components.CassandraType;
 
-import com.datastax.driver.core.KeyspaceMetadata;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.UserType;
+import com.datastax.oss.driver.api.core.metadata.schema.KeyspaceMetadata;
+import com.datastax.oss.driver.api.core.session.Session;
+import com.datastax.oss.driver.api.core.type.UserDefinedType;
 import com.github.steveash.guavate.Guavate;
 import com.google.common.collect.ImmutableMap;
 
 public class CassandraTypesProvider {
-    private final ImmutableMap<String, UserType> userTypes;
+    private final ImmutableMap<String, UserDefinedType> userTypes;
 
     @Inject
     public CassandraTypesProvider(CassandraModule module, Session session) {
-        KeyspaceMetadata keyspaceMetadata = session.getCluster()
-            .getMetadata()
-            .getKeyspace(session.getLoggedKeyspace());
+        Optional<KeyspaceMetadata> keyspaceMetadata = session.getKeyspace()
+            .flatMap(keyspace -> session.getMetadata().getKeyspace(keyspace));
 
         userTypes = module.moduleTypes()
             .stream()
             .collect(Guavate.toImmutableMap(
                     CassandraType::getName,
-                    type -> keyspaceMetadata.getUserType(type.getName())));
+                    type -> keyspaceMetadata.flatMap(km -> km.getUserDefinedType(type.getName())).orElseThrow(() -> new RuntimeException("TODO not found"))));
     }
 
-    public UserType getDefinedUserType(String typeName) {
+    public UserDefinedType getUserDefinedType(String typeName) {
         return Optional.ofNullable(userTypes.get(typeName))
             .orElseThrow(() -> new RuntimeException("Cassandra UDT " + typeName + " can not be retrieved"));
     }

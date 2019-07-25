@@ -26,28 +26,30 @@ import org.apache.james.backends.cassandra.components.CassandraTable;
 import org.apache.james.backends.cassandra.components.CassandraTable.InitializationStatus;
 import org.apache.james.backends.cassandra.utils.CassandraAsyncExecutor;
 
-import com.datastax.driver.core.KeyspaceMetadata;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
+import com.datastax.oss.driver.api.core.metadata.schema.KeyspaceMetadata;
+import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 public class CassandraTableManager {
 
-    private final Session session;
+    private final CqlSession session;
     private final CassandraModule module;
 
     @Inject
-    public CassandraTableManager(CassandraModule module, Session session) {
+    public CassandraTableManager(CassandraModule module, CqlSession session) {
         this.session = session;
         this.module = module;
     }
 
     public InitializationStatus initializeTables() {
-        KeyspaceMetadata keyspaceMetadata = session.getCluster()
-            .getMetadata()
-            .getKeyspace(session.getLoggedKeyspace());
+        KeyspaceMetadata keyspaceMetadata = session.getKeyspace()
+                .flatMap(keyspace -> session.getMetadata().getKeyspace(keyspace))
+                .orElseThrow(() -> new RuntimeException("TODO"));
 
         return module.moduleTables()
                 .stream()
@@ -68,11 +70,11 @@ public class CassandraTableManager {
 
     private Mono<Void> truncate(CassandraAsyncExecutor executor, String name) {
         return executor.execute(
-                QueryBuilder.select()
-                        .from(name)
+                QueryBuilder.selectFrom(name)
+                        .all()
                         .limit(1)
-                        .setFetchSize(1))
-                .filter(resultSet -> !resultSet.isExhausted())
-                .flatMap(ignored -> executor.executeVoid(QueryBuilder.truncate(name)));
+                        /*FIXME?.setFetchSize(1)*/.build())
+                .filter(AsyncResultSet::wasApplied) //FIXME really the same than !isExhausted?
+                .flatMap(ignored -> executor.executeVoid(QueryBuilder.truncate(name).build()));
     }
 }
