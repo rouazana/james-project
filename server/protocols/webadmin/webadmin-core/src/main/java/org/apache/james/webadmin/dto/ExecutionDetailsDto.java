@@ -29,6 +29,7 @@ import org.apache.james.task.TaskExecutionDetails;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.steveash.guavate.Guavate;
+import org.apache.james.task.eventsourcing.Hostname;
 
 public class ExecutionDetailsDto {
     public static List<ExecutionDetailsDto> from(List<TaskExecutionDetails> tasksDetails) {
@@ -57,6 +58,20 @@ public class ExecutionDetailsDto {
 
     public String getStatus() {
         return executionDetails.getStatus().getValue();
+    }
+
+    public String getSubmittedNode() {
+        return executionDetails.getSubmittedNode().asString();
+    }
+
+    public Optional<String> getRanNode() {
+        return executionDetails.getRanNode()
+            .map(Hostname::asString);
+    }
+
+    public Optional<String> getCancelRequestedNode() {
+        return executionDetails.getCancelRequestedNode()
+            .map(Hostname::asString);
     }
 
     public Optional<TaskExecutionDetails.AdditionalInformation> getAdditionalInformation() {

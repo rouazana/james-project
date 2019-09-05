@@ -22,11 +22,7 @@ package org.apache.james.webadmin.routes;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static io.restassured.RestAssured.with;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isOneOf;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -48,13 +44,14 @@ import io.restassured.RestAssured;
 
 class TasksRoutesTest {
 
+    public static final String HOSTNAME = "foo";
     private MemoryTaskManager taskManager;
     private WebAdminServer webAdminServer;
     private CountDownLatch waitingForResultLatch;
 
     @BeforeEach
     void setUp() {
-        taskManager = new MemoryTaskManager(new Hostname("foo"));
+        taskManager = new MemoryTaskManager(new Hostname(HOSTNAME));
 
         webAdminServer = WebAdminUtils.createWebAdminServer(new TasksRoutes(taskManager, new JsonTransformer()))
             .start();
@@ -99,7 +96,10 @@ class TasksRoutesTest {
             .body("", hasSize(1))
             .body("[0].status", is(TaskManager.Status.IN_PROGRESS.getValue()))
             .body("[0].taskId", is(taskId.asString()))
-            .body("[0].class", is(not(empty())));
+            .body("[0].class", is(not(empty())))
+            .body("[0].submittedNode", is(HOSTNAME))
+            .body("[0].ranNode", is(HOSTNAME))
+            .body("[0].cancelRequestedNode", nullValue());
     }
 
     private void await(CountDownLatch latch) {
@@ -264,7 +264,8 @@ class TasksRoutesTest {
             .get("/" + taskId.getValue() + "/await")
             .then()
             .statusCode(HttpStatus.OK_200)
-            .body("status", is("canceled"));
+            .body("status", is("canceled"))
+            .body("cancelRequestedNode", is(HOSTNAME));
     }
 
     @Test
