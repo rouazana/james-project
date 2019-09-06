@@ -102,9 +102,9 @@ class TasksRoutesTest {
             .body("[0].status", is(TaskManager.Status.IN_PROGRESS.getValue()))
             .body("[0].taskId", is(taskId.asString()))
             .body("[0].class", is(not(empty())))
-            .body("[0].submittedNode", is(HOSTNAME))
-            .body("[0].ranNode", is(HOSTNAME))
-            .body("[0].cancelRequestedNode", nullValue());
+            .body("[0].submittedFrom", is(HOSTNAME))
+            .body("[0].executedOn", is(HOSTNAME))
+            .body("[0].cancelledFrom", nullValue());
     }
 
     private void await(CountDownLatch latch) {
@@ -270,7 +270,7 @@ class TasksRoutesTest {
             .then()
             .statusCode(HttpStatus.OK_200)
             .body("status", is("canceled"))
-            .body("cancelRequestedNode", is(HOSTNAME));
+            .body("cancelledFrom", is(HOSTNAME));
     }
 
     @Test

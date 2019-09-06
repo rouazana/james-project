@@ -60,16 +60,16 @@ public class ExecutionDetailsDto {
         return executionDetails.getStatus().getValue();
     }
 
-    public String getSubmittedNode() {
+    public String getSubmittedFrom() {
         return executionDetails.getSubmittedNode().asString();
     }
 
-    public Optional<String> getRanNode() {
+    public Optional<String> getExecutedOn() {
         return executionDetails.getRanNode()
             .map(Hostname::asString);
     }
 
-    public Optional<String> getCancelRequestedNode() {
+    public Optional<String> getCancelledFrom() {
         return executionDetails.getCancelRequestedNode()
             .map(Hostname::asString);
     }
