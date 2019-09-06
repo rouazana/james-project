@@ -25,11 +25,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.james.task.TaskExecutionDetails;
+import org.apache.james.task.eventsourcing.Hostname;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.steveash.guavate.Guavate;
-import org.apache.james.task.eventsourcing.Hostname;
 
 public class ExecutionDetailsDto {
     public static List<ExecutionDetailsDto> from(List<TaskExecutionDetails> tasksDetails) {
