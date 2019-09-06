@@ -81,7 +81,7 @@ public class ExecutionDetailsDto {
     @JsonInclude(JsonInclude.Include.NON_ABSENT)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     public ZonedDateTime getSubmitDate() {
-        return executionDetails.getSubmitDate();
+        return executionDetails.getSubmittedDate();
     }
 
     @JsonInclude(JsonInclude.Include.NON_ABSENT)
