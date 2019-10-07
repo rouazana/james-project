@@ -1,15 +1,10 @@
 package org.apache.james.modules;
 
-import java.util.List;
-
 import org.apache.james.backends.cassandra.migration.MigrationTask;
 import org.apache.james.backends.cassandra.migration.MigrationTaskDTO;
 import org.apache.james.eventsourcing.eventstore.cassandra.dto.EventDTOModule;
 import org.apache.james.mailbox.cassandra.mail.task.MailboxMergingTaskDTO;
 import org.apache.james.mailbox.cassandra.mail.task.MailboxMergingTaskRunner;
-import org.apache.james.mailrepository.api.MailRepository;
-import org.apache.james.mailrepository.api.MailRepositoryStore;
-import org.apache.james.mailrepository.api.MailRepositoryUrl;
 import org.apache.james.queue.api.MailQueueFactory;
 import org.apache.james.queue.api.ManageableMailQueue;
 import org.apache.james.rrt.cassandra.CassandraMappingsSourcesDAO;
@@ -17,11 +12,11 @@ import org.apache.james.rrt.cassandra.migration.MappingsSourcesMigration;
 import org.apache.james.server.task.json.JsonTaskSerializer;
 import org.apache.james.server.task.json.dto.TaskDTOModule;
 import org.apache.james.task.eventsourcing.distributed.TasksSerializationModule;
-import org.apache.james.util.OptionalUtils;
 import org.apache.james.vault.blob.BlobStoreVaultGarbageCollectionTask;
 import org.apache.james.vault.blob.BlobStoreVaultGarbageCollectionTaskDTO;
 import org.apache.james.webadmin.service.CassandraMappingsSolveInconsistenciesTask;
 import org.apache.james.webadmin.service.ClearMailQueueTaskDTO;
+import org.apache.james.webadmin.service.ClearMailRepositoryTask;
 import org.apache.james.webadmin.service.ClearMailRepositoryTaskDTO;
 import org.apache.james.webadmin.service.DeleteMailsFromMailQueueTaskDTO;
 import org.apache.james.webadmin.service.EventDeadLettersRedeliverAllTaskDTO;
@@ -46,8 +41,6 @@ import org.apache.mailbox.tools.indexer.SingleMessageReindexingTaskDTO;
 import org.apache.mailbox.tools.indexer.UserReindexingTask;
 import org.apache.mailbox.tools.indexer.UserReindexingTaskDTO;
 
-import com.github.fge.lambdas.Throwing;
-import com.github.steveash.guavate.Guavate;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.ProvidesIntoSet;
 
@@ -143,11 +136,8 @@ public class TaskSerializationModule extends AbstractModule {
     }
 
     @ProvidesIntoSet
-    public TaskDTOModule<?, ?> clearMailRepositoyTask(MailRepositoryStore mailRepositoryStore) {
-        List<MailRepository> mailRepositories = mailRepositoryStore.getUrls()
-            .flatMap(Throwing.function((MailRepositoryUrl url) -> OptionalUtils.toStream(mailRepositoryStore.get(url))).sneakyThrow())
-            .collect(Guavate.toImmutableList());
-        return ClearMailRepositoryTaskDTO.module(mailRepositories);
+    public TaskDTOModule<?, ?> clearMailRepositoyTask(ClearMailRepositoryTask.Factory factory) {
+        return ClearMailRepositoryTaskDTO.module(factory);
     }
 
     @ProvidesIntoSet

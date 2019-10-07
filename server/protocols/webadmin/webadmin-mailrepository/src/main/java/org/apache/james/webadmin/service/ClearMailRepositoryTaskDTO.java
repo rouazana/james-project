@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.james.json.DTOModule;
 import org.apache.james.mailrepository.api.MailRepository;
 import org.apache.james.mailrepository.api.MailRepositoryPath;
+import org.apache.james.mailrepository.api.MailRepositoryStore;
 import org.apache.james.server.task.json.dto.TaskDTO;
 import org.apache.james.server.task.json.dto.TaskDTOModule;
 
@@ -30,11 +31,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ClearMailRepositoryTaskDTO implements TaskDTO {
 
-    public static TaskDTOModule<ClearMailRepositoryTask, ClearMailRepositoryTaskDTO> module(List<MailRepository> mailRepositories) {
+    public static TaskDTOModule<ClearMailRepositoryTask, ClearMailRepositoryTaskDTO> module(ClearMailRepositoryTask.Factory factory) {
         return DTOModule
             .forDomainObject(ClearMailRepositoryTask.class)
             .convertToDTO(ClearMailRepositoryTaskDTO.class)
-            .toDomainObjectConverter(dto -> dto.fromDTO(mailRepositories))
+            .toDomainObjectConverter(dto -> dto.fromDTO(factory))
             .toDTOConverter(ClearMailRepositoryTaskDTO::toDTO)
             .typeName(ClearMailRepositoryTask.TYPE.asString())
             .withFactory(TaskDTOModule::new);
@@ -56,9 +57,9 @@ public class ClearMailRepositoryTaskDTO implements TaskDTO {
         this.mailRepositoryPath = mailRepositoryPath;
     }
 
-    public ClearMailRepositoryTask fromDTO(List<MailRepository> mailRepositories) {
+    public ClearMailRepositoryTask fromDTO(ClearMailRepositoryTask.Factory factory) {
         try {
-            return new ClearMailRepositoryTask(mailRepositories, MailRepositoryPath.fromEncoded(mailRepositoryPath));
+            return factory.create(MailRepositoryPath.fromEncoded(mailRepositoryPath));
         } catch (Exception e) {
             throw new ClearMailRepositoryTask.InvalidMailRepositoryPathDeserializationException(mailRepositoryPath);
         }
