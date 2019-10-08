@@ -731,7 +731,7 @@ public class WebAdminServerTaskSerializationIntegrationTest {
     }
 
     @Test
-    public void CassandraMappingsSolveInconsistenciesShouldComplete() {
+    public void cassandraMappingsSolveInconsistenciesShouldComplete() {
         String taskId = with()
                 .basePath(CassandraMappingsRoutes.ROOT_PATH)
                 .queryParam("action", "SolveInconsistencies")
