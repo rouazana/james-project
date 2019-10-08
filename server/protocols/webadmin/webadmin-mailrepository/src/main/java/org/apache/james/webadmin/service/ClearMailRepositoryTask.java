@@ -40,7 +40,6 @@ public class ClearMailRepositoryTask implements Task {
     public static final TaskType TYPE = TaskType.of("clearMailRepository");
 
     public static class Factory {
-
         private final MailRepositoryStore mailRepositoryStore;
 
         @Inject
@@ -54,6 +53,7 @@ public class ClearMailRepositoryTask implements Task {
             return new ClearMailRepositoryTask(mailRepositories, mailRepositoryPath);
         }
     }
+
     public static class AdditionalInformation implements TaskExecutionDetails.AdditionalInformation {
         private final MailRepositoryPath repositoryPath;
         private final long initialCount;

@@ -18,12 +18,8 @@
  ****************************************************************/
 package org.apache.james.webadmin.service;
 
-import java.util.List;
-
 import org.apache.james.json.DTOModule;
-import org.apache.james.mailrepository.api.MailRepository;
 import org.apache.james.mailrepository.api.MailRepositoryPath;
-import org.apache.james.mailrepository.api.MailRepositoryStore;
 import org.apache.james.server.task.json.dto.TaskDTO;
 import org.apache.james.server.task.json.dto.TaskDTOModule;
 
