@@ -46,7 +46,6 @@ public class GuiceJamesServer {
     private final IsStartedProbe isStartedProbe;
     private Stager<PreDestroy> preDestroy;
     private GuiceProbeProvider guiceProbeProvider;
-    private Injector injector;
 
     public static GuiceJamesServer forConfiguration(Configuration configuration) {
         IsStartedProbe isStartedProbe = new IsStartedProbe();
@@ -77,7 +76,7 @@ public class GuiceJamesServer {
     }
 
     public void start() throws Exception {
-        injector = Guice.createInjector(module);
+        Injector injector = Guice.createInjector(module);
         preDestroy = injector.getInstance(Key.get(new TypeLiteral<Stager<PreDestroy>>() {}));
         injector.getInstance(StartUpChecksPerformer.class)
             .performCheck();
@@ -99,9 +98,5 @@ public class GuiceJamesServer {
 
     public <T extends GuiceProbe> T getProbe(Class<T> probe) {
         return guiceProbeProvider.getProbe(probe);
-    }
-
-    public Injector getInjector() {
-        return injector;
     }
 }

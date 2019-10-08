@@ -56,6 +56,7 @@ import org.apache.james.mailbox.store.event.EventFactory;
 import org.apache.james.mailrepository.api.MailRepository;
 import org.apache.james.mailrepository.api.MailRepositoryStore;
 import org.apache.james.mailrepository.api.MailRepositoryUrl;
+import org.apache.james.modules.EventDeadLettersProbe;
 import org.apache.james.modules.MailboxProbeImpl;
 import org.apache.james.probe.DataProbe;
 import org.apache.james.task.TaskManager;
@@ -439,8 +440,8 @@ public class WebAdminServerTaskSerializationIntegrationTest {
             .build();
 
         guiceJamesServer
-            .getInjector()
-            .getInstance(EventDeadLetters.class)
+            .getProbe(EventDeadLettersProbe.class)
+            .getEventDeadLetters()
             .store(group, event, insertionId)
             .block();
 
@@ -478,8 +479,8 @@ public class WebAdminServerTaskSerializationIntegrationTest {
             .build();
 
         guiceJamesServer
-            .getInjector()
-            .getInstance(EventDeadLetters.class)
+            .getProbe(EventDeadLettersProbe.class)
+            .getEventDeadLetters()
             .store(group, event, insertionId)
             .block();
 
