@@ -19,18 +19,10 @@
 
 package org.apache.james.modules;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.apache.james.mailbox.events.EventDeadLetters;
-import org.apache.james.mailrepository.api.MailKey;
-import org.apache.james.mailrepository.api.MailRepositoryStore;
-import org.apache.james.mailrepository.api.MailRepositoryUrl;
 import org.apache.james.utils.GuiceProbe;
-
-import com.github.steveash.guavate.Guavate;
-import com.google.common.collect.ImmutableList;
 
 public class EventDeadLettersProbe implements GuiceProbe {
 
