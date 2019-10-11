@@ -41,10 +41,6 @@ import com.google.inject.multibindings.ProvidesIntoSet;
 
 public class TaskSerializationModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
-    }
-
     @ProvidesIntoSet
     public EventDTOModule<?, ?> taskCreatedSerialization(JsonTaskSerializer jsonTaskSerializer, JsonTaskAdditionalInformationsSerializer jsonTaskAdditionalInformationsSerializer) {
         return TasksSerializationModule.CREATED.create(jsonTaskSerializer, jsonTaskAdditionalInformationsSerializer);
