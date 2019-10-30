@@ -64,7 +64,7 @@ public class DeletedMessagesVaultExportTaskDTO implements TaskDTO {
         }
 
         public DeletedMessagesVaultExportTask create(DeletedMessagesVaultExportTaskDTO dto) throws AddressException {
-            Username usernameExportFrom = Username.fromUsername(dto.userExportFrom);
+            Username usernameExportFrom = Username.of(dto.userExportFrom);
             Query exportQuery = queryTranslator.translate(dto.exportQuery);
             MailAddress exportTo = new MailAddress(dto.exportTo);
             return new DeletedMessagesVaultExportTask(exportService, usernameExportFrom, exportQuery, exportTo);
