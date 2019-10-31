@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.apache.james.core.Username;
 import org.apache.james.core.quota.QuotaCount;
 import org.apache.james.core.quota.QuotaSize;
 import org.apache.james.mailbox.MailboxAnnotationManager;
@@ -217,7 +218,7 @@ public class StoreMailboxManager implements MailboxManager {
     }
 
     @Override
-    public MailboxSession createSystemSession(String userName) {
+    public MailboxSession createSystemSession(Username userName) {
         return sessionProvider.createSystemSession(userName);
     }
 
@@ -227,12 +228,12 @@ public class StoreMailboxManager implements MailboxManager {
     }
 
     @Override
-    public MailboxSession login(String userid, String passwd) throws MailboxException {
+    public MailboxSession login(Username userid, String passwd) throws MailboxException {
         return sessionProvider.login(userid, passwd);
     }
 
     @Override
-    public MailboxSession loginAsOtherUser(String adminUserid, String passwd, String otherUserId) throws MailboxException {
+    public MailboxSession loginAsOtherUser(Username adminUserid, String passwd, Username otherUserId) throws MailboxException {
         return sessionProvider.loginAsOtherUser(adminUserid, passwd, otherUserId);
     }
 
@@ -595,7 +596,7 @@ public class StoreMailboxManager implements MailboxManager {
     public static MailboxQuery.UserBound toSingleUserQuery(MailboxQuery mailboxQuery, MailboxSession mailboxSession) {
         return MailboxQuery.builder()
             .namespace(mailboxQuery.getNamespace().orElse(MailboxConstants.USER_NAMESPACE))
-            .username(mailboxQuery.getUser().orElse(mailboxSession.getUser().asString()))
+            .username(mailboxQuery.getUser().orElse(mailboxSession.getUser()))
             .expression(mailboxQuery.getMailboxNameExpression()
                 .includeChildren())
             .build()
@@ -607,7 +608,7 @@ public class StoreMailboxManager implements MailboxManager {
         if (mailboxQuery.isPrivateMailboxes(session)) {
             return Stream.of();
         }
-        return mailboxMapper.findNonPersonalMailboxes(session.getUser().asString(), right).stream();
+        return mailboxMapper.findNonPersonalMailboxes(session.getUser(), right).stream();
     }
 
     private MailboxMetaData toMailboxMetadata(MailboxSession session, List<Mailbox> mailboxes, Mailbox mailbox) {

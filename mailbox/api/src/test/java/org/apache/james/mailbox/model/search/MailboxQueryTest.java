@@ -22,6 +22,7 @@ package org.apache.james.mailbox.model.search;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.james.core.Username;
 import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.model.search.MailboxQuery.Builder;
 import org.junit.Before;
@@ -30,13 +31,13 @@ import org.junit.Test;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class MailboxQueryTest {
-    private static final String CURRENT_USER = "user";
+    private static final Username CURRENT_USER = Username.of("user");
 
     private MailboxPath mailboxPath;
 
     @Before
     public void setUp() {
-        mailboxPath = new MailboxPath("namespace", "user", "name");
+        mailboxPath = new MailboxPath("namespace", CURRENT_USER, "name");
     }
 
     @Test
@@ -58,10 +59,10 @@ public class MailboxQueryTest {
 
     @Test
     public void buildShouldConstructMailboxPathWhenPrivateUserMailboxes() throws Exception {
-        MailboxPath expected = MailboxPath.forUser("user", "");
+        MailboxPath expected = MailboxPath.forUser(CURRENT_USER, "");
 
         MailboxQuery actual = MailboxQuery.builder()
-                .username("user")
+                .username(CURRENT_USER)
                 .privateNamespace()
                 .build();
 
@@ -73,7 +74,7 @@ public class MailboxQueryTest {
     @Test
     public void buildShouldMatchAllValuesWhenPrivateUserMailboxes() throws Exception {
         Builder testee = MailboxQuery.builder()
-                .username("user")
+                .username(CURRENT_USER)
                 .privateNamespace();
 
         MailboxQuery actual = testee.build();
@@ -93,7 +94,7 @@ public class MailboxQueryTest {
     public void builderShouldThrowWhenBaseAndUsernameGiven() throws Exception {
         Builder testee = MailboxQuery.builder()
                 .userAndNamespaceFrom(mailboxPath)
-                .username("user");
+                .username(CURRENT_USER);
 
         testee.build();
     }
@@ -139,7 +140,7 @@ public class MailboxQueryTest {
 
     @Test
     public void belongsToNamespaceAndUserShouldReturnTrueWithIdenticalMailboxesWithNullNamespace() {
-        MailboxPath mailboxPath = new MailboxPath(null, "user", "name");
+        MailboxPath mailboxPath = new MailboxPath(null, CURRENT_USER, "name");
 
         MailboxQuery mailboxQuery = MailboxQuery.builder()
             .userAndNamespaceFrom(mailboxPath)
@@ -175,7 +176,7 @@ public class MailboxQueryTest {
             .userAndNamespaceFrom(new MailboxPath("namespace", CURRENT_USER, "name"))
             .build();
 
-        assertThat(mailboxQuery.belongsToRequestedNamespaceAndUser(new MailboxPath("namespace", CURRENT_USER + "2", "name")))
+        assertThat(mailboxQuery.belongsToRequestedNamespaceAndUser(new MailboxPath("namespace", Username.of("user2"), "name")))
             .isFalse();
     }
     
@@ -185,7 +186,7 @@ public class MailboxQueryTest {
             .userAndNamespaceFrom(new MailboxPath("namespace", CURRENT_USER, "name"))
             .build();
 
-        assertThat(mailboxQuery.belongsToRequestedNamespaceAndUser(new MailboxPath("namespace", "other", "name")))
+        assertThat(mailboxQuery.belongsToRequestedNamespaceAndUser(new MailboxPath("namespace", Username.of("other"), "name")))
             .isFalse();
     }
 }
