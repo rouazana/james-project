@@ -215,7 +215,7 @@ class SieveQuotaRoutesTest {
     void updatePerUserSieveQuotaShouldReturn400WhenInvalidIntegerFormatInTheBody() {
         given()
             .body("89884743.9999")
-            .put("/sieve/quota/users/" + USER_A.asString())
+            .put("/sieve/quota/users/" + USERNAME_A.asString())
         .then()
             .statusCode(HttpStatus.BAD_REQUEST_400)
             .body("message", is("unrecognized integer number '89884743.9999'"));
