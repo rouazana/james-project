@@ -94,7 +94,7 @@ class DeletedMessagesVaultExportTaskSerializationTest {
 
         Task deserializedTask = taskSerializer.deserialize(serializedDeleteMessagesVaultExportTask);
         assertThat(deserializedTask)
-            .isEqualToComparingOnlyGivenFields(task, "userExportFrom", "exportTo");
+            .isEqualToComparingOnlyGivenFields(task, "usernameExportFrom", "exportTo");
 
         DeletedMessagesVaultExportTask deserializedExportTask = (DeletedMessagesVaultExportTask) deserializedTask;
         assertThat(queryTranslator.toDTO(deserializedExportTask.exportQuery)).isEqualTo(queryTranslator.toDTO(QUERY));

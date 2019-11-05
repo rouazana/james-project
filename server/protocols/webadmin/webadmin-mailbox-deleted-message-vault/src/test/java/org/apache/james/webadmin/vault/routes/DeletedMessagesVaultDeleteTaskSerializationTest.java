@@ -73,7 +73,7 @@ class DeletedMessagesVaultDeleteTaskSerializationTest {
         DeletedMessagesVaultDeleteTask task = new DeletedMessagesVaultDeleteTask(deletedMessageVault, username, messageId);
 
         assertThat(taskSerializer.deserialize(serializedDeleteMessagesVaultDeleteTask))
-            .isEqualToComparingOnlyGivenFields(task, "user", "messageId");
+            .isEqualToComparingOnlyGivenFields(task, "username", "messageId");
     }
 
 
