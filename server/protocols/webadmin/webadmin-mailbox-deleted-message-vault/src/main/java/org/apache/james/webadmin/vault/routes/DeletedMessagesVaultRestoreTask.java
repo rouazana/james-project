@@ -74,16 +74,16 @@ public class DeletedMessagesVaultRestoreTask implements Task {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeletedMessagesVaultRestoreTask.class);
 
-    private final Username usernameToRestore;
+    private final Username userToRestore;
     private final RestoreService vaultRestore;
     private final AtomicLong successfulRestoreCount;
     private final AtomicLong errorRestoreCount;
     @VisibleForTesting
     final Query query;
 
-    DeletedMessagesVaultRestoreTask(RestoreService vaultRestore, Username usernameToRestore, Query query) {
+    DeletedMessagesVaultRestoreTask(RestoreService vaultRestore, Username userToRestore, Query query) {
         this.query = query;
-        this.usernameToRestore = usernameToRestore;
+        this.userToRestore = userToRestore;
         this.vaultRestore = vaultRestore;
         this.successfulRestoreCount = new AtomicLong();
         this.errorRestoreCount = new AtomicLong();
@@ -92,13 +92,13 @@ public class DeletedMessagesVaultRestoreTask implements Task {
     @Override
     public Result run() {
         try {
-            return vaultRestore.restore(usernameToRestore, query).toStream()
+            return vaultRestore.restore(userToRestore, query).toStream()
                 .peek(this::updateInformation)
                 .map(this::restoreResultToTaskResult)
                 .reduce(Task::combine)
                 .orElse(Result.COMPLETED);
         } catch (MailboxException e) {
-            LOGGER.error("Error happens while restoring user {}", usernameToRestore.asString(), e);
+            LOGGER.error("Error happens while restoring user {}", userToRestore.asString(), e);
             return Result.PARTIAL;
         }
     }
@@ -136,10 +136,10 @@ public class DeletedMessagesVaultRestoreTask implements Task {
 
     @Override
     public Optional<TaskExecutionDetails.AdditionalInformation> details() {
-        return Optional.of(new AdditionalInformation(usernameToRestore, successfulRestoreCount.get(), errorRestoreCount.get(), Clock.systemUTC().instant()));
+        return Optional.of(new AdditionalInformation(userToRestore, successfulRestoreCount.get(), errorRestoreCount.get(), Clock.systemUTC().instant()));
     }
 
-    Username getUsernameToRestore() {
-        return usernameToRestore;
+    Username getUserToRestore() {
+        return userToRestore;
     }
 }

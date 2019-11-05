@@ -1537,7 +1537,7 @@ class DeletedMessagesVaultRoutesTest {
                     .body("type", is(DeletedMessagesVaultRestoreTask.TYPE.asString()))
                     .body("additionalInformation.successfulRestoreCount", is(0))
                     .body("additionalInformation.errorRestoreCount", is(0))
-                    .body("additionalInformation.user", is(USERNAME.asString()))
+                    .body("additionalInformation.username", is(USERNAME.asString()))
                     .body("startedDate", is(notNullValue()))
                     .body("submitDate", is(notNullValue()));
             }
@@ -1575,7 +1575,7 @@ class DeletedMessagesVaultRoutesTest {
                     .body("type", is(DeletedMessagesVaultRestoreTask.TYPE.asString()))
                     .body("additionalInformation.successfulRestoreCount", is(0))
                     .body("additionalInformation.errorRestoreCount", is(2))
-                    .body("additionalInformation.user", is(USERNAME.asString()))
+                    .body("additionalInformation.username", is(USERNAME.asString()))
                     .body("startedDate", is(notNullValue()))
                     .body("submitDate", is(notNullValue()));
             }
@@ -1608,7 +1608,7 @@ class DeletedMessagesVaultRoutesTest {
                     .body("type", is(DeletedMessagesVaultRestoreTask.TYPE.asString()))
                     .body("additionalInformation.successfulRestoreCount", is(0))
                     .body("additionalInformation.errorRestoreCount", is(0))
-                    .body("additionalInformation.user", is(USERNAME.asString()))
+                    .body("additionalInformation.username", is(USERNAME.asString()))
                     .body("startedDate", is(notNullValue()))
                     .body("submitDate", is(notNullValue()));
             }
@@ -1650,7 +1650,7 @@ class DeletedMessagesVaultRoutesTest {
                 .body("type", is(DeletedMessagesVaultRestoreTask.TYPE.asString()))
                 .body("additionalInformation.successfulRestoreCount", is(2))
                 .body("additionalInformation.errorRestoreCount", is(0))
-                .body("additionalInformation.user", is(USERNAME.asString()))
+                .body("additionalInformation.username", is(USERNAME.asString()))
                 .body("startedDate", is(notNullValue()))
                 .body("submitDate", is(notNullValue()))
                 .body("completedDate", is(notNullValue()));
@@ -1843,7 +1843,7 @@ class DeletedMessagesVaultRoutesTest {
                     .body("status", is("completed"))
                     .body("taskId", is(taskId))
                     .body("type", is(DeletedMessagesVaultExportTask.TYPE.asString()))
-                    .body("additionalInformation.userExportFrom", is(USERNAME.asString()))
+                    .body("additionalInformation.usernameExportFrom", is(USERNAME.asString()))
                     .body("additionalInformation.exportTo", is(USERNAME_2.asString()))
                     .body("additionalInformation.totalExportedMessages", is(2))
                     .body("startedDate", is(notNullValue()))
@@ -2092,7 +2092,7 @@ class DeletedMessagesVaultRoutesTest {
                 .body("status", is("completed"))
                 .body("taskId", is(taskId))
                 .body("type", is(DeletedMessagesVaultDeleteTask.TYPE.asString()))
-                .body("additionalInformation.user", is(USERNAME.asString()))
+                .body("additionalInformation.username", is(USERNAME.asString()))
                 .body("additionalInformation.deleteMessageId", is(MESSAGE_ID.serialize()))
                 .body("startedDate", is(notNullValue()))
                 .body("submitDate", is(notNullValue()))
@@ -2118,7 +2118,7 @@ class DeletedMessagesVaultRoutesTest {
                 .body("status", is("completed"))
                 .body("taskId", is(taskId))
                 .body("type", is(DeletedMessagesVaultDeleteTask.TYPE.asString()))
-                .body("additionalInformation.user", is(USERNAME.asString()))
+                .body("additionalInformation.username", is(USERNAME.asString()))
                 .body("additionalInformation.deleteMessageId", is(MESSAGE_ID.serialize()))
                 .body("startedDate", is(notNullValue()))
                 .body("submitDate", is(notNullValue()))
@@ -2203,7 +2203,7 @@ class DeletedMessagesVaultRoutesTest {
                     .body("status", is("failed"))
                     .body("taskId", is(taskId))
                     .body("type", is(DeletedMessagesVaultDeleteTask.TYPE.asString()))
-                    .body("additionalInformation.user", is(USERNAME.asString()))
+                    .body("additionalInformation.username", is(USERNAME.asString()))
                     .body("additionalInformation.deleteMessageId", is(MESSAGE_ID.serialize()))
                     .body("startedDate", is(notNullValue()))
                     .body("submitDate", is(notNullValue()))

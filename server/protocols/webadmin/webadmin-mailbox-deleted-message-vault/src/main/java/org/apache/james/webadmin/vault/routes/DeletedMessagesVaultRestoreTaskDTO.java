@@ -52,7 +52,7 @@ public class DeletedMessagesVaultRestoreTaskDTO implements TaskDTO {
         }
 
         public DeletedMessagesVaultRestoreTaskDTO createDTO(DeletedMessagesVaultRestoreTask task, String type) {
-            return new DeletedMessagesVaultRestoreTaskDTO(type, task.getUsernameToRestore().asString(), queryTranslator.toDTO(task.query));
+            return new DeletedMessagesVaultRestoreTaskDTO(type, task.getUserToRestore().asString(), queryTranslator.toDTO(task.query));
         }
     }
 

@@ -82,7 +82,7 @@ class DeletedMessagesVaultRestoreTaskSerializationTest {
 
         Task deserializedTask = taskSerializer.deserialize(SERIALIZED_DELETE_MESSAGES_VAULT_RESTORE_TASK);
         assertThat(deserializedTask)
-            .isEqualToComparingOnlyGivenFields(task, "usernameToRestore");
+            .isEqualToComparingOnlyGivenFields(task, "userToRestore");
 
         DeletedMessagesVaultRestoreTask deserializedRestoreTask = (DeletedMessagesVaultRestoreTask) deserializedTask;
         assertThat(queryTranslator.toDTO(deserializedRestoreTask.query)).isEqualTo(queryTranslator.toDTO(QUERY));

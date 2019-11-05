@@ -75,15 +75,15 @@ public class DeletedMessagesVaultExportTask implements Task {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeletedMessagesVaultExportTask.class);
 
     private final ExportService exportService;
-    private final Username usernameExportFrom;
+    private final Username userExportFrom;
     @VisibleForTesting
     final Query exportQuery;
     private final MailAddress exportTo;
     private final AtomicLong totalExportedMessages;
 
-    DeletedMessagesVaultExportTask(ExportService exportService, Username usernameExportFrom, Query exportQuery, MailAddress exportTo) {
+    DeletedMessagesVaultExportTask(ExportService exportService, Username userExportFrom, Query exportQuery, MailAddress exportTo) {
         this.exportService = exportService;
-        this.usernameExportFrom = usernameExportFrom;
+        this.userExportFrom = userExportFrom;
         this.exportQuery = exportQuery;
         this.exportTo = exportTo;
         this.totalExportedMessages = new AtomicLong();
@@ -93,10 +93,10 @@ public class DeletedMessagesVaultExportTask implements Task {
     public Result run() {
         try {
             Runnable messageToShareCallback = totalExportedMessages::incrementAndGet;
-            exportService.export(usernameExportFrom, exportQuery, exportTo, messageToShareCallback);
+            exportService.export(userExportFrom, exportQuery, exportTo, messageToShareCallback);
             return Result.COMPLETED;
         } catch (IOException e) {
-            LOGGER.error("Error happens when exporting deleted messages from {} to {}", usernameExportFrom.asString(), exportTo.asString());
+            LOGGER.error("Error happens when exporting deleted messages from {} to {}", userExportFrom.asString(), exportTo.asString());
             return Result.PARTIAL;
         }
     }
@@ -108,11 +108,11 @@ public class DeletedMessagesVaultExportTask implements Task {
 
     @Override
     public Optional<TaskExecutionDetails.AdditionalInformation> details() {
-        return Optional.of(new AdditionalInformation(usernameExportFrom, exportTo, totalExportedMessages.get(), Clock.systemUTC().instant()));
+        return Optional.of(new AdditionalInformation(userExportFrom, exportTo, totalExportedMessages.get(), Clock.systemUTC().instant()));
     }
 
-    Username getUsernameExportFrom() {
-        return usernameExportFrom;
+    Username getUserExportFrom() {
+        return userExportFrom;
     }
 
     MailAddress getExportTo() {
