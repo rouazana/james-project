@@ -1843,7 +1843,7 @@ class DeletedMessagesVaultRoutesTest {
                     .body("status", is("completed"))
                     .body("taskId", is(taskId))
                     .body("type", is(DeletedMessagesVaultExportTask.TYPE.asString()))
-                    .body("additionalInformation.usernameExportFrom", is(USERNAME.asString()))
+                    .body("additionalInformation.userExportFrom", is(USERNAME.asString()))
                     .body("additionalInformation.exportTo", is(USERNAME_2.asString()))
                     .body("additionalInformation.totalExportedMessages", is(2))
                     .body("startedDate", is(notNullValue()))

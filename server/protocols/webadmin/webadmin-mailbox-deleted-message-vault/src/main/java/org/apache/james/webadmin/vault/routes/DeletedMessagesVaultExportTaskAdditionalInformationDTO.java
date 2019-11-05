@@ -37,7 +37,7 @@ public class DeletedMessagesVaultExportTaskAdditionalInformationDTO implements A
     private static DeletedMessagesVaultExportTaskAdditionalInformationDTO fromDomainObject(DeletedMessagesVaultExportTask.AdditionalInformation additionalInformation, String type) {
         return new DeletedMessagesVaultExportTaskAdditionalInformationDTO(
             type,
-            additionalInformation.getUsernameExportFrom(),
+            additionalInformation.getUserExportFrom(),
             additionalInformation.getExportTo(),
             additionalInformation.getTotalExportedMessages(),
             additionalInformation.timestamp()

@@ -42,20 +42,20 @@ public class DeletedMessagesVaultExportTask implements Task {
 
     public static class AdditionalInformation implements TaskExecutionDetails.AdditionalInformation {
 
-        private final Username usernameExportFrom;
+        private final Username userExportFrom;
         private final MailAddress exportTo;
         private final long totalExportedMessages;
         private final Instant timestamp;
 
-        public AdditionalInformation(Username usernameExportFrom, MailAddress exportTo, long totalExportedMessages, Instant timestamp) {
-            this.usernameExportFrom = usernameExportFrom;
+        public AdditionalInformation(Username userExportFrom, MailAddress exportTo, long totalExportedMessages, Instant timestamp) {
+            this.userExportFrom = userExportFrom;
             this.exportTo = exportTo;
             this.totalExportedMessages = totalExportedMessages;
             this.timestamp = timestamp;
         }
 
-        public String getUsernameExportFrom() {
-            return usernameExportFrom.asString();
+        public String getUserExportFrom() {
+            return userExportFrom.asString();
         }
 
         public String getExportTo() {
