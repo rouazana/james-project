@@ -327,7 +327,7 @@ public class WebAdminServerTaskSerializationIntegrationTest {
             .body("type", is("user-reindexing"))
             .body("additionalInformation.successfullyReprocessedMailCount", is(0))
             .body("additionalInformation.failedReprocessedMailCount", is(0))
-            .body("additionalInformation.user", is(USERNAME))
+            .body("additionalInformation.username", is(USERNAME))
             .body("additionalInformation.failures", is(anEmptyMap()));
     }
 
@@ -358,7 +358,7 @@ public class WebAdminServerTaskSerializationIntegrationTest {
             .body("status", is("completed"))
             .body("taskId", is(Matchers.notNullValue()))
             .body("type", is("deleted-messages-restore"))
-            .body("additionalInformation.user", is(USERNAME))
+            .body("additionalInformation.username", is(USERNAME))
             .body("additionalInformation.successfulRestoreCount", is(0))
             .body("additionalInformation.errorRestoreCount", is(0));
     }
@@ -705,7 +705,7 @@ public class WebAdminServerTaskSerializationIntegrationTest {
             .body("status", is("completed"))
             .body("taskId", is(taskId))
             .body("type", is("deleted-messages-delete"))
-            .body("additionalInformation.user", is(USERNAME))
+            .body("additionalInformation.username", is(USERNAME))
             .body("additionalInformation.deleteMessageId", is(composedMessageId.getMessageId().serialize()));
     }
 
