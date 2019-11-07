@@ -19,6 +19,8 @@
 
 package org.apache.james.user.file;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,9 +32,12 @@ import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.james.filesystem.api.FileSystem;
 import org.apache.james.lifecycle.api.LifecycleUtil;
+import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
+import org.apache.james.user.api.model.User;
 import org.apache.james.user.lib.AbstractUsersRepository;
 import org.apache.james.user.lib.AbstractUsersRepositoryTest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -44,25 +49,28 @@ import org.junit.Test;
 public class UsersFileRepositoryTest extends AbstractUsersRepositoryTest {
     
     private static final String TARGET_REPOSITORY_FOLDER = "target/var/users";
-    private File targetRepositoryFolder;
+    private static final File TARGET_REPOSITORY = new File(TARGET_REPOSITORY_FOLDER);
 
     @Before
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        targetRepositoryFolder = new File(TARGET_REPOSITORY_FOLDER);
         this.usersRepository = getUsersRepository();
     }
 
     @Override
     @After
     public void tearDown() throws IOException {
-        FileUtils.forceDelete(targetRepositoryFolder);
+        FileUtils.forceDelete(TARGET_REPOSITORY);
+    }
+
+    @Override
+    protected AbstractUsersRepository getUsersRepository() throws Exception {
+        return getUsersRepository(TARGET_REPOSITORY);
     }
 
     @SuppressWarnings("deprecation")
-    @Override
-    protected AbstractUsersRepository getUsersRepository() throws Exception {
+    private AbstractUsersRepository getUsersRepository(File repositoryFolder) throws Exception {
         FileSystem fs = new FileSystem() {
 
             @Override
@@ -83,7 +91,7 @@ public class UsersFileRepositoryTest extends AbstractUsersRepositoryTest {
         };
 
         BaseHierarchicalConfiguration configuration = new BaseHierarchicalConfiguration();
-        configuration.addProperty("destination.[@URL]", "file://target/var/users");
+        configuration.addProperty("destination.[@URL]", "file://" + repositoryFolder.getPath());
         // Configure with ignoreCase = false, we need some more work to support true
         configuration.addProperty("ignoreCase", "false");
 
@@ -94,7 +102,7 @@ public class UsersFileRepositoryTest extends AbstractUsersRepositoryTest {
         res.init();
         return res;
     }
-    
+
     @Override
     @Ignore
     @Test
@@ -116,4 +124,19 @@ public class UsersFileRepositoryTest extends AbstractUsersRepositoryTest {
     @Override
     public void testShouldReturnTrueWhenAUserHasACorrectPasswordAndOtherCaseInDomain() throws Exception {
     }
+
+    @Test
+    public void enforceBinaryCompatibility() throws Exception {
+        //Given
+        String user1 = "username";
+        File repositoryFolder = new File(ClassLoader.getSystemResource("users-repository").getFile());
+        UsersRepository usersRepository = getUsersRepository(repositoryFolder);
+        //When
+        User actual = usersRepository.getUserByName(user1);
+        //Then
+        assertThat(actual).isNotNull();
+        assertThat(actual.getUserName()).isEqualTo(user1);
+        assertThat(actual.verifyPassword("password")).isTrue();
+    }
+
 }
