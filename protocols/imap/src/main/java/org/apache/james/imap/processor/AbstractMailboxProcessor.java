@@ -384,7 +384,7 @@ public abstract class AbstractMailboxProcessor<M extends ImapRequest> extends Ab
             if (sb.length() > 0) {
                 sb.append(delimiter);
             }
-            sb.append(mailboxPath.getUser());
+            sb.append(mailboxPath.getUser().asString());
         }
         if (mailboxPath.getName() != null && !mailboxPath.getName().equals("")) {
             if (sb.length() > 0) {
