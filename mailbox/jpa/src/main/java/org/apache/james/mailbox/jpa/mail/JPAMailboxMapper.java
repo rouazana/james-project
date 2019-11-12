@@ -225,7 +225,14 @@ public class JPAMailboxMapper extends JPATransactionalMapper implements MailboxM
     public boolean hasChildren(Mailbox mailbox, char delimiter) throws MailboxException, MailboxNotFoundException {
         final String name = mailbox.getName() + delimiter + SQL_WILDCARD_CHAR; 
         final Long numberOfChildMailboxes;
-        numberOfChildMailboxes = (Long) getEntityManager().createNamedQuery("countMailboxesWithNameLikeWithUser").setParameter("nameParam", name).setParameter("namespaceParam", mailbox.getNamespace()).setParameter("userParam", mailbox.getUser()).getSingleResult();
+
+        numberOfChildMailboxes = (Long) getEntityManager()
+            .createNamedQuery("countMailboxesWithNameLikeWithUser")
+            .setParameter("nameParam", name)
+            .setParameter("namespaceParam", mailbox.getNamespace())
+            .setParameter("userParam", mailbox.getUser().asString())
+            .getSingleResult();
+
         return numberOfChildMailboxes != null && numberOfChildMailboxes > 0;
     }
 
