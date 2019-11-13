@@ -2321,10 +2321,10 @@ public abstract class GetMessageListMethodTest {
 
     @Test
     public void aMessageInOutboxShouldBeAccessibleViaJmap() throws Exception {
-        MailboxId outboxMailboxId = mailboxProbe.createMailbox(MailboxConstants.USER_NAMESPACE, ALICE, "Outbox");
+        MailboxId outboxMailboxId = mailboxProbe.createMailbox(MailboxConstants.USER_NAMESPACE, ALICE.asString(), "Outbox");
         String messageBody = "We're all mad here.";
         mailboxProbe.appendMessage(
-            ALICE,
+            ALICE.asString(),
             MailboxPath.forUser(ALICE, "Outbox"),
             new ByteArrayInputStream(("Subject: test\r\n\r\n" + messageBody).getBytes(StandardCharsets.UTF_8)),
             new Date(), false, new Flags());
