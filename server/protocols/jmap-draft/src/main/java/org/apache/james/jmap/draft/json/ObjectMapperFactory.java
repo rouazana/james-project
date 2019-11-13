@@ -76,6 +76,8 @@ public class ObjectMapperFactory {
         mailboxIdModule.addSerializer(MessageId.class, new MessageIdSerializer());
         mailboxIdModule.addKeyDeserializer(MessageId.class, new MessageIdKeyDeserializer(messageIdFactory));
         mailboxIdModule.addKeySerializer(MessageId.class, new MessageIdKeySerializer());
+        mailboxIdModule.addSerializer(Username.class, new UsernameSerializer());
+        mailboxIdModule.addDeserializer(Username.class, new UsernameDeserializer());
         mailboxIdModule.addKeyDeserializer(Username.class, new UsernameKeyDeserializer());
         mailboxIdModule.addDeserializer(Rights.Right.class, new RightDeserializer());
 
@@ -163,6 +165,20 @@ public class ObjectMapperFactory {
         @Override
         public void serialize(MailboxId value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
             gen.writeString(value.serialize());
+        }
+    }
+
+    public static class UsernameSerializer extends JsonSerializer<Username> {
+        @Override
+        public void serialize(Username value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
+            gen.writeString(value.asString());
+        }
+    }
+
+    public static class UsernameDeserializer extends JsonDeserializer<Username> {
+        @Override
+        public Username deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            return Username.of(p.getValueAsString());
         }
     }
 
