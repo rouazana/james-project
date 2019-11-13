@@ -20,6 +20,7 @@
 package org.apache.james.protocols.pop3.core;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.apache.james.core.Username;
 import org.apache.james.protocols.api.Request;
@@ -69,9 +70,11 @@ public abstract class AbstractPassCmdHandler extends RsetCmdHandler {
                 stat(session);
 
                 session.setHandlerState(POP3Session.TRANSACTION);
-                
 
-                StringBuilder responseBuffer = new StringBuilder(64).append("Welcome ").append(session.getUsername().asString());
+                StringBuilder responseBuffer = new StringBuilder(64).append("Welcome ")
+                    .append(Optional.ofNullable(session.getUsername())
+                        .map(Username::asString)
+                        .orElse(null));
                 return  new POP3Response(POP3Response.OK_RESPONSE, responseBuffer.toString());
             } else {
                 session.setHandlerState(POP3Session.AUTHENTICATION_READY);
