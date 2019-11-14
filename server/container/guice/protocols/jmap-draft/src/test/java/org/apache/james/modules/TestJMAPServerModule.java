@@ -46,6 +46,7 @@ public class TestJMAPServerModule extends AbstractModule {
         "-----END PUBLIC KEY-----\n";
 
     // For commodity, here is the matching private key, allowing to generate easily token if needed
+    // for example using jwt.io.
     @SuppressWarnings("unused")
     private static final String UNUSED_PRIVATE_KEY =
         "-----BEGIN RSA PRIVATE KEY-----\n" +
