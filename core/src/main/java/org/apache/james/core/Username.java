@@ -26,7 +26,6 @@ import java.util.Optional;
 
 import javax.mail.internet.AddressException;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -147,9 +146,6 @@ public class Username {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("localPart", localPart)
-            .add("domainPart", domainPart)
-            .toString();
+        return asString();
     }
 }
