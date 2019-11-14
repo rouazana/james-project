@@ -130,7 +130,7 @@ public abstract class QuotaMailingTest {
     @Test
     public void configurationShouldBeWellLoaded() throws Exception {
         jmapServer.getProbe(QuotaProbesImpl.class)
-            .setMaxStorage(MailboxConstants.USER_NAMESPACE + "&" + HOMER,
+            .setMaxStorage(MailboxConstants.USER_NAMESPACE + "&" + HOMER.asString(),
                 new SerializableQuotaValue<>(QuotaSize.size(100 * 1000)));
 
         bartSendMessageToHomer();
