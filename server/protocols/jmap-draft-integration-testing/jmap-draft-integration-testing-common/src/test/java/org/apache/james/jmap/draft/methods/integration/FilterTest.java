@@ -1595,7 +1595,7 @@ public abstract class FilterTest {
                 "      \"condition\": {" +
                 "        \"field\": \"from\"," +
                 "        \"comparator\": \"exactly-equals\"," +
-                "        \"value\": \"Bob <" + BOB + ">\"" +
+                "        \"value\": \"Bob <" + BOB.asString() + ">\"" +
                 "      }," +
                 "      \"action\": {" +
                 "        \"appendIn\": {" +
@@ -1981,7 +1981,7 @@ public abstract class FilterTest {
                 "      \"condition\": {" +
                 "        \"field\": \"from\"," +
                 "        \"comparator\": \"not-exactly-equals\"," +
-                "        \"value\": \"Bob <" + BOB + ">\"" +
+                "        \"value\": \"Bob <" + BOB.asString() + ">\"" +
                 "      }," +
                 "      \"action\": {" +
                 "        \"appendIn\": {" +
