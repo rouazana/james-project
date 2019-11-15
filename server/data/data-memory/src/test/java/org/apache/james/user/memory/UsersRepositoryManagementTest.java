@@ -57,19 +57,19 @@ public class UsersRepositoryManagementTest {
     @Test
     public void testAddUserAndVerify() throws Exception {
         usersRepository.addUser(Username.of("testcount1"), "testCount");
-        assertThat(userManagement.verifyExists(Username.of("testNotAdded"))).describedAs("user not there").isFalse();
-        assertThat(userManagement.verifyExists(Username.of("testCount1"))).describedAs("user is there").isTrue();
+        assertThat(userManagement.verifyExists("testNotAdded")).describedAs("user not there").isFalse();
+        assertThat(userManagement.verifyExists("testCount1")).describedAs("user is there").isTrue();
         usersRepository.removeUser(Username.of("testcount1"));
-        assertThat(userManagement.verifyExists(Username.of("testCount1"))).describedAs("user not there").isFalse();
+        assertThat(userManagement.verifyExists("testCount1")).describedAs("user not there").isFalse();
     }
 
     @Test
     public void testDelUser() throws Exception {
         usersRepository.addUser(Username.of("testdel"), "test");
-        assertThat(userManagement.verifyExists(Username.of("testNotDeletable"))).describedAs("user not there").isFalse();
-        assertThat(userManagement.verifyExists(Username.of("testdel"))).describedAs("user is there").isTrue();
+        assertThat(userManagement.verifyExists("testNotDeletable")).describedAs("user not there").isFalse();
+        assertThat(userManagement.verifyExists("testdel")).describedAs("user is there").isTrue();
         usersRepository.removeUser(Username.of("testdel"));
-        assertThat(userManagement.verifyExists(Username.of("testdel"))).describedAs("user no longer there").isFalse();
+        assertThat(userManagement.verifyExists("testdel")).describedAs("user no longer there").isFalse();
     }
 
     @Test
@@ -81,11 +81,11 @@ public class UsersRepositoryManagementTest {
             usersRepository.addUser(user, "test");
         }
 
-        Username[] userNames = userManagement.listAllUsers();
+        String[] userNames = userManagement.listAllUsers();
         assertThat(userNames.length).describedAs("user count").isEqualTo(users.size());
 
-        for (Username user : userNames) {
-            if (!users.contains(user)) {
+        for (String user : userNames) {
+            if (!users.contains(Username.of(user))) {
                 fail("user not listed");
             }
         }
@@ -93,20 +93,20 @@ public class UsersRepositoryManagementTest {
 
     @Test
     public void testSetPassword() throws Exception {
-        userManagement.addUser(Username.of("testpwduser"), "pwd1");
+        userManagement.addUser("testpwduser", "pwd1");
 
         assertThat(usersRepository.test(Username.of("testpwduser"), "pwd1")).describedAs("initial password").isTrue();
 
         // set empty pwd
-        userManagement.setPassword(Username.of("testpwduser"), "");
+        userManagement.setPassword("testpwduser", "");
         assertThat(usersRepository.test(Username.of("testpwduser"), "")).describedAs("password changed to empty").isTrue();
 
         // change pwd
-        userManagement.setPassword(Username.of("testpwduser"), "pwd2");
+        userManagement.setPassword("testpwduser", "pwd2");
         assertThat(usersRepository.test(Username.of("testpwduser"), "pwd2")).describedAs("password not changed to pwd2").isTrue();
 
         // assure case sensitivity
-        userManagement.setPassword(Username.of("testpwduser"), "pWD2");
+        userManagement.setPassword("testpwduser", "pWD2");
         assertThat(usersRepository.test(Username.of("testpwduser"), "pwd2")).describedAs("password no longer pwd2").isFalse();
         assertThat(usersRepository.test(Username.of("testpwduser"), "pWD2")).describedAs("password changed to pWD2").isTrue();
     }

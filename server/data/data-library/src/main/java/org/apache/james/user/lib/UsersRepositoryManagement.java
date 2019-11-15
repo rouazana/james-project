@@ -63,8 +63,9 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     }
 
     @Override
-    public void addUser(Username userName, String password) throws Exception {
+    public void addUser(String rawUsername, String password) throws Exception {
         try {
+            Username userName = Username.of(rawUsername);
             usersRepository.addUser(userName, password);
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
@@ -72,8 +73,9 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     }
 
     @Override
-    public void deleteUser(Username userName) throws Exception {
+    public void deleteUser(String rawUsername) throws Exception {
         try {
+            Username userName = Username.of(rawUsername);
             usersRepository.removeUser(userName);
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
@@ -81,8 +83,9 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     }
 
     @Override
-    public boolean verifyExists(Username userName) throws Exception {
+    public boolean verifyExists(String rawUsername) throws Exception {
         try {
+            Username userName = Username.of(rawUsername);
             return usersRepository.contains(userName);
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
@@ -99,22 +102,23 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     }
 
     @Override
-    public Username[] listAllUsers() throws Exception {
-        List<Username> userNames = new ArrayList<>();
+    public String[] listAllUsers() throws Exception {
+        List<String> userNames = new ArrayList<>();
         try {
             for (Iterator<Username> it = usersRepository.list(); it.hasNext(); ) {
-                userNames.add(it.next());
+                userNames.add(it.next().asString());
             }
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
 
         }
-        return userNames.toArray(new Username[userNames.size()]);
+        return userNames.toArray(new String[userNames.size()]);
     }
 
     @Override
-    public void setPassword(Username userName, String password) throws Exception {
+    public void setPassword(String rawUsername, String password) throws Exception {
         try {
+            Username userName = Username.of(rawUsername);
             User user = usersRepository.getUserByName(userName);
             if (user == null) {
                 throw new UsersRepositoryException("user not found: " + userName.asString());

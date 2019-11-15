@@ -35,7 +35,7 @@ public interface UsersRepositoryManagementMBean {
      * @param password
      *            The password of the user being added
      */
-    void addUser(Username userName, String password) throws Exception;
+    void addUser(String userName, String password) throws Exception;
 
     /**
      * Deletes a user from this mail server.
@@ -46,7 +46,7 @@ public interface UsersRepositoryManagementMBean {
      * @throws UsersRepositoryException
      *             if error
      */
-    void deleteUser(Username userName) throws Exception;
+    void deleteUser(String userName) throws Exception;
 
     /**
      * Check if a user exists with the given name.
@@ -58,7 +58,7 @@ public interface UsersRepositoryManagementMBean {
      * @throws UsersRepositoryException
      *             if error
      */
-    boolean verifyExists(Username userName) throws Exception;
+    boolean verifyExists(String userName) throws Exception;
 
     /**
      * Total count of existing users
@@ -76,7 +76,7 @@ public interface UsersRepositoryManagementMBean {
      * @throws UsersRepositoryException
      *             if error
      */
-    Username[] listAllUsers() throws Exception;
+    String[] listAllUsers() throws Exception;
 
     /**
      * Set a user's password
@@ -89,7 +89,7 @@ public interface UsersRepositoryManagementMBean {
      * @throws UsersRepositoryException
      *             if error
      */
-    void setPassword(Username userName, String password) throws Exception;
+    void setPassword(String userName, String password) throws Exception;
 
     /**
      * Removes a user's alias which terminates local mail forwarding

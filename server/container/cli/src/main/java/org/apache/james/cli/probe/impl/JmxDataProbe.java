@@ -21,13 +21,11 @@ package org.apache.james.cli.probe.impl;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import javax.management.MalformedObjectNameException;
 
-import org.apache.james.core.Username;
 import org.apache.james.domainlist.api.DomainListManagementMBean;
 import org.apache.james.probe.DataProbe;
 import org.apache.james.rrt.api.RecipientRewriteTableManagementMBean;
@@ -66,7 +64,7 @@ public class JmxDataProbe implements DataProbe, JmxProbe {
                      .addContext(MDCBuilder.ACTION, "addUser")
                      .addContext("parameter", userName)
                      .build()) {
-            usersRepositoryProxy.addUser(Username.of(userName), password);
+            usersRepositoryProxy.addUser(userName, password);
         }
     }
 
@@ -78,7 +76,7 @@ public class JmxDataProbe implements DataProbe, JmxProbe {
                      .addContext(MDCBuilder.ACTION, "removeUser")
                      .addContext("parameter", username)
                      .build()) {
-            usersRepositoryProxy.deleteUser(Username.of(username));
+            usersRepositoryProxy.deleteUser(username);
         }
     }
 
@@ -89,9 +87,7 @@ public class JmxDataProbe implements DataProbe, JmxProbe {
                      .addContext(MDCBuilder.PROTOCOL, JMX)
                      .addContext(MDCBuilder.ACTION, "listUsers")
                      .build()) {
-            return Arrays.stream(usersRepositoryProxy.listAllUsers())
-                .map(Username::asString)
-                .toArray(String[]::new);
+            return usersRepositoryProxy.listAllUsers();
         }
     }
 
@@ -103,7 +99,7 @@ public class JmxDataProbe implements DataProbe, JmxProbe {
                      .addContext(MDCBuilder.ACTION, "setPassword")
                      .addContext("parameter", userName)
                      .build()) {
-            usersRepositoryProxy.setPassword(Username.of(userName), password);
+            usersRepositoryProxy.setPassword(userName, password);
         }
     }
 
