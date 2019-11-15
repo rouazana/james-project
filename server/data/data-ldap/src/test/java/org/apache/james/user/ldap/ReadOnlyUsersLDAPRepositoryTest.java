@@ -31,7 +31,6 @@ import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.configuration2.plist.PropertyListConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
-import org.apache.james.core.MailAddress;
 import org.apache.james.core.Username;
 import org.apache.james.domainlist.api.DomainList;
 import org.junit.jupiter.api.BeforeEach;
