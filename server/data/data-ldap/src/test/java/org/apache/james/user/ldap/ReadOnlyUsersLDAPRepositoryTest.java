@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class ReadOnlyUsersLDAPRepositoryTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadOnlyUsersLDAPRepositoryTest.class);
-    private static final Username JAMES_USER_MAIL = Username.of(JAMES_USER + "@" + DOMAIN);
+    private static final Username JAMES_USER_MAIL = Username.of(JAMES_USER.getLocalPart()+ "@" + DOMAIN);
     private static final Username UNKNOWN = Username.of("unknown");
     private static final String BAD_PASSWORD = "badpassword";
 
@@ -179,13 +179,13 @@ public class ReadOnlyUsersLDAPRepositoryTest {
         @Test
         public void containsWithGetUserShouldBeTrue() throws Exception {
             ReadOnlyUsersLDAPRepository ldapRepository = startUsersRepository(ldapRepositoryConfiguration());
-            assertThat(ldapRepository.contains(ldapRepository.getUser(new MailAddress(JAMES_USER_MAIL.asString())))).isTrue();
+            assertThat(ldapRepository.contains(ldapRepository.getUser(JAMES_USER_MAIL.asMailAddress()))).isTrue();
         }
 
         @Test
         public void containsWithGetUserShouldBeTrueWithVirtualHosting() throws Exception {
             ReadOnlyUsersLDAPRepository ldapRepository = startUsersRepository(ldapRepositoryConfigurationWithVirtualHosting());
-            assertThat(ldapRepository.contains(ldapRepository.getUser(new MailAddress(JAMES_USER_MAIL.asString())))).isTrue();
+            assertThat(ldapRepository.contains(ldapRepository.getUser(JAMES_USER_MAIL.asMailAddress()))).isTrue();
         }
 
         private ReadOnlyUsersLDAPRepository startUsersRepository(HierarchicalConfiguration<ImmutableNode> ldapRepositoryConfiguration) throws Exception {
