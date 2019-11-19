@@ -83,8 +83,6 @@ public class SenderAuthIdentifyVerificationRcptHook extends AbstractSenderAuthId
 
     @Override
     protected boolean isSenderAllowed(Username user, Username sender) {
-        Collator collator = Collator.getInstance(Locale.US);
-        collator.setStrength(Collator.PRIMARY);
-        return collator.compare(user.asString(), sender.asString()) == 0; //FIXME-USERNAME
+        return user.equalsAsId(sender);
     }
 }
