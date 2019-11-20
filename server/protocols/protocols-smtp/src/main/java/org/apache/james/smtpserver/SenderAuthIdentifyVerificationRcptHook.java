@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.james.smtpserver;
 
-import java.text.Collator;
-import java.util.Locale;
-
 import javax.inject.Inject;
 
 import org.apache.james.core.Domain;
