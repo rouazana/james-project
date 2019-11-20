@@ -84,7 +84,7 @@ public class CassandraUsersRepository extends AbstractUsersRepository {
     }
 
     private PreparedStatement prepareListStatement(Session session) {
-        return session.prepare(select(REALNAME)
+        return session.prepare(select(NAME)
             .from(TABLE_NAME));
     }
 
@@ -109,7 +109,7 @@ public class CassandraUsersRepository extends AbstractUsersRepository {
     }
 
     private PreparedStatement prepareGetUserStatement(Session session) {
-        return session.prepare(select(REALNAME, PASSWORD, ALGORITHM)
+        return session.prepare(select(NAME, PASSWORD, ALGORITHM)
             .from(TABLE_NAME)
             .where(eq(NAME, bindMarker(NAME))));
     }
@@ -118,8 +118,8 @@ public class CassandraUsersRepository extends AbstractUsersRepository {
     public User getUserByName(Username name) {
         return executor.executeSingleRow(
                 getUserStatement.bind()
-                    .setString(NAME, name.asId()))
-            .map(row -> new DefaultUser(Username.of(row.getString(REALNAME)), row.getString(PASSWORD), row.getString(ALGORITHM)))
+                    .setString(NAME, name.asString()))
+            .map(row -> new DefaultUser(Username.of(row.getString(NAME)), row.getString(PASSWORD), row.getString(ALGORITHM)))
             .blockOptional()
             .orElse(null);
     }
@@ -133,7 +133,7 @@ public class CassandraUsersRepository extends AbstractUsersRepository {
                     .setString(REALNAME, defaultUser.getUserName().asString())
                     .setString(PASSWORD, defaultUser.getHashedPassword())
                     .setString(ALGORITHM, defaultUser.getHashAlgorithm())
-                    .setString(NAME, defaultUser.getUserName().asId()))
+                    .setString(NAME, defaultUser.getUserName().asString()))
             .block();
 
         if (!executed) {
@@ -178,7 +178,7 @@ public class CassandraUsersRepository extends AbstractUsersRepository {
     @Override
     public Iterator<Username> list() throws UsersRepositoryException {
         return executor.executeRows(listStatement.bind())
-            .map(row -> row.getString(REALNAME))
+            .map(row -> row.getString(NAME))
             .map(Username::of)
             .toIterable()
             .iterator();
@@ -196,7 +196,7 @@ public class CassandraUsersRepository extends AbstractUsersRepository {
         user.setPassword(password);
         boolean executed = executor.executeReturnApplied(
             insertStatement.bind()
-                .setString(NAME, user.getUserName().asId())
+                .setString(NAME, user.getUserName().asString())
                 .setString(REALNAME, user.getUserName().asString())
                 .setString(PASSWORD, user.getHashedPassword())
                 .setString(ALGORITHM, user.getHashAlgorithm()))
