@@ -1,11 +1,11 @@
 ---
 layout: post
-title:  "Benoît Tellier presents James at ApacheCon Europe"
+title:  "Benoit Tellier presents James at ApacheCon Europe"
 date:   2019-11-19  16:16:30 +0200
 categories: james apachecon
 ---
 
-Benoît had the pleasure to present James at the ApacheCon at Berlin: "Gaining control over emails with Apache James".
+Benoit had the pleasure to present James at the ApacheCon at Berlin: "Gaining control over emails with Apache James".
 
 If you missed him you can see his conference on [youtube][Youtube], or read his [article][article].
 
