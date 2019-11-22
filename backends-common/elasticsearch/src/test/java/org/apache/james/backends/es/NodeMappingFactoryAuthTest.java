@@ -47,14 +47,14 @@ class NodeMappingFactoryAuthTest {
     @BeforeEach
     void setUp(ElasticSearchClusterExtension.ElasticSearchCluster esCluster) throws Exception {
         client = new ClientProvider(ElasticSearchConfiguration.builder()
-            .credential(Optional.of(DockerElasticSearch.WithAuth.DEFAULT_CREDENTIAL))
-            .hostScheme(Optional.of(ElasticSearchConfiguration.HostScheme.HTTPS))
-            .sslTrustConfiguration(ElasticSearchConfiguration.SSLConfiguration.builder()
-                .strategyIgnore()
-                .acceptAnyHostNameVerifier()
-                .build())
-            .addHost(esCluster.es1.getHttpHost())
-        .build()).get();
+                .credential(Optional.of(DockerElasticSearch.WithAuth.DEFAULT_CREDENTIAL))
+                .hostScheme(Optional.of(ElasticSearchConfiguration.HostScheme.HTTPS))
+                .sslTrustConfiguration(ElasticSearchConfiguration.SSLConfiguration.builder()
+                    .strategyIgnore()
+                    .acceptAnyHostNameVerifier()
+                    .build())
+                .addHost(esCluster.es1.getHttpHost())
+            .build()).get();
         new IndexCreationFactory(ElasticSearchConfiguration.DEFAULT_CONFIGURATION)
             .useIndex(INDEX_NAME)
             .addAlias(ALIAS_NAME)
@@ -85,9 +85,9 @@ class NodeMappingFactoryAuthTest {
         esCluster.es1.flushIndices();
 
         assertThatCode(() -> NodeMappingFactory.applyMapping(client,
-            INDEX_NAME,
-            getOtherMappingsSources()))
-        .doesNotThrowAnyException();
+                INDEX_NAME,
+                getOtherMappingsSources()))
+            .doesNotThrowAnyException();
     }
 
     private XContentBuilder getMappingsSources() throws Exception {
