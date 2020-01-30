@@ -19,20 +19,36 @@
 
 package org.apache.james;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 import java.util.UUID;
 
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.FlagTerm;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.james.core.Domain;
 import org.apache.james.mailbox.DefaultMailboxes;
 import org.apache.james.modules.MailboxProbeImpl;
 import org.apache.james.modules.protocols.ImapGuiceProbe;
 import org.apache.james.modules.protocols.SmtpGuiceProbe;
+import org.apache.james.util.MimeMessageUtil;
 import org.apache.james.util.Port;
 import org.apache.james.utils.DataProbeImpl;
 import org.apache.james.utils.IMAPMessageReader;
 import org.apache.james.utils.SMTPMessageSender;
 import org.apache.james.utils.SpoolerProbe;
+import org.apache.mailet.base.test.FakeMail;
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.awaitility.core.ConditionFactory;
@@ -40,6 +56,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.fge.lambdas.Throwing;
 import com.google.common.io.Resources;
+
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -55,6 +72,69 @@ interface MailsShouldBeWellReceived {
         .await();
 
     ConditionFactory CALMLY_AWAIT_FIVE_MINUTE = CALMLY_AWAIT.timeout(Duration.FIVE_MINUTES);
+    String SENDER = "bob@apache.org";
+    String UNICODE_BODY = "Unicode €uro symbol.";
+
+
+    static String readFirstMessageJavax(int imapPort) throws Exception {
+        Session imapSession = Session.getDefaultInstance(new Properties());
+        try (Store store = imapSession.getStore("imap")) {
+            store.connect("localhost", imapPort, JAMES_USER, PASSWORD);
+            Folder inbox = store.getFolder(IMAPMessageReader.INBOX);
+            inbox.open(Folder.READ_ONLY);
+
+            CALMLY_AWAIT.untilAsserted(() ->
+                assertThat(searchForAll(inbox))
+                    .hasSize(1));
+
+            try (InputStream inputStream = searchForAll(inbox)[0].getInputStream()) {
+                return MimeMessageUtil.asString(
+                    MimeMessageUtil.mimeMessageFromStream(inputStream));
+            }
+        }
+    }
+
+    static Message[] searchForAll(Folder inbox) throws MessagingException {
+        return inbox.search(new FlagTerm(new Flags(), false));
+    }
+
+    @Test
+    default void mailsContentWithUnicodeCharactersShouldBeKeptUnChanged(GuiceJamesServer server) throws Exception {
+        server.getProbe(DataProbeImpl.class).fluent()
+            .addDomain(DOMAIN)
+            .addUser(JAMES_USER, PASSWORD);
+
+        MailboxProbeImpl mailboxProbe = server.getProbe(MailboxProbeImpl.class);
+        mailboxProbe.createMailbox("#private", JAMES_USER, DefaultMailboxes.INBOX);
+
+        Port smtpPort = server.getProbe(SmtpGuiceProbe.class).getSmtpPort();
+        try (SMTPMessageSender sender = new SMTPMessageSender(Domain.LOCALHOST.asString())) {
+            sender.connect(JAMES_SERVER_HOST, smtpPort);
+            MimeMessage mimeMessage = MimeMessageUtil.mimeMessageFromStream(
+                ClassLoader.getSystemResourceAsStream("eml/mail-containing-unicode-characters.eml"));
+
+            FakeMail.Builder mail = FakeMail.builder()
+                .name("test-unicode-body")
+                .sender(SENDER)
+                .recipient(JAMES_USER)
+                .mimeMessage(mimeMessage);
+
+            sender.sendMessage(mail);
+        }
+
+        CALMLY_AWAIT.until(() -> server.getProbe(SpoolerProbe.class).processingFinished());
+
+        try (IMAPMessageReader reader = new IMAPMessageReader()) {
+            int imapPort = server.getProbe(ImapGuiceProbe.class).getImapPort();
+            reader.connect(JAMES_SERVER_HOST, imapPort)
+                .login(JAMES_USER, PASSWORD)
+                .select(IMAPMessageReader.INBOX)
+                .awaitMessageCount(CALMLY_AWAIT, 1);
+
+            assertThat(readFirstMessageJavax(imapPort))
+                .contains(UNICODE_BODY);
+        }
+    }
 
     @Test
     default void mailsShouldBeWellReceived(GuiceJamesServer server) throws Exception {
