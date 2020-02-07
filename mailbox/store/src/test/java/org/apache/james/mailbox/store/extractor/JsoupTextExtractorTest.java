@@ -81,7 +81,6 @@ class JsoupTextExtractorTest {
             .isEqualTo(ParsedContent.empty());
     }
 
-    @Disabled("JAMES-3044 java.io.IOException: Input is binary and unsupported")
     @Test
     void extractContentShouldNotThrowWhenContainingNullCharacters() {
         InputStream inputStream = textContentWithManyNullCharacters();
@@ -92,14 +91,9 @@ class JsoupTextExtractorTest {
 
     private InputStream textContentWithManyNullCharacters() {
         String htmlTextContent = "HTML pages can include a lot of null '\0' character. But still expecting the content can be parsed." +
-            "Jsoup 1.21.1 thinks a file containing more than 10 null characters can be a binary file";
+            "Jsoup 1.21.1 thinks a file containing more than 10 null characters can be a binary file \0\0\0\0\0\0\0\0\0\0";
         byte[] htmlBytesContent = htmlTextContent.getBytes(StandardCharsets.UTF_8);
-        byte[] nullCharacters = {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'};
 
-        byte[] fullContent = new byte[htmlBytesContent.length + nullCharacters.length];
-        System.arraycopy(htmlBytesContent, 0, fullContent, 0, htmlBytesContent.length);
-        System.arraycopy(nullCharacters, 0, fullContent, htmlBytesContent.length, nullCharacters.length);
-
-        return new ByteArrayInputStream(fullContent);
+        return new ByteArrayInputStream(htmlBytesContent);
     }
 }
