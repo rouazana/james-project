@@ -1,18 +1,34 @@
 import org.apache.james.blob.api.{BlobId, TestBlobId}
-import org.scalacheck.Gen
-import org.scalatest.funsuite.AnyFunSuite
+import org.scalacheck.{Arbitrary, Gen, Properties}
+import org.scalacheck.Prop.forAll
 
 case class Generation(id: Long)
-case class Iteration(id: Long)
+case class Iteration(id: Long) {
+  def next: Iteration = Iteration(id + 1)
+}
 case class ExternalID(id: String) // TODO
 
-sealed trait Event
-case class Reference(externalId: ExternalID, blobId: BlobId, generation: Generation) extends Event
-case class Deletion(generation: Generation, reference: Reference) extends Event
+sealed trait Event {
+  def getBlob: (Generation, BlobId)
+}
+
+case class Reference(externalId: ExternalID, blobId: BlobId, generation: Generation) extends Event {
+  override def getBlob: (Generation, BlobId) = (generation, blobId)
+}
+
+case class Deletion(generation: Generation, reference: Reference) extends Event {
+  override def getBlob: (Generation, BlobId) = reference.getBlob
+}
 
 case class Report(iteration: Iteration,
                   blobsToDelete: Set[(Generation, BlobId)]
                  )
+
+object GC {
+  def plan(events: Seq[Event], lastIteration: Iteration): Report = {
+    Report(lastIteration.next, Set())
+  }
+}
 
 object Generators {
 
@@ -47,11 +63,11 @@ object Generators {
     })._2
 
   def deletionGen(previousEvents : Seq[Event], generation: Generation): Gen[Option[Deletion]] = {
-    val persistingReferences = existingReferences(previousEvents)
-    if (persistingReferences.isEmpty) {
+    val remainingReferences = existingReferences(previousEvents)
+    if (remainingReferences.isEmpty) {
       Gen.const(None)
     } else {
-      Gen.oneOf(persistingReferences)
+      Gen.oneOf(remainingReferences)
         .map(reference => Deletion(generation, reference))
         .map(Some(_))
     }
@@ -77,7 +93,7 @@ object Generators {
     event <- Gen.oneOf(Seq(greenAddEvent, duplicateAddEvent) ++ deleteEvent)
   } yield event
 
-  def eventsGen() : Gen[Seq[Event]] = for {
+  val eventsGen : Gen[Seq[Event]] = for {
     nbEvents <- Gen.choose(0, 100)
     generations <- generationsGen.map(_.take(nbEvents))
     startEvent <- referenceGen(Generation.apply(0))
@@ -100,8 +116,20 @@ object Generators {
   }
 }
 
-class GCPropertiesTest extends AnyFunSuite {
-  test("print sample") {
-    Generators.eventsGen().sample.foreach(_.foreach(println))
+object GCPropertiesTest extends Properties("GC") {
+  implicit val arbEvents = Arbitrary(Generators.eventsGen)
+//  Generators.eventsGen().sample.foreach(_.foreach(println))
+  property("2.1. GC should not delete data being referenced by a pending process or still referenced") = forAll {
+    events: Seq[Event] => {
+      val (creationEvents, deletionEvents) = events.partition {
+        case _ : Reference => true
+        case _ : Deletion => false
+      }
+      val createdBlobs = creationEvents.map(_.getBlob._2).toSet
+      val deletedBlobs = deletionEvents.map(_.getBlob._2).toSet
+      val remainingBlobs = createdBlobs -- deletedBlobs
+      val plannedDeletions = GC.plan(events, Iteration(0)).blobsToDelete.map(_._2)
+      remainingBlobs.intersect(plannedDeletions).isEmpty
+    }
   }
 }
