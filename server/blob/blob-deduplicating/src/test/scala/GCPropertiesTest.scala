@@ -9,23 +9,47 @@ case class Iteration(id: Long) {
 case class ExternalID(id: String) // TODO
 
 sealed trait Event {
-  def getBlob: (Generation, BlobId)
+  def blob: BlobId
+  def generation: Generation
 }
 
 case class Reference(externalId: ExternalID, blobId: BlobId, generation: Generation) extends Event {
-  override def getBlob: (Generation, BlobId) = (generation, blobId)
+  override def blob: BlobId = blobId
 }
 
 case class Deletion(generation: Generation, reference: Reference) extends Event {
-  override def getBlob: (Generation, BlobId) = reference.getBlob
+  override def blob: BlobId = reference.blob
 }
 
 case class Report(iteration: Iteration,
                   blobsToDelete: Set[(Generation, BlobId)]
                  )
 
+case class State(blobs: Set[BlobId],
+                 references: Map[Generation, Set[Reference]],
+                 deletions: Map[Generation, Set[Deletion]]) {
+  def apply(event: Event): State = { event match {
+        case e : Reference => copy(references = addElement(references, e), blobs = blobs + e.blob)
+        case e : Deletion => copy(deletions = addElement(deletions, e))
+    }
+  }
+
+  private def addElement[T <: Event](collection: Map[Generation, Set[T]], e: T) = {
+    collection.updatedWith(e.generation)(previous => Some(previous.getOrElse(Set()) + e))
+  }
+}
+
+object State {
+  val initial = State(blobs = Set.empty, references = Map.empty, deletions = Map.empty)
+}
+
+object Interpreter {
+  def apply(events: Seq[Event]): State =
+    events.foldLeft(State.initial)((state, event) => state(event))
+}
+
 object GC {
-  def plan(events: Seq[Event], lastIteration: Iteration): Report = {
+  def plan(state: State, lastIteration: Iteration): Report = {
     Report(lastIteration.next, Set())
   }
 }
@@ -34,7 +58,7 @@ object Generators {
 
   val smallInteger = Gen.choose(0L,100L)
   var current = 0;
-  val generationsGen: Gen[LazyList[Generation]] = Gen.infiniteLazyList(Gen.frequency((90, Gen.const(0)), (9, Gen.const(1)), (1, Gen.const(2))))
+  val generationsGen: Gen[LazyList[Generation]] = Gen.infiniteLazyList(Gen.frequency((80, Gen.const(0)), (19, Gen.const(1)), (1, Gen.const(2))))
     .map(list => list.scanLeft(0)(_ + _))
     .map(list => list.map(_.toLong).map(Generation.apply))
 
@@ -125,11 +149,67 @@ object GCPropertiesTest extends Properties("GC") {
         case _ : Reference => true
         case _ : Deletion => false
       }
-      val createdBlobs = creationEvents.map(_.getBlob._2).toSet
-      val deletedBlobs = deletionEvents.map(_.getBlob._2).toSet
+
+      val createdBlobs = creationEvents.map(_.blob).toSet
+      val deletedBlobs = deletionEvents.map(_.blob).toSet
       val remainingBlobs = createdBlobs -- deletedBlobs
-      val plannedDeletions = GC.plan(events, Iteration(0)).blobsToDelete.map(_._2)
+      val plannedDeletions = GC.plan(Interpreter(events), Iteration(0)).blobsToDelete.map(_._2)
       remainingBlobs.intersect(plannedDeletions).isEmpty
     }
   }
+
+  property("3.2. less than 10% of unreferenced data of a significant dataset should persist") = forAll {
+    events: Seq[Event] => {
+      val (creationEvents, deletionEvents) = events.partition {
+        case _ : Reference => true
+        case _ : Deletion => false
+      }
+      val createdBlobs = creationEvents.map(_.blob).toSet
+      val deletedBlobs = deletionEvents.map(_.blob).toSet
+      val remainingBlobs = createdBlobs -- deletedBlobs
+      val plannedDeletions = GC.plan(Interpreter(events), Iteration(0)).blobsToDelete.map(_._2)
+
+      plannedDeletions.size >= deletedBlobs.size * 0.9
+    }
+  }
 }
+
+/*
+
+Blob A : blabla
+Blob B : blabla
+Blob C : foo
+
+Dedup (for a given generation):
+
+Blob A : BlobId == 1
+Blob B : BlobId == 1
+Blob C : BlobId == 2
+
+BlobStore:
+
+Create(A) => Store(A)
+Create(B) => Store(B)
+Create(C) => Store(C)
+Delete(B) => Delete(B)
+Delete(C) => Delete(C)
+
+(A)
+
+
+Dedup:
+
+A ==> External Id
+
+Create(A) => Reference((1, A)) + Store(1)
+Create(B) => Reference((1, B))
+Create(C) => Reference((2, C)) + Store(2)
+Delete(B) => Deletion((1, B))
+Delete(C) => Deletion((2, C))
+
+GC
+
+(1)
+
+
+ */
