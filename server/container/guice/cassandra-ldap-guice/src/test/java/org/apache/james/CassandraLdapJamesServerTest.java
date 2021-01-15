@@ -86,9 +86,13 @@ class CassandraLdapJamesServerTest implements JamesServerContract {
 
     @Test
     void receivingMailShouldIssueAnSmtpErrorWhenLdapIsNotAvailable(GuiceJamesServer server) {
-        ldap.getLdapRule().stop();
-        assertThatThrownBy(() -> messageSender.connect(JAMES_SERVER_HOST, server.getProbe(SmtpGuiceProbe.class).getSmtpPort())
-                .sendMessage("bob@any.com", JAMES_USER.asString() + "@localhost"))
-            .isInstanceOf(SMTPSendingException.class);
+        try {
+            ldap.getLdapRule().stop();
+            assertThatThrownBy(() -> messageSender.connect(JAMES_SERVER_HOST, server.getProbe(SmtpGuiceProbe.class).getSmtpPort())
+                    .sendMessage("bob@any.com", JAMES_USER.asString() + "@localhost"))
+                .isInstanceOf(SMTPSendingException.class);
+        } finally {
+            ldap.getLdapRule().start();
+        }
     }
 }
