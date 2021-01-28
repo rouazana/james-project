@@ -18,6 +18,15 @@
  ****************************************************************/
 package org.apache.james.jmap.rfc8621.contract
 
+import sttp.client3._
+import sttp.ws.{WebSocket, WebSocketFrame}
+import sttp.monad.syntax._
+import sttp.capabilities.WebSockets
+import sttp.client3._
+import sttp.monad.syntax._
+import sttp.client3.monad.IdMonad
+import sttp.monad.MonadError
+
 import java.net.URI
 import java.util
 import net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
@@ -33,6 +42,10 @@ import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import org.junit.jupiter.api.{BeforeEach, Tag, Test}
 import org.slf4j.{Logger, LoggerFactory}
+import sttp.client3.basicRequest.send
+import sttp.client3.okhttp.OkHttpSyncBackend
+import sttp.model.Uri
+import sttp.ws.WebSocketFrame.Text
 
 import java.util.concurrent.TimeUnit
 
@@ -81,7 +94,38 @@ trait WebSocketContract {
     val port = server.getProbe(classOf[JmapGuiceProbe])
       .getJmapPort
       .getValue
-    val client = new ExampleClient(new URI(s"ws://127.0.0.1:$port/jmap/ws"))
+    //implicit val backend = HttpClientSyncBackend()
+    val backend: SttpBackend[Identity, WebSockets] = OkHttpSyncBackend()
+    //implicit val convertToFuture: ConvertToFuture[Identity] = ConvertToFuture.id
+    implicit val monad: MonadError[Identity] = IdMonad
+    basicRequest.get(Uri.apply(new URI(s"ws://127.0.0.1:$port/jmap/ws")))
+      .header("Authorization", "Basic Ym9iQGRvbWFpbi50bGQ6Ym9icGFzc3dvcmQ=")
+      .header("Accept", ACCEPT_RFC8621_VERSION_HEADER)
+      .response(asWebSocket[Identity, String]{
+        ws => ws.send(WebSocketFrame.text("""{
+                                            |  "@type": "Request",
+                                            |  "requestId": "req-36",
+                                            |  "using": [ "urn:ietf:params:jmap:core"],
+                                            |  "methodCalls": [
+                                            |    [
+                                            |      "Core/echo",
+                                            |      {
+                                            |        "arg1": "arg1data",
+                                            |        "arg2": "arg2data"
+                                            |      },
+                                            |      "c1"
+                                            |    ]
+                                            |  ]
+                                            |}""".stripMargin))
+          ws.receive().map{ case t: Text => t.payload }
+      })
+      .send(backend)
+      .map{
+        s => println (s.body)
+      }
+
+
+    /*val client = new ExampleClient(new URI(s"ws://127.0.0.1:$port/jmap/ws"))
     client.addHeader("Authorization", "Basic Ym9iQGRvbWFpbi50bGQ6Ym9icGFzc3dvcmQ=")
     client.addHeader("Accept", ACCEPT_RFC8621_VERSION_HEADER)
 
@@ -112,7 +156,7 @@ trait WebSocketContract {
         |  "sessionState":"2c9f1b12-b35a-43e6-9af2-0106fb53a943",
         |  "methodResponses":[["Core/echo",{"arg1":"arg1data","arg2":"arg2data"},"c1"]]
         |}
-        |""".stripMargin)
+        |""".stripMargin)*/
   }
 
   @Test
